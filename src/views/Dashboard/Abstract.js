@@ -1,0 +1,62 @@
+import React, { Component } from 'react';
+
+import {render} from 'react-dom';
+import {Pie, Bar} from 'nivo';
+
+const neo4jConnectionString = "bolt://localhost";
+const neo4jUsername = "neo4j";
+const neo4jPassword = "Test123.";
+
+var neo4j = null;
+var neo4jDriver = null;
+var neo4jSession = null;
+
+class DashboardAbstract extends Component {
+
+    constructor(props) {
+        super(props);
+        /*
+        this.state = {
+            filetypeData: [
+              {
+                "id": "dummy",
+                "label": "dummy",
+                "value": 1
+              }
+            ],
+            commitsPerAuthor: [
+              {
+                "author": "Dummy",
+                "commits": 1,
+                "files": 2,
+              }
+            ],
+            filesFiletypeAuthor: [
+              {
+                "filetype": "dummy",
+                "author": "dummy",
+                "files": 1
+              }
+            ]
+        };
+        */
+    }
+
+    componentDidMount() {
+      neo4j = require('../../../neo4j-web.min');
+      neo4jDriver = neo4j.v1.driver(neo4jConnectionString, neo4j.v1.auth.basic(neo4jUsername, neo4jPassword));
+      neo4jSession = neo4jDriver.session();
+    }
+
+    componentWillUnmount() {
+      neo4jSession.close();
+      neo4jDriver.close();
+    }
+
+    render() {
+        //do nothing
+    }
+}
+
+export default DashboardAbstract;
+export { neo4j, neo4jSession };
