@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 import {render} from 'react-dom';
-import {Pie, Bar} from 'nivo';
 
 import DashboardAbstract, { neo4jSession } from './Abstract';
 

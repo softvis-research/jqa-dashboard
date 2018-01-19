@@ -5,6 +5,7 @@ import {Pie, Bar} from 'nivo';
 
 import DashboardAbstract, { neo4jSession } from './Abstract';
 import CommitsPerAuthor from './visualizations/CommitsPerAuthor';
+import NumberOfFilesPerFiletypePerAuthor from './visualizations/NumberOfFilesPerFiletypePerAuthor';
 
 class History extends DashboardAbstract {
 
@@ -58,8 +59,9 @@ class History extends DashboardAbstract {
 
     render() {
         return (
-            <div>
-              <CommitsPerAuthor/>
+          <div>
+            <CommitsPerAuthor/>
+            <NumberOfFilesPerFiletypePerAuthor/>
           </div>
         )
     }

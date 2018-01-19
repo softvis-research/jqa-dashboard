@@ -5,18 +5,21 @@ import {ResponsiveBar} from 'nivo';
 
 import DashboardAbstract, { neo4jSession } from '../Abstract';
 
-class CommitsPerAuthor extends DashboardAbstract {
+class NumberOfFilesPerFiletypePerAuthor extends DashboardAbstract {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            commitsPerAuthor: [
+            data: [
               {
                 "author": "Dummy",
-                "commits": 1,
+                "filetype": "dum",
                 "files": 1,
               }
+            ],
+            dataKeys: [
+              "Dummy"
             ]
         };
     }
@@ -24,34 +27,66 @@ class CommitsPerAuthor extends DashboardAbstract {
     componentDidMount() {
       super.componentDidMount();
 
-      this.readCommitsPerAuthor();
+      this.readData();
     }
 
-    readCommitsPerAuthor() {
+    readData() {
       var aggregatedData = [];
+      var aggregatedKeys = [];
       var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
       var recordCount = 0;
 
       neo4jSession.run(
-        'MATCH (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(file:File) ' + 
-        'WHERE NOT c:Merge ' + 
-        'RETURN a.name as author, count(distinct c) as commits, count(file) as files ' + 
-        'ORDER BY files DESC'
+        'MATCH ' + 
+        '  (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(file:File) ' +
+        'WHERE NOT ' + 
+        '  c:Merge ' +
+        'RETURN ' + 
+        '  file.type as filetype, a.name as author, count(file) as files ' +
+        'ORDER BY ' + 
+        '  files DESC, filetype '
       ).then(function (result) {
         result.records.forEach(function (record) {
-          var recordConverted = {
-            "author": record.get(0),
-            "commits": record.get(1).low,
-            "files": record.get(2).low
-          };
+          if (recordCount < 100) { //above 100 records makes the chart unreadable
+            var author = record.get(1);
+            var filetype = record.get(0);
+            var files = record.get(2).low;
 
-          if (recordCount < 20) { //above 20 records makes the chart unreadable
-            aggregatedData.push(recordConverted);
+            var found = false;
+            aggregatedData.forEach(function (dataSet) {
+              if (dataSet.filetype === filetype) { //found: only append author
+                dataSet[author] = files;
+                found = true;
+              }
+            });
+
+            if (!found) { //create dataset
+              aggregatedData.push({
+                "filetype": filetype,
+              });
+              aggregatedData[aggregatedData.length - 1][author] = files;
+            }
+
+            if (aggregatedKeys.indexOf(author) === -1) {
+              aggregatedKeys.push(author);
+            }
           }
           recordCount++;
         });
       }).then( function(context) {
-        thisBackup.setState({commitsPerAuthor: aggregatedData.reverse()}); //reverse reverses the order of the array (because the chart is flipped this is neccesary)
+        var grouping = [];
+        aggregatedData.forEach(function (record) {
+
+        })
+
+      }).then( function(context) {
+        console.log(aggregatedData);
+        thisBackup.setState(
+          {
+            data: aggregatedData,
+            dataKeys: aggregatedKeys
+          }
+        );
       }).catch(function (error) {
           console.log(error);
       });
@@ -60,16 +95,13 @@ class CommitsPerAuthor extends DashboardAbstract {
     render() {
         return (
           <div>
-            <h2>number of commits per author with excluded MERGES</h2>
+            <h2>number of files per file type per author</h2>
             <div style={{height: "600px"}}>
               <ResponsiveBar
                 onClick={function() {alert("foo")}}
-                data={this.state.commitsPerAuthor}
-                keys={[
-                  "commits",
-                  "files"
-                ]}
-                indexBy="author"
+                data={this.state.data}
+                keys={this.state.dataKeys}
+                indexBy="filetype"
                 margin={{
                   "top": 50,
                   "right": 50,
@@ -77,8 +109,8 @@ class CommitsPerAuthor extends DashboardAbstract {
                   "left": 150
                 }}
                 padding={0.05}
-                groupMode="grouped"
-                layout="horizontal"
+                groupMode="stacked"
+                layout="vertical"
                 colors="nivo"
                 colorBy="id"
                 defs={[
@@ -107,7 +139,7 @@ class CommitsPerAuthor extends DashboardAbstract {
                   "tickSize": 5,
                   "tickPadding": 5,
                   "tickRotation": 0,
-                  "legend": "Number",
+                  "legend": "Filetypes",
                   "legendPosition": "center",
                   "legendOffset": 36
                 }}
@@ -116,7 +148,7 @@ class CommitsPerAuthor extends DashboardAbstract {
                   "tickSize": 5,
                   "tickPadding": 5,
                   "tickRotation": 0,
-                  "legend": "Author",
+                  "legend": "Number of files",
                   "legendPosition": "center",
                   "legendOffset": -140
                 }}
@@ -145,4 +177,4 @@ class CommitsPerAuthor extends DashboardAbstract {
     }
 }
 
-export default CommitsPerAuthor;
+export default NumberOfFilesPerFiletypePerAuthor;

@@ -22,9 +22,9 @@ class Full extends Component {
             <Breadcrumb />
             <Container fluid>
               <Switch>
-                <Route path="/history" name="Historie" component={History}/>
-                <Route path="/behaviour" name="Verhalten" component={Behaviour}/>
-                <Route path="/structure" name="Struktur" component={Structure}/>
+                <Route path="/history" name="History" component={History}/>
+                <Route path="/behaviour" name="Behaviour" component={Behaviour}/>
+                <Route path="/structure" name="Structure" component={Structure}/>
                 <Redirect from="/" to="/history"/>
               </Switch>
             </Container>

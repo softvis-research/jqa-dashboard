@@ -1,15 +1,15 @@
 export default {
   items: [
     {
-        name: 'Historie',
+        name: 'History',
         url: '/history'
     },
     {
-      name: 'Verhalten',
+      name: 'Behaviour',
       url: '/behaviour'
     },
     {
-      name: 'Struktur',
+      name: 'Structure',
       url: '/structure'
     }
   ]

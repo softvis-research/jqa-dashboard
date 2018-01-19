@@ -13,35 +13,6 @@ var neo4jSession = null;
 
 class DashboardAbstract extends Component {
 
-    constructor(props) {
-        super(props);
-        /*
-        this.state = {
-            filetypeData: [
-              {
-                "id": "dummy",
-                "label": "dummy",
-                "value": 1
-              }
-            ],
-            commitsPerAuthor: [
-              {
-                "author": "Dummy",
-                "commits": 1,
-                "files": 2,
-              }
-            ],
-            filesFiletypeAuthor: [
-              {
-                "filetype": "dummy",
-                "author": "dummy",
-                "files": 1
-              }
-            ]
-        };
-        */
-    }
-
     componentDidMount() {
       neo4j = require('../../../neo4j-web.min');
       neo4jDriver = neo4j.v1.driver(neo4jConnectionString, neo4j.v1.auth.basic(neo4jUsername, neo4jPassword));

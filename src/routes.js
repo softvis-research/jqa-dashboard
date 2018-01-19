@@ -1,7 +1,7 @@
 const routes = {
   '/': 'Home',
-  '/history': 'Historie',
-  '/behaviour': 'Verhalten',
-  '/structure': 'Struktur'
+  '/history': 'History',
+  '/behaviour': 'Behaviour',
+  '/structure': 'Structure'
 };
 export default routes;

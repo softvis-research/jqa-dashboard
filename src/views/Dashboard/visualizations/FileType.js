@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import {render} from 'react-dom';
-import {Pie, Bar} from 'nivo';
+import {ResponsivePie} from 'nivo';
 
 import DashboardAbstract, { neo4jSession } from '../Abstract';
 
@@ -59,10 +59,9 @@ class FileType extends DashboardAbstract {
     render() {
         return (
             <div>
-                <h2>number of files per file type (pie chart) > Struktur</h2>
-                <Pie
-                  width={1000}
-                  height={800}
+              <h2>number of files per file type</h2>
+              <div style={{height:"600px"}}>
+                <ResponsivePie
                   data={this.state.filetypeData}
                   margin={{
                     "top": 20,
@@ -101,6 +100,7 @@ class FileType extends DashboardAbstract {
                     }
                   ]}
                 />
+              </div>
             </div>
         )
     }
