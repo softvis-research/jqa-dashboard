@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 
-import {render} from 'react-dom';
-import {Pie, Bar} from 'nivo';
-
 const neo4jConnectionString = "bolt://localhost";
 const neo4jUsername = "neo4j";
 const neo4jPassword = "Test123.";

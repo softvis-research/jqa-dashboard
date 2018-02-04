@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 
-import {render} from 'react-dom';
-import {Pie, Bar} from 'nivo';
-
 import DashboardAbstract, { neo4jSession } from './Abstract';
 import CommitsPerAuthor from './visualizations/CommitsPerAuthor';
 import NumberOfFilesPerFiletypePerAuthor from './visualizations/NumberOfFilesPerFiletypePerAuthor';
+import LatestCommits from './visualizations/LatestCommits';
 
 class History extends DashboardAbstract {
 
@@ -13,13 +11,6 @@ class History extends DashboardAbstract {
         super(props);
 
         this.state = {
-            filesFiletypeAuthor: [
-              {
-                "filetype": "dummy",
-                "author": "dummy",
-                "files": 1
-              }
-            ]
         };
     }
 
@@ -62,6 +53,7 @@ class History extends DashboardAbstract {
           <div>
             <CommitsPerAuthor/>
             <NumberOfFilesPerFiletypePerAuthor/>
+            <LatestCommits/>
           </div>
         )
     }

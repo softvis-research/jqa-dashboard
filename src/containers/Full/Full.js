@@ -10,6 +10,7 @@ import Aside from '../../components/Aside/';
 import History from '../../views/Dashboard/History';
 import Behaviour from '../../views/Dashboard/Behaviour';
 import Structure from '../../views/Dashboard/Structure';
+import NewVisualization from '../../views/Dashboard/NewVisualization';
 
 class Full extends Component {
   render() {
@@ -25,6 +26,7 @@ class Full extends Component {
                 <Route path="/history" name="History" component={History}/>
                 <Route path="/behaviour" name="Behaviour" component={Behaviour}/>
                 <Route path="/structure" name="Structure" component={Structure}/>
+                <Route path="/new" name="New Visualization" component={NewVisualization}/>
                 <Redirect from="/" to="/history"/>
               </Switch>
             </Container>

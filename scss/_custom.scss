@@ -1,1 +1,9 @@
-// Here you can add other styles
+// prevent second vertical scrollbar
+
+.app-body {
+  overflow: hidden;
+}
+
+.CodeMirror {
+  height: auto;
+}

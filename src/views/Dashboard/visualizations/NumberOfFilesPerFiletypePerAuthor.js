@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-
-import {render} from 'react-dom';
-import {ResponsiveBar} from 'nivo';
-
 import DashboardAbstract, { neo4jSession } from '../Abstract';
+
+import {ResponsiveBar} from 'nivo';
 
 class NumberOfFilesPerFiletypePerAuthor extends DashboardAbstract {
 
@@ -29,6 +27,7 @@ class NumberOfFilesPerFiletypePerAuthor extends DashboardAbstract {
 
       this.readData();
     }
+  
 
     readData() {
       var aggregatedData = [];
@@ -80,7 +79,7 @@ class NumberOfFilesPerFiletypePerAuthor extends DashboardAbstract {
         })
 
       }).then( function(context) {
-        console.log(aggregatedData);
+        //console.log(aggregatedData);
         thisBackup.setState(
           {
             data: aggregatedData,
@@ -98,7 +97,7 @@ class NumberOfFilesPerFiletypePerAuthor extends DashboardAbstract {
             <h2>number of files per file type per author</h2>
             <div style={{height: "600px"}}>
               <ResponsiveBar
-                onClick={function() {alert("foo")}}
+                onClick={ function(event) { console.log(event) } }
                 data={this.state.data}
                 keys={this.state.dataKeys}
                 indexBy="filetype"

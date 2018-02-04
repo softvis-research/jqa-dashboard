@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-
-import {render} from 'react-dom';
-import {ResponsivePie} from 'nivo';
-
 import DashboardAbstract, { neo4jSession } from '../Abstract';
+
+import {ResponsivePie} from 'nivo';
 
 class FileType extends DashboardAbstract {
 
@@ -69,6 +67,7 @@ class FileType extends DashboardAbstract {
                     "bottom": 20,
                     "left": 20
                   }}
+                  onClick={ function(event) { console.log(event) } }
                   innerRadius={0}
                   padAngle={0}
                   cornerRadius={0}

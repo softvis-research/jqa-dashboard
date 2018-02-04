@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 
-import {render} from 'react-dom';
-import {ResponsivePie, ResponsiveBar} from 'nivo';
-
 import DashboardAbstract, { neo4jSession } from './Abstract';
 
 class Behaviour extends DashboardAbstract {
@@ -21,7 +18,7 @@ class Behaviour extends DashboardAbstract {
     render() {
         return (
           <div>
-            <div style={{height:"600px"}}>
+            <div>
               <h2>currently empty</h2>
             </div>
           </div>

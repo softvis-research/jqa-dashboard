@@ -34,6 +34,7 @@
     "bootstrap": "4.0.0-beta.2",
     "chart.js": "2.7.1",
     "font-awesome": "4.7.0",
+    "graph-app-kit": "^1.0.0",
     "history": "4.7.2",
     "nivo": "^0.31.0",
     "react": "16.1.1",
@@ -41,6 +42,7 @@
     "react-dom": "16.1.1",
     "react-load-script": "0.0.6",
     "react-router-dom": "4.2.2",
+    "react-table": "^6.7.6",
     "react-transition-group": "2.2.1",
     "reactstrap": "5.0.0-alpha.4",
     "simple-line-icons": "2.4.1"
@@ -48,6 +50,8 @@
   "scripts": {
     "dev": "webpack -d --progress --watch --profile --json > compilation-stats.json --env.dev",
     "start": "webpack-dev-server --progress --colors --inline --env.dev",
+    "project": "webpack-dev-server --progress --colors --inline --env.dev",
+    "dashboard": "webpack-dev-server --progress --colors --inline --env.dev",
     "build": "webpack -p --progress --env.prod",
     "clean": "rimraf ./build"
   },

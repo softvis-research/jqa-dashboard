@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-
-import {render} from 'react-dom';
-import {ResponsiveBar} from 'nivo';
-
 import DashboardAbstract, { neo4jSession } from '../Abstract';
+
+import {ResponsiveBar} from 'nivo';
 
 class CommitsPerAuthor extends DashboardAbstract {
 
@@ -60,10 +58,10 @@ class CommitsPerAuthor extends DashboardAbstract {
     render() {
         return (
           <div>
-            <h2>number of commits per author with excluded MERGES</h2>
+            <h2>number of commits and files per author with excluded merges</h2>
             <div style={{height: "600px"}}>
               <ResponsiveBar
-                onClick={function() {alert("foo")}}
+                onClick={ function(event) { console.log(event) } }
                 data={this.state.commitsPerAuthor}
                 keys={[
                   "commits",

@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 
-import {render} from 'react-dom';
-
 import DashboardAbstract, { neo4jSession } from './Abstract';
-
 import FileType from './visualizations/FileType';
 
 class Structure extends DashboardAbstract {

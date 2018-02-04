@@ -11,6 +11,13 @@ export default {
     {
       name: 'Structure',
       url: '/structure'
+    },
+    {
+        name: 'Add Visualization',
+        url: '/new',
+        icon: 'icon-plus',
+        class: 'mt-auto',
+        variant: 'success'
     }
   ]
 };
