@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+var AppDispatcher = require('../../../AppDispatcher');
 import DashboardAbstract, { neo4jSession } from '../Abstract';
 
 import {ResponsivePie} from 'nivo';
@@ -17,6 +18,22 @@ class FileType extends DashboardAbstract {
               }
             ]
         };
+
+        AppDispatcher.register(function(payload) {
+          var action = payload.action;
+          var event = payload.event;
+        console.log('dingsda');
+          switch(action.actionType) {
+
+            // Respond to RECEIVE_DATA action
+            case SELECT_COMMITSPERAUTHOR:
+              console.log(event);
+              break;
+
+            default:
+              return true;
+          }
+        });
     }
 
     componentDidMount() {
@@ -67,7 +84,13 @@ class FileType extends DashboardAbstract {
                     "bottom": 20,
                     "left": 20
                   }}
-                  onClick={ function(event) { console.log(event) } }
+                  onClick={ function(event) {
+                    console.log(event);
+                    AppDispatcher.handleAction({
+                      actionType: 'SELECT_FILETYPE',
+                      data: event
+                    });
+                  } }
                   innerRadius={0}
                   padAngle={0}
                   cornerRadius={0}

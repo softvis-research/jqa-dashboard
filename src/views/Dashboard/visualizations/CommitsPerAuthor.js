@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import DashboardAbstract, { neo4jSession } from '../Abstract';
+var AppDispatcher = require('../../../AppDispatcher');
 
 import {ResponsiveBar} from 'nivo';
+
+import DashboardAbstract, { neo4jSession } from '../Abstract';
 
 class CommitsPerAuthor extends DashboardAbstract {
 
@@ -61,7 +63,13 @@ class CommitsPerAuthor extends DashboardAbstract {
             <h2>number of commits and files per author with excluded merges</h2>
             <div style={{height: "600px"}}>
               <ResponsiveBar
-                onClick={ function(event) { console.log(event) } }
+                onClick={ function(event) { 
+                  //console.log(event);
+                  AppDispatcher.handleAction({
+                    actionType: 'SELECT_COMMITSPERAUTHOR',
+                    data: event
+                  });
+                } }
                 data={this.state.commitsPerAuthor}
                 keys={[
                   "commits",

@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
+var AppDispatcher = require('../../../AppDispatcher');
+
 import DashboardAbstract, { neo4jSession } from '../Abstract';
 
 import {ResponsiveBar} from 'nivo';
+
+var authorToFilterBy;
 
 class NumberOfFilesPerFiletypePerAuthor extends DashboardAbstract {
 
@@ -27,7 +31,30 @@ class NumberOfFilesPerFiletypePerAuthor extends DashboardAbstract {
 
       this.readData();
     }
+
+    componentWillMount() {
+      this.handleActions = this.handleActions.bind(this);
+      this.setState({
+        dispatcherEventId: AppDispatcher.register(this.handleActions)
+      });
+    }
   
+    componentWillUnmount() {
+      AppDispatcher.unregister(this.state.dispatcherEventId);
+    }
+
+    handleActions(event) {
+      var action = event.action;
+      switch (action.actionType) {
+        // Respond to CART_ADD action
+        case 'SELECT_COMMITSPERAUTHOR':
+          authorToFilterBy = action.data.indexValue;
+          this.readData();
+          break;
+        default:
+          return true;
+      }
+    }
 
     readData() {
       var aggregatedData = [];
@@ -35,15 +62,24 @@ class NumberOfFilesPerFiletypePerAuthor extends DashboardAbstract {
       var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
       var recordCount = 0;
 
+      var whereClause = ' NOT c:Merge ';
+      //console.log(authorToFilterBy);
+      if (authorToFilterBy && authorToFilterBy.length > 0) {
+        whereClause = ' c.author contains \'' + authorToFilterBy + '\''; //TODO: contains is a workaround
+        //TODO: this could result in a sql injection, proper enconding is needed!
+      }
+
+      var query =         'MATCH ' + 
+      '  (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(file:File) ' +
+      'WHERE ' + 
+        whereClause + 
+      'RETURN ' + 
+      '  file.type as filetype, a.name as author, count(file) as files ' +
+      'ORDER BY ' + 
+      '  files DESC, filetype ';
+
       neo4jSession.run(
-        'MATCH ' + 
-        '  (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(file:File) ' +
-        'WHERE NOT ' + 
-        '  c:Merge ' +
-        'RETURN ' + 
-        '  file.type as filetype, a.name as author, count(file) as files ' +
-        'ORDER BY ' + 
-        '  files DESC, filetype '
+        query
       ).then(function (result) {
         result.records.forEach(function (record) {
           if (recordCount < 100) { //above 100 records makes the chart unreadable
@@ -79,7 +115,7 @@ class NumberOfFilesPerFiletypePerAuthor extends DashboardAbstract {
         })
 
       }).then( function(context) {
-        //console.log(aggregatedData);
+//        console.log(aggregatedData);
         thisBackup.setState(
           {
             data: aggregatedData,
@@ -177,3 +213,4 @@ class NumberOfFilesPerFiletypePerAuthor extends DashboardAbstract {
 }
 
 export default NumberOfFilesPerFiletypePerAuthor;
+
