@@ -53,15 +53,34 @@ class CustomQuery extends DashboardAbstract {
                 var tmpHeader = [];
                 var recordConverted = {};
                 record.keys.forEach(function (key) {
+                    var index = record._fieldLookup[key];
+                    var value = record.get(index);
+                    var isObject = false;
+
+                    if (typeof value === 'object') {
+                        value = JSON.stringify(value, null, 2);
+                        isObject = true;
+                    } else {
+                        if (value.low) { //.low if datatype is numeric
+                            value = vlue.low;
+                        }
+                    }
+
                     //set keys
-                    if (isFirst) {
-                        tmpHeader.push({
+                    if (isFirst && typeof key !== 'undefined' && typeof key !== 'object') {
+                        var dataToSet = {
                             Header: key,
                             accessor: key.replace('.', '')
-                        });
+                        };
+                        if (isObject) {
+                            dataToSet['style'] = {
+                                whiteSpace: 'pre'
+                            }
+                        }
+                        tmpHeader.push(dataToSet);
                     }
-                    var index = record._fieldLookup[key];
-                    recordConverted[key.replace('.', '')] = record.get(index).low ? record.get(index).low : record.get(index); //.low if datatype is not string
+
+                    recordConverted[key.replace('.', '')] = value;
                 });
 
                 if (isFirst) { //make fieldlist accessable
@@ -103,6 +122,7 @@ class CustomQuery extends DashboardAbstract {
                     columns = {this.state.headerData}
                     defaultPageSize = {20}
                     className = "-striped -highlight"
+                    minRows = {1}
                 />
 
             </div>
