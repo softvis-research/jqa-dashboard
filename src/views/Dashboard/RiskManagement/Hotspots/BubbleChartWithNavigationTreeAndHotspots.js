@@ -1,8 +1,19 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import DashboardAbstract, { neo4jSession } from '../../Abstract';
+import {Row, Col, Card, CardHeader, CardBody} from 'reactstrap';
+import DynamicBreadcrumb from '../../../../components/Breadcrumb/DynamicBreadcrumb';
+
+var AppDispatcher = require('../../../../AppDispatcher');
 
 import {ResponsiveBubble} from 'nivo';
 import * as d3 from "d3";
+
+import {Treebeard} from 'react-treebeard';
+var treebeardCustomTheme = require('./TreebeardCustomTheme');
+// from here: https://github.com/alexcurtis/react-treebeard
+// TODO: add search input from example: https://github.com/alexcurtis/react-treebeard/tree/master/example
+// demo: http://alexcurtis.github.io/react-treebeard/
 
 class RiskManagementHotspotsBubbleChartWithNavigationTreeAndHotspots extends DashboardAbstract {
 
@@ -11,52 +22,61 @@ class RiskManagementHotspotsBubbleChartWithNavigationTreeAndHotspots extends Das
 
         this.state = {
             hotSpotData:
-                {
+                { 
                     "name": "nivo",
                     "test": "testval",
-                    "color": "hsl(333, 70%, 50%)",
                     "children": [
                         {
-                            "name": "viz",
-                            "color": "hsl(260, 70%, 50%)",
-                            "children": [
+                            "name": "dummy",
+                            "loc": 1
+                        }
+                    ]
+                },
+            treeViewData:
+                {
+                    name: 'root',
+                    toggled: true,
+                    children: [
+                        {
+                            name: 'parent',
+                            children: [
+                                { name: 'child1' },
+                                { name: 'child2' }
+                            ]
+                        },
+                        {
+                            name: 'parent',
+                            children: [
                                 {
-                                    "name": "stack",
-                                    "color": "hsl(114, 70%, 50%)",
-                                    "children": [
-                                        {
-                                            "name": "chart",
-                                            "color": "hsl(6, 70%, 50%)",
-                                            "loc": 149781
-                                        },
-                                        {
-                                            "name": "xAxis",
-                                            "color": "hsl(330, 70%, 50%)",
-                                            "loc": 104756
-                                        },
-                                        {
-                                            "name": "yAxis",
-                                            "color": "hsl(115, 70%, 50%)",
-                                            "loc": 157675
-                                        },
-                                        {
-                                            "name": "layers",
-                                            "color": "hsl(106, 70%, 50%)",
-                                            "loc": 111794
-                                        }
+                                    name: 'nested parent',
+                                    children: [
+                                        { name: 'nested child 1' },
+                                        { name: 'nested child 2' }
                                     ]
                                 }
                             ]
                         }
                     ]
-                }
+                },
+            breadCrumbData: ['']
         };
+
+        this.onToggle = this.onToggle.bind(this);
+//        this.breadcrumbClicked = this.breadcrumbClicked.bind(this);
+    }
+
+    componentWillMount() {
+        super.componentWillMount();
     }
 
     componentDidMount() {
         super.componentDidMount();
 
         this.readStructure();
+    }
+
+    componentWillUnmount() {
+        super.componentWillUnmount();
     }
 
     readStructure() {
@@ -103,7 +123,8 @@ class RiskManagementHotspotsBubbleChartWithNavigationTreeAndHotspots extends Das
                 //normalize recursively all childs (move information from .data to the element's root where nivo expects it)
                 var normalize = function(hierarchicalData) {
                     for (var i = 0; i < hierarchicalData.children.length; i++) {
-                        hierarchicalData.children[i].name = hierarchicalData.children[i].data.name;
+                        var lastDot = hierarchicalData.children[i].data.name.lastIndexOf(".");
+                        hierarchicalData.children[i].name = hierarchicalData.children[i].data.name.substring(lastDot + 1);
                         hierarchicalData.children[i].loc = hierarchicalData.children[i].data.loc;
                         hierarchicalData.children[i].complexity = hierarchicalData.children[i].data.complexity;
                         if (hierarchicalData.children[i].children) {
@@ -111,6 +132,7 @@ class RiskManagementHotspotsBubbleChartWithNavigationTreeAndHotspots extends Das
                         }
                     }
                 }
+
                 normalize(hierarchicalData);
 
                 neo4jSession.close();
@@ -119,29 +141,7 @@ class RiskManagementHotspotsBubbleChartWithNavigationTreeAndHotspots extends Das
                 hierarchicalData.name = hierarchicalData.id;
                 hierarchicalData.loc = hierarchicalData.data.loc;
                 hierarchicalData.complexity = hierarchicalData.data.complexity;
-
-                //window.hierarchicalData = hierarchicalData;
-                //window.hotSpotData = thisBackup.state.hotSpotData;
-
-                //console.log(hierarchicalData);
-                //console.log(thisBackup.state.hotSpotData);
-/*
-                var seen = [];
-                var test = JSON.stringify(hierarchicalData, function(key, val) {
-                    if (val != null && typeof val == "object") {
-                        if (seen.indexOf(val) >= 0) {
-                            return;
-                        }
-                        seen.push(val);
-                    }
-
-                    return val;
-                }, 2);
-*/
-//                console.log(test);
-
             }).then( function(context) {
-                //this currently explodes
                 thisBackup.setState({hotSpotData: hierarchicalData});
             })
             .catch(function (error) {
@@ -149,50 +149,196 @@ class RiskManagementHotspotsBubbleChartWithNavigationTreeAndHotspots extends Das
             });
     }
 
+    // tree view toggle
+    onToggle(node, toggled) {
+        if (this.state.cursor) {
+            this.state.cursor.active = false;
+        }
+        node.active = true;
+        if (node.children) {
+            node.toggled = toggled;
+        }
+        this.setState({ cursor: node });
+    }
+
+    handleAction(event) {
+        var PROJECTNAME = 'PROJECTNAME';
+
+        var action = event.action;
+        switch (action.actionType) {
+          // Respond to CART_ADD action
+          case 'SELECT_HOTSPOT_PACKAGE':
+            var selectedPackage = event.action.data.data.id;
+
+            console.log(selectedPackage);
+
+            var hotspotClone = this.state.hotSpotData;
+
+            var markSelectedPackageAsActive = function(hierarchicalData) {
+                for (var i = 0; i < hierarchicalData.children.length; i++) {
+                    if (hierarchicalData.children[i].id === selectedPackage) {
+                        hierarchicalData.children[i].active = true;
+                    } else {
+                        hierarchicalData.children[i].active = false;
+                    }
+
+                    if (hierarchicalData.children[i].children) {
+                        markSelectedPackageAsActive(hierarchicalData.children[i]);
+                    }
+                }
+            }
+            markSelectedPackageAsActive(hotspotClone);
+
+            var markAllPackagesAsUntoggled = function(hierarchicalData) {
+                for (var i = 0; i < hierarchicalData.children.length; i++) {
+                    hierarchicalData.children[i].toggled = false;
+
+                    if (hierarchicalData.children[i].children) {
+                        markAllPackagesAsUntoggled(hierarchicalData.children[i]);
+                    }
+                }
+            }
+
+            markAllPackagesAsUntoggled(hotspotClone);
+
+            var markSelectedPackageAsToggled = function(hierarchicalData, targetElementName) {
+                for (var i = 0; i < hierarchicalData.children.length; i++) {
+                    if (hierarchicalData.children[i].id === targetElementName) {
+                        hierarchicalData.children[i].toggled = true;
+                    }
+
+                    if (hierarchicalData.children[i].children) {
+                        markSelectedPackageAsToggled(hierarchicalData.children[i], targetElementName);
+                    }
+                }
+            }
+
+            var elementToDoList = selectedPackage.split(".");
+            var currentName = "";
+            for (var i = 0; i < elementToDoList.length; i++) {
+                if (i > 0 ) {
+                    currentName += '.' + elementToDoList[i];
+                } else {
+                    currentName = elementToDoList[i];
+                }
+                markSelectedPackageAsToggled(hotspotClone, currentName);
+            }
+            hotspotClone.toggled = true;
+
+            this.setState({
+                hotSpotData: hotspotClone,
+                breadCrumbData: selectedPackage.split(".")
+            });
+
+            break;
+          default:
+            return true;
+        }
+    }
+
+    breadcrumbClicked(clickEvent) {
+        var element = clickEvent.target;
+        //var clickedPackage = element.id; //e.g. org.junit.tests.experimental...
+        AppDispatcher.handleAction({
+            actionType: 'SELECT_HOTSPOT_PACKAGE',
+            data: {
+                data: element //we need to mimic the stratify's structure to handle this event unified
+            }
+        });
+    }
+
     render() {
         return (
             <div>
-                <h2>Hotspots</h2>
-                <div style={{height: "600px"}}>
-                    <ResponsiveBubble
-                        root={this.state.hotSpotData}
-                        margin={{
-                            "top": 20,
-                            "right": 20,
-                            "bottom": 20,
-                            "left": 20
-                        }}
-                        identity="name"
-                        value="loc"
-                        colors="nivo"
-                        colorBy="depth"
-                        padding={6}
-                        labelTextColor="inherit:darker(0.8)"
-                        borderWidth={2}
-                        defs={[
-                            {
-                                "id": "lines",
-                                "type": "patternLines",
-                                "background": "none",
-                                "color": "inherit",
-                                "rotation": -45,
-                                "lineWidth": 5,
-                                "spacing": 8
-                            }
-                        ]}
-                        fill={[
-                            {
-                                "match": {
-                                    "depth": 1
-                                },
-                                "id": "lines"
-                            }
-                        ]}
-                        animate={true}
-                        motionStiffness={90}
-                        motionDamping={12}
-                    />
-                </div>
+                <Row>
+                    <Col xs="12" sm="12" md="12">
+                        <Card>
+                            <CardHeader>
+                                Breadcrumb
+                            </CardHeader>
+                            <CardBody>
+                                <DynamicBreadcrumb
+                                    items={this.state.breadCrumbData}
+                                    onClickHandler={this.breadcrumbClicked}
+                                    separator="."
+                                />
+                            </CardBody>
+                        </Card>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col xs="12" sm="6" md="8">
+                        <Card>
+                            <CardHeader>
+                                Hotspots
+                            </CardHeader>
+                            <CardBody>
+                                <div style={{height: "600px"}}>
+                                    <ResponsiveBubble
+                                        onClick={ function(event) {
+                                            //console.log(event);
+                                            AppDispatcher.handleAction({
+                                                actionType: 'SELECT_HOTSPOT_PACKAGE',
+                                                data: event
+                                            });
+                                        }
+                                        }
+                                        root={this.state.hotSpotData}
+                                        margin={{
+                                            "top": 20,
+                                            "right": 20,
+                                            "bottom": 20,
+                                            "left": 20
+                                        }}
+                                        identity="name"
+                                        value="loc"
+                                        colors="nivo"
+                                        colorBy="depth"
+                                        padding={6}
+                                        labelTextColor="inherit:darker(0.8)"
+                                        borderWidth={2}
+                                        defs={[
+                                            {
+                                                "id": "lines",
+                                                "type": "patternLines",
+                                                "background": "none",
+                                                "color": "inherit",
+                                                "rotation": -45,
+                                                "lineWidth": 5,
+                                                "spacing": 8
+                                            }
+                                        ]}
+                                        fill={[
+                                            {
+                                                "match": {
+                                                    "depth": 1
+                                                },
+                                                "id": "lines"
+                                            }
+                                        ]}
+                                        animate={false}
+                                        motionStiffness={90}
+                                        motionDamping={12}
+                                    />
+                                </div>
+                            </CardBody>
+                        </Card>
+                    </Col>
+                    <Col xs="12" sm="6" md="4">
+                        <Card>
+                            <CardHeader>
+                                Package Explorer
+                            </CardHeader>
+                            <CardBody>
+                                <Treebeard
+                                    data={this.state.hotSpotData}
+                                    onToggle={this.onToggle}
+                                    style={treebeardCustomTheme.default}
+                                />
+                            </CardBody>
+                        </Card>
+                    </Col>
+                </Row>
             </div>
         )
     }

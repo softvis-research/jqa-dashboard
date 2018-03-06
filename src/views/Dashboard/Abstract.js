@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+var AppDispatcher = require('../../AppDispatcher');
 
 const neo4jConnectionString = "bolt://localhost";
 const neo4jUsername = "neo4j";
@@ -10,6 +11,13 @@ var neo4jSession = null;
 
 class DashboardAbstract extends Component {
 
+    componentWillMount() {
+      this.handleAction = this.handleAction.bind(this);
+      this.setState({
+        dispatcherEventId: AppDispatcher.register(this.handleAction)
+      });
+    }
+  
     componentDidMount() {
       neo4j = require('../../../neo4j-web.min');
       neo4jDriver = neo4j.v1.driver(neo4jConnectionString, neo4j.v1.auth.basic(neo4jUsername, neo4jPassword));
@@ -19,6 +27,11 @@ class DashboardAbstract extends Component {
     componentWillUnmount() {
       neo4jSession.close();
       neo4jDriver.close();
+      AppDispatcher.unregister(this.state.dispatcherEventId);
+    }
+
+    handleAction() {
+
     }
 
     render() {

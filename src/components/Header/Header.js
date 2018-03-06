@@ -45,6 +45,12 @@ class Header extends Component {
         <NavbarToggler className="d-md-down-none" onClick={this.sidebarToggle}>
           <span className="navbar-toggler-icon"></span>
         </NavbarToggler>
+
+        <Nav className="ml-auto" navbar>
+            <NavItem className="d-md-down-none">
+                <NavLink href="/#/settings"><i className="icon-settings"></i></NavLink>
+            </NavItem>
+        </Nav>
       </header>
     );
   }

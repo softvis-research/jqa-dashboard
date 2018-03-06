@@ -25,7 +25,8 @@ const routes = {
     '/quality-management/metrics': 'Metrics',
     '/quality-management/test-coverage': 'Test Coverage',
     '/quality-management/clone-detection': 'Clone Detection',
-    '/custom-query': 'Custom Cypher Query'
+    '/custom-query': 'Custom Cypher Query',
+    '/settings': 'Settings'
 };
 
 export default routes;

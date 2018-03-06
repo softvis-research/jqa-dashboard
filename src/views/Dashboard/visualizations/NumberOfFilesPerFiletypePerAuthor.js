@@ -26,24 +26,22 @@ class NumberOfFilesPerFiletypePerAuthor extends DashboardAbstract {
         };
     }
 
+    componentWillMount() {
+      super.componentWillMount();
+    }
+  
     componentDidMount() {
       super.componentDidMount();
 
       this.readData();
     }
 
-    componentWillMount() {
-      this.handleActions = this.handleActions.bind(this);
-      this.setState({
-        dispatcherEventId: AppDispatcher.register(this.handleActions)
-      });
-    }
-  
     componentWillUnmount() {
-      AppDispatcher.unregister(this.state.dispatcherEventId);
+      super.componentWillUnmount();
+      authorToFilterBy = null;
     }
 
-    handleActions(event) {
+    handleAction(event) {
       var action = event.action;
       switch (action.actionType) {
         // Respond to CART_ADD action

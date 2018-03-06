@@ -21,10 +21,18 @@ class CommitsPerAuthor extends DashboardAbstract {
         };
     }
 
+    componentWillMount() {
+      super.componentWillMount();
+    }
+
     componentDidMount() {
       super.componentDidMount();
 
       this.readCommitsPerAuthor();
+    }
+
+    componentWillUnmount() {
+      super.componentWillUnmount();
     }
 
     readCommitsPerAuthor() {

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import DashboardAbstract, { neo4jSession } from '../Abstract';
 
 import ReactTable from 'react-table';
-import "react-table/react-table.css";
 
 class LatestCommits extends DashboardAbstract {
 
@@ -20,10 +19,18 @@ class LatestCommits extends DashboardAbstract {
         };
     }
 
+    componentWillMount() {
+        super.componentWillMount();
+    }
+
     componentDidMount() {
         super.componentDidMount();
 
         this.readLatestCommits();
+    }
+
+    componentWillUnmount() {
+        super.componentWillUnmount();
     }
 
     readLatestCommits() {

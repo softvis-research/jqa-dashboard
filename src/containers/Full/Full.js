@@ -11,6 +11,7 @@ import History from '../../views/Dashboard/History';
 import Behaviour from '../../views/Dashboard/Behaviour';
 import Structure from '../../views/Dashboard/Structure';
 import CustomQuery from '../../views/Dashboard/CustomQuery';
+import Settings from '../../views/Dashboard/Settings';
 
 // architecture
 import ArchitectureOverviewStructure from '../../views/Dashboard/Architecture/Overview/Structure';
@@ -59,6 +60,7 @@ class Full extends Component {
                                 <Route path="/quality-management/test-coverage" name="Test Coverage" component={QualityManagementTestCoverage}/>
                                 <Route path="/quality-management/clone-detection" name="Clone Detection" component={QualityManagementCloneDetection}/>
                                 <Route path="/custom-query" name="Custom Cypher Query" component={CustomQuery}/>
+                                <Route path="/settings" name="Settings" component={Settings}/>
                                 <Redirect from="/" to="/history"/>
                             </Switch>
                         </Container>

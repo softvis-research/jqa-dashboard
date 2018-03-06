@@ -10,12 +10,6 @@ import { Chart } from "graph-app-kit/components/Chart";
 import { CypherEditor } from "graph-app-kit/components/Editor";
 
 import ReactTable from 'react-table';
-import "react-table/react-table.css";
-
-import "codemirror/lib/codemirror.css";
-import "codemirror/addon/lint/lint.css";
-import "codemirror/addon/hint/show-hint.css";
-import "cypher-codemirror/dist/cypher-codemirror-syntax.css";
 
 class CustomQuery extends DashboardAbstract {
 
@@ -36,8 +30,16 @@ class CustomQuery extends DashboardAbstract {
         };
     }
 
+    componentWillMount() {
+        super.componentWillMount();
+    }
+
     componentDidMount() {
         super.componentDidMount();
+    }
+
+    componentWillUnmount() {
+        super.componentWillUnmount();
     }
 
     sendQuery(event) {
