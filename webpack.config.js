@@ -84,7 +84,6 @@ module.exports = (env = {}) => {
           test: /\.(png|jpg|jpeg|gif|ico)$/,
           use: [
             {
-              // loader: 'url-loader'
               loader: 'file-loader',
               options: {
                 name: './img/[name].[hash].[ext]'

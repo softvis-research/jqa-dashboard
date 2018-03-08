@@ -6,14 +6,14 @@ import DynamicBreadcrumb from '../../../../components/Breadcrumb/DynamicBreadcru
 
 var AppDispatcher = require('../../../../AppDispatcher');
 
-import {ResponsiveBubble} from 'nivo';
+import {ResponsiveBubbleHtml} from 'nivo';
 import * as d3 from "d3";
 
 import {Treebeard} from 'react-treebeard';
 var treebeardCustomTheme = require('./TreebeardCustomTheme');
 // from here: https://github.com/alexcurtis/react-treebeard
-// TODO: add search input from example: https://github.com/alexcurtis/react-treebeard/tree/master/example
-// demo: http://alexcurtis.github.io/react-treebeard/
+
+var dynamicBreadcrumbSeparator = " > ";
 
 class RiskManagementHotspotsBubbleChartWithNavigationTreeAndHotspots extends DashboardAbstract {
 
@@ -149,8 +149,23 @@ class RiskManagementHotspotsBubbleChartWithNavigationTreeAndHotspots extends Das
             });
     }
 
+    triggerClickOnNode(node) {
+        var nodeId = node.id.replace(/[^\w]/gi, '-');
+        if (node.id) {
+            var bubbleBelongingToNode = document.querySelectorAll('div#' + nodeId);
+            if (bubbleBelongingToNode && bubbleBelongingToNode.length == 1) {
+                bubbleBelongingToNode[0].click();
+            } else if (bubbleBelongingToNode.length > 1) {
+                console.log("Found more than one candidate to click on, to prevent a mess nothing has been clicked. ");
+                console.log(bubbleBelongingToNode);
+            }
+        }
+    }
+
     // tree view toggle
     onToggle(node, toggled) {
+        this.triggerClickOnNode(node);
+
         if (this.state.cursor) {
             this.state.cursor.active = false;
         }
@@ -169,8 +184,6 @@ class RiskManagementHotspotsBubbleChartWithNavigationTreeAndHotspots extends Das
           // Respond to CART_ADD action
           case 'SELECT_HOTSPOT_PACKAGE':
             var selectedPackage = event.action.data.data.id;
-
-            console.log(selectedPackage);
 
             var hotspotClone = this.state.hotSpotData;
 
@@ -231,6 +244,27 @@ class RiskManagementHotspotsBubbleChartWithNavigationTreeAndHotspots extends Das
             });
 
             break;
+          case 'SELECT_HOTSPOT_PACKAGE_FROM_BREADCRUMB':
+            var elementName = event.action.data;
+            var findNodeByName = function(hierarchicalData) {
+                for (var i = 0; i < hierarchicalData.children.length; i++) {
+                    if (hierarchicalData.children[i].id === elementName) {
+                        return hierarchicalData.children[i];
+                    } else {
+                        if (hierarchicalData.children[i].children) {
+                            var node = findNodeByName(hierarchicalData.children[i]);
+                            if (typeof node !== 'undefined') {
+                                return node;
+                            }
+                        }
+                    }
+                }
+            }
+            var node = findNodeByName(this.state.hotSpotData);
+            //setTimeout to prevent "Cannot dispatch in the middle of a dispatch"
+            // when the !!time is out!! the dispatch is completed and the next click can be handled
+            setTimeout(function() { this.triggerClickOnNode(node) }.bind(this), 50);
+          break;
           default:
             return true;
         }
@@ -238,12 +272,12 @@ class RiskManagementHotspotsBubbleChartWithNavigationTreeAndHotspots extends Das
 
     breadcrumbClicked(clickEvent) {
         var element = clickEvent.target;
+        var elementName = (element.id + "").replace(new RegExp(dynamicBreadcrumbSeparator, 'g'), '.');
+        
         //var clickedPackage = element.id; //e.g. org.junit.tests.experimental...
         AppDispatcher.handleAction({
-            actionType: 'SELECT_HOTSPOT_PACKAGE',
-            data: {
-                data: element //we need to mimic the stratify's structure to handle this event unified
-            }
+            actionType: 'SELECT_HOTSPOT_PACKAGE_FROM_BREADCRUMB',
+            data: elementName
         });
     }
 
@@ -260,7 +294,7 @@ class RiskManagementHotspotsBubbleChartWithNavigationTreeAndHotspots extends Das
                                 <DynamicBreadcrumb
                                     items={this.state.breadCrumbData}
                                     onClickHandler={this.breadcrumbClicked}
-                                    separator="."
+                                    separator={dynamicBreadcrumbSeparator}
                                 />
                             </CardBody>
                         </Card>
@@ -272,11 +306,10 @@ class RiskManagementHotspotsBubbleChartWithNavigationTreeAndHotspots extends Das
                             <CardHeader>
                                 Hotspots
                             </CardHeader>
-                            <CardBody>
+                            <CardBody className={'hotspot-component'}>
                                 <div style={{height: "600px"}}>
-                                    <ResponsiveBubble
+                                    <ResponsiveBubbleHtml
                                         onClick={ function(event) {
-                                            //console.log(event);
                                             AppDispatcher.handleAction({
                                                 actionType: 'SELECT_HOTSPOT_PACKAGE',
                                                 data: event

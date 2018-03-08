@@ -14,7 +14,7 @@ class DynamicBreadcrumb extends Component {
             key = key + (i !== 0 ? this.props.separator : '') + propname;
             var currentItem = items[i];
             items.push(
-                <span id={key} key={key} onClick={this.props.onClickHandler}>
+                <span id={key} className={'breadcrumb-item'} key={key} onClick={this.props.onClickHandler}>
                     {propname}
                 </span>
             );
@@ -27,7 +27,7 @@ class DynamicBreadcrumb extends Component {
         }
         
         return (
-            <div>{items}</div>
+            <div className="dynamic-breadcrumb">{items}</div>
         );
     }
 
