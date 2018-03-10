@@ -17,6 +17,11 @@ class ResourceManagementActivityLatestCommits extends DashboardAbstract {
     }
 
     render() {
+        var redirect = super.render();
+        if (redirect.length > 0) {
+          return(redirect);
+        }
+        
         return (
             <div>
                 <LatestCommits/>

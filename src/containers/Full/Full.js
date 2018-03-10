@@ -7,9 +7,6 @@ import Breadcrumb from '../../components/Breadcrumb/';
 import Aside from '../../components/Aside/';
 //import Footer from '../../components/Footer/';
 
-import History from '../../views/Dashboard/History';
-import Behaviour from '../../views/Dashboard/Behaviour';
-import Structure from '../../views/Dashboard/Structure';
 import CustomQuery from '../../views/Dashboard/CustomQuery';
 import Settings from '../../views/Dashboard/Settings';
 
@@ -33,7 +30,10 @@ import QualityManagementMetrics from '../../views/Dashboard/QualityManagement/Me
 import QualityManagementTestCoverage from '../../views/Dashboard/QualityManagement/TestCoverage';
 import QualityManagementCloneDetection from '../../views/Dashboard/QualityManagement/CloneDetection';
 
+var gotoSettings = false;
+
 class Full extends Component {
+
     render() {
         return (
             <div className="app">
@@ -44,9 +44,6 @@ class Full extends Component {
                         <Breadcrumb/>
                         <Container fluid>
                             <Switch>
-                                <Route path="/history" name="History" component={History}/>
-                                <Route path="/behaviour" name="Behaviour" component={Behaviour}/>
-                                <Route path="/structure" name="Structure" component={Structure}/>
                                 <Route path="/architecture/overview/structure" name="Structure" component={ArchitectureOverviewStructure}/>
                                 <Route path="/architecture/language/files-per-file-type" name="Files per File Type" component={ArchitectureLanguageFilesPerFileType}/>
                                 <Route path="/resource-management/code-ownership/commits-and-files-per-author" name="Commits and Files per Author" component={ResourceManagementCodeOwnershipCommitsAndFilesPerAuthor}/>
@@ -61,7 +58,7 @@ class Full extends Component {
                                 <Route path="/quality-management/clone-detection" name="Clone Detection" component={QualityManagementCloneDetection}/>
                                 <Route path="/custom-query" name="Custom Cypher Query" component={CustomQuery}/>
                                 <Route path="/settings" name="Settings" component={Settings}/>
-                                <Redirect from="/" to="/history"/>
+                                <Redirect from="/" to="/settings"/>
                             </Switch>
                         </Container>
                     </main>

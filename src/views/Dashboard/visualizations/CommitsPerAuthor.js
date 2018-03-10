@@ -3,7 +3,7 @@ var AppDispatcher = require('../../../AppDispatcher');
 
 import {ResponsiveBar} from 'nivo';
 
-import DashboardAbstract, { neo4jSession } from '../Abstract';
+import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../Abstract';
 
 class CommitsPerAuthor extends DashboardAbstract {
 
@@ -27,8 +27,10 @@ class CommitsPerAuthor extends DashboardAbstract {
 
     componentDidMount() {
       super.componentDidMount();
-
-      this.readCommitsPerAuthor();
+      console.log(databaseCredentialsProvided);
+      if (databaseCredentialsProvided) {
+        this.readCommitsPerAuthor();
+      }
     }
 
     componentWillUnmount() {
@@ -66,6 +68,11 @@ class CommitsPerAuthor extends DashboardAbstract {
     }
 
     render() {
+        var redirect = super.render();
+        if (redirect.length > 0) {
+          return(redirect);
+        }
+
         return (
           <div>
             <h2>number of commits and files per author with excluded merges</h2>

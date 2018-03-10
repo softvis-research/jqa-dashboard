@@ -7,6 +7,10 @@
   "copyright": "Copyright 2017 creativeLabs Łukasz Holeczek",
   "license": "MIT",
   "private": true,
+  "repository": {
+    "type": "npm",
+    "url": "https://neo.jfrog.io/neo/api/npm/npm/graph-app-kit"
+  },
   "devDependencies": {
     "babel-core": "6.26.0",
     "babel-loader": "7.1.2",

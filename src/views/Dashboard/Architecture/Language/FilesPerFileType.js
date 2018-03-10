@@ -17,8 +17,14 @@ class ArchitectureLanguageFilesPerFileType extends DashboardAbstract {
     }
 
     render() {
+        var redirect = super.render();
+        if (redirect.length > 0) {
+          return(redirect);
+        }
+
         return (
             <div>
+                {redirect}
                 <FileType/>
             </div>
         )

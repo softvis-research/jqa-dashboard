@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import DashboardAbstract, { neo4jSession } from '../Abstract';
+import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../Abstract';
 
 import ReactTable from 'react-table';
 
@@ -25,8 +25,9 @@ class LatestCommits extends DashboardAbstract {
 
     componentDidMount() {
         super.componentDidMount();
-
-        this.readLatestCommits();
+        if (databaseCredentialsProvided) {
+            this.readLatestCommits();
+        }
     }
 
     componentWillUnmount() {
@@ -61,6 +62,11 @@ class LatestCommits extends DashboardAbstract {
     }
 
     render() {
+        var redirect = super.render();
+        if (redirect.length > 0) {
+          return(redirect);
+        }
+        
         return (
             <div>
                 <h2>latest 20 commits</h2>

@@ -105,6 +105,11 @@ class CustomQuery extends DashboardAbstract {
     }
 
     render() {
+        var redirect = super.render();
+        if (redirect.length > 0) {
+          return(redirect);
+        }
+
         return (
             <div>
                 <h2>Type Cypher query here:</h2>

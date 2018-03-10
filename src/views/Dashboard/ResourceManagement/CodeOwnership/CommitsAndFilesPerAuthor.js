@@ -17,6 +17,11 @@ class ResourceManagementCodeOwnershipCommitsAndFilesPerAuthor extends DashboardA
     }
 
     render() {
+        var redirect = super.render();
+        if (redirect.length > 0) {
+          return(redirect);
+        }
+        
         return (
             <div>
                 <CommitsPerAuthor/>

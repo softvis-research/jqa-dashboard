@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import DashboardAbstract, { neo4jSession } from './Abstract';
 
 import {
+    Alert,
     Row,
     Col,
     Button,
@@ -17,6 +18,10 @@ import {
     InputGroupText
 } from 'reactstrap';
 
+var IDENTIFIER_PROJECT_NAME = "projectName";
+var IDENTIFIER_CONNECTION_STRING = "connectionString";
+var IDENTIFIER_NEO4J_USERNAME = "username";
+var IDENTIFIER_NEO4J_PASSWORD = "password";
 
 class Settings extends DashboardAbstract {
 
@@ -29,77 +34,115 @@ class Settings extends DashboardAbstract {
     }
 
     componentDidMount() {
-        super.componentDidMount();
+        //super.componentDidMount(); //do nothing, we don't need a database here
+    }
+
+    componentWillUnmount() {
+        //super.componentWillUnmount(); //do nothing, we don't have a database here
+    }
+    updateLocalStorage(event) {
+
+        var settings = document.querySelectorAll('.setting');
+
+        // TODO: test database connection
+
+        // save settings to localStorage
+        [].forEach.call(settings, function(setting) {
+            var identifier = setting.id.replace('-input', '');
+            localStorage.setItem(identifier, setting.value);
+        });
+
+        // show success message
+        document.getElementById('settings-alert').style.display = 'block';
     }
 
     render() {
         return (
             <div className="animated fadeIn">
-                <h2>Settings</h2>
                 <Row>
                     <Col xs="12" md="6">
                         <Card>
                             <CardHeader>
-                                <strong>Project</strong>
+                                <strong>Settings</strong>
                             </CardHeader>
                             <CardBody>
                                 <Form action="" method="post" encType="multipart/form-data" className="form-horizontal">
                                     <FormGroup row>
                                         <Col md="4">
-                                            <Label htmlFor="text-input">Project name</Label>
+                                            <Label htmlFor={IDENTIFIER_PROJECT_NAME + "-input"}>Project name</Label>
                                         </Col>
                                         <Col xs="12" md="8">
-                                            <Input type="text" id="text-input" name="text-input" placeholder="Please provide project name..."/>
+                                            <Input 
+                                                type="text" 
+                                                id={IDENTIFIER_PROJECT_NAME + "-input"}
+                                                name={IDENTIFIER_PROJECT_NAME + "-input"}
+                                                className={'setting'}
+                                                placeholder="Please provide project name..."
+                                                defaultValue={ localStorage.getItem(IDENTIFIER_PROJECT_NAME) }
+                                                required
+                                            />
                                             <FormText color="muted">Example: "jUnit"</FormText>
                                         </Col>
                                     </FormGroup>
-                                </Form>
-                            </CardBody>
-                            <CardFooter>
-                                <Button className="float-right" type="submit" size="sm" color="success"><i className="fa fa-save"></i> Save project name</Button>
-                            </CardFooter>
-                        </Card>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col xs="12" md="6">
-                        <Card>
-                            <CardHeader>
-                                <strong>Database Connection</strong>
-                            </CardHeader>
-                            <CardBody>
-                                <Form action="" method="post" encType="multipart/form-data" className="form-horizontal">
+                                    <hr />
                                     <FormGroup row>
                                         <Col md="4">
-                                            <Label htmlFor="text-input">Neo4j Connection String</Label>
+                                            <Label htmlFor={IDENTIFIER_CONNECTION_STRING + "-input"}>Neo4j Connection String</Label>
                                         </Col>
                                         <Col xs="12" md="8">
-                                            <Input type="text" id="text-input" name="text-input" placeholder="Please provide Neo4j connection string..."/>
+                                            <Input
+                                                type="text"
+                                                id={IDENTIFIER_CONNECTION_STRING + "-input"}
+                                                name={IDENTIFIER_CONNECTION_STRING + "-input"}
+                                                className={'setting'}
+                                                placeholder="Please provide Neo4j connection string..."
+                                                defaultValue={ localStorage.getItem(IDENTIFIER_CONNECTION_STRING) }
+                                                required
+                                            />
                                             <FormText color="muted">Default: "bolt://localhost"</FormText>
                                         </Col>
                                     </FormGroup>
                                     <FormGroup row>
                                         <Col md="4">
-                                            <Label htmlFor="email-input">Neo4j Username</Label>
+                                            <Label htmlFor={IDENTIFIER_NEO4J_USERNAME + "-input"}>Neo4j Username</Label>
                                         </Col>
                                         <Col xs="12" md="8">
-                                            <Input type="email" id="email-input" name="email-input" placeholder="Please provide Neo4j username..."/>
+                                            <Input
+                                                type="text"
+                                                id={IDENTIFIER_NEO4J_USERNAME + "-input"}
+                                                name={IDENTIFIER_NEO4J_USERNAME + "-input"}
+                                                className={'setting'}
+                                                placeholder="Please provide Neo4j username..."
+                                                defaultValue={ localStorage.getItem(IDENTIFIER_NEO4J_USERNAME) }
+                                                required
+                                            />
                                             <FormText className="help-block">Default: "neo4j"</FormText>
                                         </Col>
                                     </FormGroup>
                                     <FormGroup row>
                                         <Col md="4">
-                                            <Label htmlFor="password-input">Password</Label>
+                                            <Label htmlFor={IDENTIFIER_NEO4J_PASSWORD + "-input"}>Password</Label>
                                         </Col>
                                         <Col xs="12" md="8">
-                                            <Input type="password" id="password-input" name="password-input" placeholder="Please provide Neo4j password..."/>
+                                            <Input
+                                                type="password"
+                                                id={IDENTIFIER_NEO4J_PASSWORD + "-input"}
+                                                name={IDENTIFIER_NEO4J_PASSWORD + "-input"}
+                                                className={'setting'}
+                                                placeholder="Please provide Neo4j password..."
+                                                defaultValue={ localStorage.getItem(IDENTIFIER_NEO4J_PASSWORD) }
+                                                required
+                                            />
                                             <FormText className="help-block">Default: "neo4j"</FormText>
                                         </Col>
                                     </FormGroup>
                                 </Form>
                             </CardBody>
                             <CardFooter>
-                                <Button className="float-right" type="submit" size="sm" color="success"><i className="fa fa-save"></i> Save database connection data</Button>
+                                <Button className="float-right" type="submit" size="lg" color="success" onClick={ this.updateLocalStorage }><i className="fa fa-save"></i> Save settings</Button>
+                                <Alert id="settings-alert" className="float-right settings-alert" color="success">
+                                    Successfully saved settings.
+                                </Alert>
                             </CardFooter>
                         </Card>
                     </Col>

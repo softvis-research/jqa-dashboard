@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import DashboardAbstract, { neo4jSession } from '../../Abstract';
+import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../Abstract';
 import {Row, Col, Card, CardHeader, CardBody} from 'reactstrap';
 import DynamicBreadcrumb from '../../../../components/Breadcrumb/DynamicBreadcrumb';
 
@@ -12,6 +12,8 @@ import * as d3 from "d3";
 import {Treebeard} from 'react-treebeard';
 var treebeardCustomTheme = require('./TreebeardCustomTheme');
 // from here: https://github.com/alexcurtis/react-treebeard
+// TODO: add search input from example: https://github.com/alexcurtis/react-treebeard/tree/master/example
+// demo: http://alexcurtis.github.io/react-treebeard/
 
 var dynamicBreadcrumbSeparator = " > ";
 
@@ -72,7 +74,9 @@ class RiskManagementHotspotsBubbleChartWithNavigationTreeAndHotspots extends Das
     componentDidMount() {
         super.componentDidMount();
 
-        this.readStructure();
+        if (databaseCredentialsProvided) {
+            this.readStructure();
+        }
     }
 
     componentWillUnmount() {
@@ -282,6 +286,11 @@ class RiskManagementHotspotsBubbleChartWithNavigationTreeAndHotspots extends Das
     }
 
     render() {
+        var redirect = super.render();
+        if (redirect.length > 0) {
+          return(redirect);
+        }
+
         return (
             <div>
                 <Row>

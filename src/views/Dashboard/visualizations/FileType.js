@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import DashboardAbstract, { neo4jSession } from '../Abstract';
+import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../Abstract';
 
 import {ResponsivePie} from 'nivo';
 
@@ -26,7 +26,9 @@ class FileType extends DashboardAbstract {
     componentDidMount() {
       super.componentDidMount();
 
-      this.readFiletypes();
+      if (databaseCredentialsProvided) {
+        this.readFiletypes();
+      }
     }
 
     componentWillUnmount() {
@@ -63,6 +65,11 @@ class FileType extends DashboardAbstract {
     }
 
     render() {
+        var redirect = super.render();
+        if (redirect.length > 0) {
+          return(redirect);
+        }
+        
         return (
             <div>
               <h2>number of files per file type</h2>

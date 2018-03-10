@@ -2,9 +2,6 @@ import QualityManagementHotspotsBubbleChartWithNavigationTreeAndHotspots from ".
 
 const routes = {
     '/': 'Home',
-    '/history': 'History',
-    '/behaviour': 'Behaviour',
-    '/structure': 'Structure',
     '/architecture': 'Architecture',
     '/architecture/overview': 'Overview',
     '/architecture/overview/structure': 'Structure',

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 var AppDispatcher = require('../../../AppDispatcher');
 
-import DashboardAbstract, { neo4jSession } from '../Abstract';
+import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../Abstract';
 
 import {ResponsiveBar} from 'nivo';
 
@@ -32,8 +32,9 @@ class NumberOfFilesPerFiletypePerAuthor extends DashboardAbstract {
   
     componentDidMount() {
       super.componentDidMount();
-
-      this.readData();
+      if (databaseCredentialsProvided) {
+        this.readData();
+      }
     }
 
     componentWillUnmount() {
@@ -126,6 +127,11 @@ class NumberOfFilesPerFiletypePerAuthor extends DashboardAbstract {
     }
 
     render() {
+        var redirect = super.render();
+        if (redirect.length > 0) {
+          return(redirect);
+        }
+
         return (
           <div>
             <h2>number of files per file type per author</h2>
