@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 var AppDispatcher = require('../../../AppDispatcher');
 
-import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../Abstract';
+import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../AbstractDashboardComponent';
 
 import {ResponsiveBar} from 'nivo';
 

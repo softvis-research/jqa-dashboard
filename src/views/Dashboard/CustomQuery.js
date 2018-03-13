@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import DashboardAbstract, { neo4jSession } from './Abstract';
+import DashboardAbstract, { neo4jSession } from './AbstractDashboardComponent';
 var AppDispatcher = require('../../AppDispatcher');
 
 import "semantic-ui-css/semantic.min.css";

@@ -3,7 +3,7 @@ var AppDispatcher = require('../../../AppDispatcher');
 
 import {ResponsiveBar} from 'nivo';
 
-import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../Abstract';
+import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../AbstractDashboardComponent';
 
 class CommitsPerAuthor extends DashboardAbstract {
 
