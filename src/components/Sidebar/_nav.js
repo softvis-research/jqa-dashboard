@@ -8,16 +8,12 @@ export default {
         {
             name: 'Architecture',
             url: '/architecture',
-            icon: 'icon-list',
-            badge: {
-                variant: 'info',
-                text: 'TODO'
-            },
+            icon: 'fa fa-cubes',
             children: [
                 {
                     name: 'Structure',
                     url: '/architecture/structure',
-                    icon: 'icon-puzzle',
+                    icon: 'fa fa-sitemap',
                     badge: {
                         variant: 'info',
                         text: 'TODO'
@@ -26,24 +22,24 @@ export default {
                 {
                     name: 'File Types',
                     url: '/architecture/file-types',
-                    icon: 'icon-puzzle'
+                    icon: 'icon-docs'
                 }
             ]
         },
         {
             name: 'Resource Management',
             url: '/resource-management',
-            icon: 'fa fa-code',
+            icon: 'icon-people',
             children: [
                 {
                     name: 'Activity',
                     url: '/resource-management/activity',
-                    icon: 'icon-puzzle'
+                    icon: 'fa fa-heartbeat'
                 },
                 {
                     name: 'Knowledge Distribution',
                     url: '/resource-management/knowledge-distribution',
-                    icon: 'icon-puzzle'
+                    icon: 'icon-bulb'
                 },
                 {
                     name: 'Code Churn',
@@ -57,7 +53,7 @@ export default {
                 {
                     name: 'Code Ownership',
                     url: '/resource-management/code-ownership',
-                    icon: 'fa fa-area-chart',
+                    icon: 'fa fa-code',
                     badge: {
                         variant: 'info',
                         text: 'FEATURE'
@@ -68,16 +64,12 @@ export default {
         {
             name: 'Risk Management',
             url: '/risk-management',
-            icon: 'icon-fire',
-            badge: {
-                variant: 'info',
-                text: 'TODO'
-            },
+            icon: 'fa fa-exclamation-triangle',
             children: [
                 {
                     name: 'Hotspots',
                     url: '/risk-management/hotspots',
-                    icon: 'icon-puzzle'
+                    icon: 'icon-fire'
                 },
                 {
                     name: 'Refactoring Targets',
@@ -102,7 +94,7 @@ export default {
         {
             name: 'Quality Management',
             url: '/quality-management',
-            icon: 'fa fa-table',
+            icon: 'icon-badge',
             children: [
                 {
                     name: 'Test Coverage',
