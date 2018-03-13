@@ -134,7 +134,6 @@ class NumberOfFilesPerFiletypePerAuthor extends DashboardAbstract {
 
         return (
           <div>
-            <h2>number of files per file type per author</h2>
             <div style={{height: "600px"}}>
               <ResponsiveBar
                 onClick={ function(event) { console.log(event) } }

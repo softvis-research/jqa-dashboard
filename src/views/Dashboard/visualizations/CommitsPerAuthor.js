@@ -75,7 +75,6 @@ class CommitsPerAuthor extends DashboardAbstract {
 
         return (
           <div>
-            <h2>number of commits and files per author with excluded merges</h2>
             <div style={{height: "600px"}}>
               <ResponsiveBar
                 onClick={ function(event) { 

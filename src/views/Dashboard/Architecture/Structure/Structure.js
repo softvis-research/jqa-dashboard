@@ -17,7 +17,7 @@ var treebeardCustomTheme = require('./TreebeardCustomTheme');
 
 var dynamicBreadcrumbSeparator = " > ";
 
-class RiskManagementHotspotsBubbleChartWithNavigationTreeAndHotspots extends DashboardAbstract {
+class ArchitectureStructure extends DashboardAbstract {
 
     constructor(props) {
         super(props);
@@ -386,4 +386,4 @@ class RiskManagementHotspotsBubbleChartWithNavigationTreeAndHotspots extends Das
     }
 }
 
-export default RiskManagementHotspotsBubbleChartWithNavigationTreeAndHotspots;
+export default ArchitectureStructure;

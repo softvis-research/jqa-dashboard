@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import DashboardAbstract, { neo4jSession } from './Abstract';
+import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from './Abstract';
 
 import {
     Alert,
@@ -22,6 +22,11 @@ var IDENTIFIER_PROJECT_NAME = "projectName";
 var IDENTIFIER_CONNECTION_STRING = "connectionString";
 var IDENTIFIER_NEO4J_USERNAME = "username";
 var IDENTIFIER_NEO4J_PASSWORD = "password";
+
+function genericException(message, type) {
+    this.message = message;
+    this.name = name;
+}
 
 class Settings extends DashboardAbstract {
 
@@ -46,13 +51,29 @@ class Settings extends DashboardAbstract {
 
         // TODO: test database connection
 
+        var settingsArray = [];
+
         // save settings to localStorage
         [].forEach.call(settings, function(setting) {
             var identifier = setting.id.replace('-input', '');
             localStorage.setItem(identifier, setting.value);
         });
+/*
+        try {
+            super.checkForDatabaseConnection();
 
-        // show success message
+            if (!databaseCredentialsProvided) {
+                throw new genericException("Database connection parameter missing.", "DatabaseConncetionException");
+            }
+            super.componentDidMount();
+            // show success message
+            document.getElementById('settings-alert').innerHTML = 'Successfully saved settings.';
+        } catch(e) {
+            console.log(e);
+            localStorage.setItem('connectionString', '');
+            document.getElementById('settings-alert').innerHTML = 'Connection failiure: ' + e.message;
+        }
+*/
         document.getElementById('settings-alert').style.display = 'block';
     }
 

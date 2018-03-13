@@ -48,7 +48,14 @@ class Header extends Component {
 
         <Nav className="ml-auto" navbar>
             <NavItem className="d-md-down-none">
-                <NavLink href="/#/settings"><i className="icon-settings"></i></NavLink>
+                <NavLink href="/#/settings" className="float-right">
+                    <i className="icon-settings"></i>
+                    <div className="label float-right">Settings</div>
+                </NavLink>
+                <NavLink href="/#/custom-query" className="float-right">
+                    <i className="fa fa-database"></i>
+                    <div className="label float-right">Custom Query</div>
+                </NavLink>
             </NavItem>
         </Nav>
       </header>

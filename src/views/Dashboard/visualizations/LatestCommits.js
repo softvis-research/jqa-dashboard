@@ -69,7 +69,6 @@ class LatestCommits extends DashboardAbstract {
         
         return (
             <div>
-                <h2>latest 20 commits</h2>
                 <div>
                     <ReactTable
                         data = {this.state.latestCommits}

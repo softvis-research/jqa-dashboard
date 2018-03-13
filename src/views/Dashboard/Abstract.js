@@ -14,7 +14,7 @@ var databaseCredentialsProvided = false;
 
 class DashboardAbstract extends Component {
 
-    componentWillMount() {
+    checkForDatabaseConnection() {
       var connectionString = localStorage.getItem('connectionString');
       var neo4jPassword = localStorage.getItem('password');
       var neo4jUsername = localStorage.getItem('username');
@@ -23,7 +23,11 @@ class DashboardAbstract extends Component {
         connectionString !== null && connectionString != "" &&
         neo4jPassword !== null && neo4jPassword != "" &&
         neo4jUsername !== null && neo4jUsername != "";
+    }
 
+    componentWillMount() {
+      this.checkForDatabaseConnection();
+      
       this.handleAction = this.handleAction.bind(this);
       this.setState({
         dispatcherEventId: AppDispatcher.register(this.handleAction)

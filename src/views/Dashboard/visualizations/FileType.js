@@ -72,7 +72,6 @@ class FileType extends DashboardAbstract {
         
         return (
             <div>
-              <h2>number of files per file type</h2>
               <div style={{height:"600px"}}>
                 <ResponsivePie
                   data={this.state.filetypeData}
