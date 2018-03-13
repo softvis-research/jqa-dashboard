@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import DashboardAbstract, { neo4jSession } from './AbstractDashboardComponent';
-var AppDispatcher = require('../../AppDispatcher');
+import DashboardAbstract, { neo4jSession } from '../AbstractDashboardComponent';
+var AppDispatcher = require('../../../AppDispatcher');
 
 import "semantic-ui-css/semantic.min.css";
 import { Cypher } from "graph-app-kit/components/Cypher";
@@ -8,6 +8,8 @@ import { DriverProvider } from "graph-app-kit/components/DriverProvider";
 import { Render } from "graph-app-kit/components/Render";
 import { Chart } from "graph-app-kit/components/Chart";
 import { CypherEditor } from "graph-app-kit/components/Editor";
+
+import {Badge, Row, Col, Card, CardHeader, CardFooter, CardBody, Label, Input} from 'reactstrap';
 
 import ReactTable from 'react-table';
 
@@ -18,11 +20,11 @@ class CustomQuery extends DashboardAbstract {
 
         this.state = {
             readData: [{
-                "aplaceholder": "Please tye a query and click \"Send\"",
+                "aplaceholder": "Please tye a query and click \"Send query\"",
             }],
             headerData: [
                 {
-                    Header: "Hint",
+                    Header: "Result",
                     accessor: "aplaceholder"
                 }
             ],
@@ -111,27 +113,36 @@ class CustomQuery extends DashboardAbstract {
         }
 
         return (
-            <div>
-                <h2>Type Cypher query here:</h2>
-                <CypherEditor
-                    value={this.state.query}
-                    options={{
-                        mode: "cypher",
-                        theme: "cypher",
-                        lineNumberFormatter: line => line
-                    }}
-                    onValueChange={this.updateStateQuery.bind(this)}
-                />
-                <button onClick={this.sendQuery.bind(this)}>Send</button>
+            <div className="animated fadeIn">
+                <Row>
+                    <Col xs="12" md="12">
+                        <Card>
+                            <CardHeader>
+                                Custom Cypher query
+                            </CardHeader>
+                            <CardBody>
+                                <CypherEditor
+                                    value={this.state.query}
+                                    options={{
+                                        mode: "cypher",
+                                        theme: "cypher",
+                                        lineNumberFormatter: line => line
+                                    }}
+                                    onValueChange={this.updateStateQuery.bind(this)}
+                                />
+                                <button onClick={this.sendQuery.bind(this)} className="btn btn-success send-query btn-lg">Send query</button>
 
-                <ReactTable
-                    data = {this.state.readData}
-                    columns = {this.state.headerData}
-                    defaultPageSize = {20}
-                    className = "-striped -highlight"
-                    minRows = {1}
-                />
-
+                                <ReactTable
+                                    data = {this.state.readData}
+                                    columns = {this.state.headerData}
+                                    defaultPageSize = {20}
+                                    className = "-striped -highlight"
+                                    minRows = {1}
+                                />
+                            </CardBody>
+                        </Card>
+                    </Col>
+                </Row>
             </div>
         )
     }

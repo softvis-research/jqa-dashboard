@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import DashboardAbstract, { neo4jSession } from '../../AbstractDashboardComponent';
-import NumberOfFilesPerFiletypePerAuthor from '../../visualizations/NumberOfFilesPerFiletypePerAuthor';
+import FilesPerFiletypePerAuthor from '../../visualizations/FilesPerFiletypePerAuthor';
 
 import {Badge, Row, Col, Card, CardHeader, CardFooter, CardBody, Label, Input} from 'reactstrap';
 
@@ -33,7 +33,7 @@ class ResourceManagementKnowledgeDistribution extends DashboardAbstract {
                                 Number of files per file type per author
                             </CardHeader>
                             <CardBody>
-                                <NumberOfFilesPerFiletypePerAuthor/>
+                                <FilesPerFiletypePerAuthor/>
                             </CardBody>
                         </Card>
                     </Col>

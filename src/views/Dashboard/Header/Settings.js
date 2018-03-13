@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from './AbstractDashboardComponent';
+import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../AbstractDashboardComponent';
 
 import {
     Alert,
@@ -84,7 +84,7 @@ class Settings extends DashboardAbstract {
                     <Col xs="12" md="6">
                         <Card>
                             <CardHeader>
-                                <strong>Settings</strong>
+                                Settings
                             </CardHeader>
                             <CardBody>
                                 <Form action="" method="post" encType="multipart/form-data" className="form-horizontal">

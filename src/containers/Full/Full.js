@@ -7,8 +7,8 @@ import Breadcrumb from '../../components/Breadcrumb/';
 import Aside from '../../components/Aside/';
 //import Footer from '../../components/Footer/';
 
-import CustomQuery from '../../views/Dashboard/CustomQuery';
-import Settings from '../../views/Dashboard/Settings';
+import CustomQuery from '../../views/Dashboard/Header/CustomQuery';
+import Settings from '../../views/Dashboard/Header/Settings';
 
 // dashboard
 import Dashboard from '../../views/Dashboard/Dashboard';

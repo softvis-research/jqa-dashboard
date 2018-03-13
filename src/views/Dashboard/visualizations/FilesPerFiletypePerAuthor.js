@@ -7,7 +7,7 @@ import {ResponsiveBar} from 'nivo';
 
 var authorToFilterBy;
 
-class NumberOfFilesPerFiletypePerAuthor extends DashboardAbstract {
+class FilesPerFiletypePerAuthor extends DashboardAbstract {
 
     constructor(props) {
         super(props);
@@ -215,5 +215,5 @@ class NumberOfFilesPerFiletypePerAuthor extends DashboardAbstract {
     }
 }
 
-export default NumberOfFilesPerFiletypePerAuthor;
+export default FilesPerFiletypePerAuthor;
 
