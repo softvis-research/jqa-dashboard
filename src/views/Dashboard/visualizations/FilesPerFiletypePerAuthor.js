@@ -76,36 +76,32 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
       '  file.type as filetype, a.name as author, count(file) as files ' +
       'ORDER BY ' + 
       '  files DESC, filetype ';
-
       neo4jSession.run(
         query
       ).then(function (result) {
         result.records.forEach(function (record) {
-          if (recordCount < 100) { //above 100 records makes the chart unreadable
-            var author = record.get(1);
-            var filetype = record.get(0);
-            var files = record.get(2).low;
+          var author = record.get(1);
+          var filetype = record.get(0);
+          var files = record.get(2).low;
+          
+          var found = false;
+          aggregatedData.forEach(function (dataSet) {
+            if (dataSet.author === author) { //found: only append author
+              dataSet[filetype] = files;
+              found = true;
+            }
+          });
 
-            var found = false;
-            aggregatedData.forEach(function (dataSet) {
-              if (dataSet.filetype === filetype) { //found: only append author
-                dataSet[author] = files;
-                found = true;
-              }
+          if (!found) { //create dataset
+            aggregatedData.push({
+              "author": author,
             });
-
-            if (!found) { //create dataset
-              aggregatedData.push({
-                "filetype": filetype,
-              });
-              aggregatedData[aggregatedData.length - 1][author] = files;
-            }
-
-            if (aggregatedKeys.indexOf(author) === -1) {
-              aggregatedKeys.push(author);
-            }
+            aggregatedData[aggregatedData.length - 1][filetype] = files;
           }
-          recordCount++;
+
+          if (aggregatedKeys.indexOf(filetype) === -1) {
+            aggregatedKeys.push(filetype);
+          }
         });
       }).then( function(context) {
         var grouping = [];
@@ -114,7 +110,6 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
         })
 
       }).then( function(context) {
-//        console.log(aggregatedData);
         thisBackup.setState(
           {
             data: aggregatedData,
@@ -132,14 +127,15 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
           return(redirect);
         }
 
+        //TODO: calculate height from this.state.dataKeys.length
         return (
           <div>
-            <div style={{height: "600px"}}>
+            <div style={{height: "4000px"}}> 
               <ResponsiveBar
                 onClick={ function(event) { console.log(event) } }
                 data={this.state.data}
                 keys={this.state.dataKeys}
-                indexBy="filetype"
+                indexBy="author"
                 margin={{
                   "top": 50,
                   "right": 50,
@@ -148,7 +144,7 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
                 }}
                 padding={0.05}
                 groupMode="stacked"
-                layout="vertical"
+                layout="horizontal"
                 colors="nivo"
                 colorBy="id"
                 defs={[

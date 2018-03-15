@@ -2,15 +2,21 @@ import React, { Component } from 'react';
 import {Redirect} from 'react-router-dom';
 var AppDispatcher = require('../../AppDispatcher');
 
-const neo4jConnectionString = localStorage.getItem("connectionString"); //"bolt://localhost";
-const neo4jUsername = localStorage.getItem("username");//"neo4j";
-const neo4jPassword = localStorage.getItem("password");//"Test123.";
+var neo4jConnectionString = localStorage.getItem("connectionString"); //"bolt://localhost";
+var neo4jUsername = localStorage.getItem("username");//"neo4j";
+var neo4jPassword = localStorage.getItem("password");//"Test123.";
 
 var neo4j = null;
 var neo4jDriver = null;
 var neo4jSession = null;
 
 var databaseCredentialsProvided = false;
+var databaseCredentialsCorrect = true;
+
+function genericException(message, name) {
+  this.message = message;
+  this.name = name;
+}
 
 class DashboardAbstract extends Component {
 
@@ -26,28 +32,65 @@ class DashboardAbstract extends Component {
     }
 
     componentWillMount() {
-      this.checkForDatabaseConnection();
-      
       this.handleAction = this.handleAction.bind(this);
       this.setState({
         dispatcherEventId: AppDispatcher.register(this.handleAction)
       });
+
+      return new Promise(
+        this.checkForDatabaseConnection
+      ).then(
+        this.testDatabaseCredentials()
+      )
     }
   
-    componentDidMount() {
+    testDatabaseCredentials() {
+      var connectionString = neo4jConnectionString;
+      var username = neo4jUsername;
+      var password = neo4jPassword;
+
+      connectionString = localStorage.getItem("connectionString"); //if we're on settings page and trying to validate new credentials
+      username = localStorage.getItem("username"); //if we're on settings page and trying to validate new credentials
+      password = localStorage.getItem("password"); //if we're on settings page and trying to validate new credentials
+
       if (databaseCredentialsProvided) {
+        this.refreshConnectionSettings(); //set to abstract variables
+
         neo4j = require('../../../neo4j-web.min');
-        neo4jDriver = neo4j.v1.driver(neo4jConnectionString, neo4j.v1.auth.basic(neo4jUsername, neo4jPassword));
+        neo4jDriver = neo4j.v1.driver(connectionString, neo4j.v1.auth.basic(username, password));
         neo4jSession = neo4jDriver.session();
-      }
+
+        var thisBackup = this;
+
+        return neo4jSession
+        .run("match (n) return n limit 1") //this should be as generic as possible =)
+        .then( function() {
+            databaseCredentialsCorrect = true;
+        })
+        .catch( function(error) {
+            databaseCredentialsCorrect = false;
+            neo4jConnectionString = "";
+            throw new genericException("Invalid database connection data", "InvalidDatabaseConnectionException");
+        }); //handle wrong credentials
+      } //end if
+    }
+
+    componentDidMount() {
+
+    }
+
+    refreshConnectionSettings() {
+      neo4jConnectionString = localStorage.getItem("connectionString"); //"bolt://localhost";
+      neo4jUsername = localStorage.getItem("username");//"neo4j";
+      neo4jPassword = localStorage.getItem("password");//"Test123.";
     }
 
     componentWillUnmount() {
       if (neo4jSession !== null) {
-        neo4jSession.close();
+        //neo4jSession.close(); //TODO: this triggers (atm) WebSocket is closed before the connection is established. > disabled
       }
       if (neo4jDriver !== null) {
-        neo4jDriver.close();
+        //neo4jDriver.close(); //TODO: this triggers (atm) WebSocket is closed before the connection is established. > disabled
       }
 
       AppDispatcher.unregister(this.state.dispatcherEventId);
@@ -59,8 +102,8 @@ class DashboardAbstract extends Component {
 
     render() {
       var rdir = [];
-      if (!databaseCredentialsProvided) {
-        console.log("No database credentials, redirecting to settings...");
+      if (!databaseCredentialsProvided || !databaseCredentialsCorrect) {
+          console.log("No database credentials, redirecting to settings...");
           var baseUrl = window.location.protocol + '//' + window.location.host + '/#';
           var path = window.location.href.replace(baseUrl, '');
           if (path != '/settings') {
@@ -73,4 +116,4 @@ class DashboardAbstract extends Component {
 }
 
 export default DashboardAbstract;
-export { neo4j, neo4jSession, databaseCredentialsProvided };
+export { neo4j, neo4jSession, databaseCredentialsProvided, databaseCredentialsCorrect, genericException };

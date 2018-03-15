@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../AbstractDashboardComponent';
+import DashboardAbstract, { neo4jSession, databaseCredentialsProvided, genericException } from '../AbstractDashboardComponent';
 
 import {
     Alert,
@@ -23,9 +23,12 @@ var IDENTIFIER_CONNECTION_STRING = "connectionString";
 var IDENTIFIER_NEO4J_USERNAME = "username";
 var IDENTIFIER_NEO4J_PASSWORD = "password";
 
-function genericException(message, type) {
-    this.message = message;
-    this.name = name;
+function handleDatabaseError(error) {
+    console.log(error);
+    localStorage.setItem('connectionString', ''); //reset connection string to prevent further access
+    document.getElementById('settings-alert').innerHTML = 'Connection failiure: please check the provided data and if the server is running.';
+    document.getElementById('settings-alert').className = 'float-right settings-alert alert alert-danger fade show';
+    document.getElementById('settings-alert').style.display = 'block';
 }
 
 class Settings extends DashboardAbstract {
@@ -34,8 +37,9 @@ class Settings extends DashboardAbstract {
         super(props);
 
         this.state = {
-
         };
+
+        this.updateLocalStorage = this.updateLocalStorage.bind(this);
     }
 
     componentDidMount() {
@@ -45,36 +49,41 @@ class Settings extends DashboardAbstract {
     componentWillUnmount() {
         //super.componentWillUnmount(); //do nothing, we don't have a database here
     }
+
+    refreshConnectionSettingsWrapper() { //wrapper because it is not possible to access thisBackup.super.function...
+        super.refreshConnectionSettings();
+    }
+
     updateLocalStorage(event) {
 
         var settings = document.querySelectorAll('.setting');
 
-        // TODO: test database connection
-
         var settingsArray = [];
-
         // save settings to localStorage
         [].forEach.call(settings, function(setting) {
             var identifier = setting.id.replace('-input', '');
             localStorage.setItem(identifier, setting.value);
         });
-/*
+
         try {
             super.checkForDatabaseConnection();
 
             if (!databaseCredentialsProvided) {
                 throw new genericException("Database connection parameter missing.", "DatabaseConncetionException");
             }
-            super.componentDidMount();
-            // show success message
-            document.getElementById('settings-alert').innerHTML = 'Successfully saved settings.';
-        } catch(e) {
-            console.log(e);
-            localStorage.setItem('connectionString', '');
-            document.getElementById('settings-alert').innerHTML = 'Connection failiure: ' + e.message;
+
+            super.testDatabaseCredentials()
+            .then(function(){
+                // show success message
+                document.getElementById('settings-alert').innerHTML = 'Successfully saved settings.';
+                document.getElementById('settings-alert').className = 'float-right settings-alert alert alert-success fade show';
+                document.getElementById('settings-alert').style.display = 'block';
+            })
+            .catch( handleDatabaseError ); //check database connection
+            
+        } catch(e) { //handle missing credentials
+            handleDatabaseError(e);
         }
-*/
-        document.getElementById('settings-alert').style.display = 'block';
     }
 
     render() {
