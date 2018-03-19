@@ -27,7 +27,6 @@ class CommitsPerAuthor extends DashboardAbstract {
 
     componentDidMount() {
       super.componentDidMount();
-      console.log(databaseCredentialsProvided);
       if (databaseCredentialsProvided) {
         this.readCommitsPerAuthor();
       }

@@ -7,6 +7,8 @@ import {ResponsiveBar} from 'nivo';
 
 import CommitsPerAuthor from '../../visualizations/CommitsPerAuthor';
 import LatestCommits from '../../visualizations/LatestCommits';
+import CommitsTimescale from '../../visualizations/CommitsTimescale';
+
 import {Badge, Row, Col, Card, CardHeader, CardFooter, CardBody, Label, Input} from 'reactstrap';
 
 class ResourceManagementActivity extends DashboardAbstract {
@@ -60,6 +62,18 @@ class ResourceManagementActivity extends DashboardAbstract {
                             </CardHeader>
                             <CardBody>
                                 <LatestCommits/>
+                            </CardBody>
+                        </Card>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col xs="12" sm="12" md="12">
+                        <Card className="commit-calendar">
+                            <CardHeader>
+                                Commit-Calendar
+                            </CardHeader>
+                            <CardBody>
+                                <CommitsTimescale/>
                             </CardBody>
                         </Card>
                     </Col>
