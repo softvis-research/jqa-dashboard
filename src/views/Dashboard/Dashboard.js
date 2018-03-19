@@ -19,6 +19,14 @@ class Dashboard extends DashboardAbstract {
                 "loc": "loading",
                 "fields": "loading"
             },
+            relationMetrics: {
+                "dependencies": "loading",
+                "extends": "loading",
+                "implements": "loading",
+                "invocations": "loading",
+                "reads": "loading",
+                "writes": "loading"
+            },
             resourceManagementMetrics: {
                 "authors": "loading",
                 "commitsWithoutMerges": "loading",
@@ -31,6 +39,7 @@ class Dashboard extends DashboardAbstract {
         super.componentDidMount();
         if (databaseCredentialsProvided) {
             this.readArchitectureMetrics();
+            this.readRelationMetrics();
             this.readResourceManagementMetrics();
         }
     }
@@ -76,6 +85,52 @@ class Dashboard extends DashboardAbstract {
             });
         }).then( function(context) {
             thisBackup.setState({architectureMetrics: architectureMetrics});
+        }).catch(function (error) {
+            console.log(error);
+        });
+    }
+
+    readRelationMetrics() {
+        var relationMetrics = [];
+        var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
+
+        neo4jSession.run(
+            // relation metrics (table 2)
+            // dependencies
+            'OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[d:DEPENDS_ON]->(:Type) ' +
+            'WITH count(d) as dependencies ' +
+            // extends
+            'OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[e:EXTENDS]->(superType:Type) ' +
+            'WHERE superType.name <> "Object" ' +
+            'WITH dependencies, count(e) as extends ' +
+            // implements
+            'OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[i:IMPLEMENTS]->(:Type) ' +
+            'WITH dependencies, extends, count(i) as implements ' +
+            // calls
+            'OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[:DECLARES]->(m:Method)-[i:INVOKES]->(:Method) ' +
+            'WITH dependencies, extends, implements, count(i) as invocations ' +
+            // reads
+            'OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[:DECLARES]->(m:Method)-[r:READS]->(:Field) ' +
+            'WITH dependencies, extends, implements, invocations, count(r) as reads ' +
+            // writes
+            'OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[:DECLARES]->(m:Method)-[w:WRITES]->(:Field) ' +
+            'RETURN dependencies, extends, implements, invocations, reads, count(w) as writes'
+        ).then(function (result) {
+            result.records.forEach(function (record) {
+
+                relationMetrics = {
+                    "dependencies": record.get(0).low,
+                    "extends": record.get(1).low,
+                    "implements": record.get(2).low,
+                    "invocations": record.get(3).low,
+                    "reads": record.get(4).low,
+                    "writes": record.get(5).low
+                };
+
+                console.log(relationMetrics);
+            });
+        }).then( function(context) {
+            thisBackup.setState({relationMetrics: relationMetrics});
         }).catch(function (error) {
             console.log(error);
         });
@@ -130,9 +185,14 @@ class Dashboard extends DashboardAbstract {
                                 Architecture
                             </CardHeader>
                             <CardBody>
-                                <ListGroup>
+                                <ListGroup className="margin-bottom">
                                     {Object.keys(this.state.architectureMetrics).map(function(key) {
                                         return <ListGroupItem key={key} className="justify-content-between">{key} <div className="float-right">{this.state.architectureMetrics[key]}</div></ListGroupItem>;
+                                    }, this)}
+                                </ListGroup>
+                                <ListGroup>
+                                    {Object.keys(this.state.relationMetrics).map(function(key) {
+                                        return <ListGroupItem key={key} className="justify-content-between">{key} <div className="float-right">{this.state.relationMetrics[key]}</div></ListGroupItem>;
                                     }, this)}
                                 </ListGroup>
                             </CardBody>
