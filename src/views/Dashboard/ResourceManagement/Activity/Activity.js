@@ -6,6 +6,7 @@ var AppDispatcher = require('../../../../AppDispatcher');
 import {ResponsiveBar} from 'nivo';
 
 import CommitsPerAuthor from '../../visualizations/CommitsPerAuthor';
+import FilesPerAuthor from '../../visualizations/FilesPerAuthor';
 import LatestCommits from '../../visualizations/LatestCommits';
 import CommitsTimescale from '../../visualizations/CommitsTimescale';
 
@@ -36,7 +37,7 @@ class ResourceManagementActivity extends DashboardAbstract {
                     <Col xs="12" sm="6" md="6">
                         <Card>
                             <CardHeader>
-                                Number of commits and files per author with excluded merges (TODO: split)
+                                Commits per author with excluded merges
                             </CardHeader>
                             <CardBody>
                                 <CommitsPerAuthor/>
@@ -46,10 +47,10 @@ class ResourceManagementActivity extends DashboardAbstract {
                     <Col xs="12" sm="6" md="6">
                         <Card>
                             <CardHeader>
-                                Number of commits and files per author with excluded merges (TODO: split)
+                                Files per author with excluded merges
                             </CardHeader>
                             <CardBody>
-                                <CommitsPerAuthor/>
+                                <FilesPerAuthor/>
                             </CardBody>
                         </Card>
                     </Col>

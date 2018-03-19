@@ -5,16 +5,16 @@ import {ResponsiveBar} from 'nivo';
 
 import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../AbstractDashboardComponent';
 
-class CommitsPerAuthor extends DashboardAbstract {
+class FilesPerAuthor extends DashboardAbstract {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            commitsPerAuthor: [
+            filesPerAuthor: [
               {
                 "author": "Dummy",
-                "commits": 1
+                "files": 1
               }
             ]
         };
@@ -27,7 +27,7 @@ class CommitsPerAuthor extends DashboardAbstract {
     componentDidMount() {
       super.componentDidMount();
       if (databaseCredentialsProvided) {
-        this.readCommitsPerAuthor();
+        this.readFilesPerAuthor();
       }
     }
 
@@ -35,7 +35,7 @@ class CommitsPerAuthor extends DashboardAbstract {
       super.componentWillUnmount();
     }
 
-    readCommitsPerAuthor() {
+    readFilesPerAuthor() {
       var aggregatedData = [];
       var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
       var recordCount = 0;
@@ -43,13 +43,13 @@ class CommitsPerAuthor extends DashboardAbstract {
       neo4jSession.run(
         'MATCH (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(file:File) ' + 
         'WHERE NOT c:Merge ' + 
-        'RETURN a.name as author, count(distinct c) as commits ' +
-        'ORDER BY commits DESC'
+        'RETURN a.name as author, count(file) as files ' +
+        'ORDER BY files DESC'
       ).then(function (result) {
         result.records.forEach(function (record) {
           var recordConverted = {
             "author": record.get(0),
-            "commits": record.get(1).low
+            "files": record.get(1).low
           };
 
           if (recordCount < 20) { //above 20 records makes the chart unreadable
@@ -58,7 +58,7 @@ class CommitsPerAuthor extends DashboardAbstract {
           recordCount++;
         });
       }).then( function(context) {
-        thisBackup.setState({commitsPerAuthor: aggregatedData.reverse()}); //reverse reverses the order of the array (because the chart is flipped this is neccesary)
+        thisBackup.setState({filesPerAuthor: aggregatedData.reverse()}); //reverse reverses the order of the array (because the chart is flipped this is neccesary)
       }).catch(function (error) {
           console.log(error);
       });
@@ -77,11 +77,11 @@ class CommitsPerAuthor extends DashboardAbstract {
                 onClick={ function(event) { 
                   //console.log(event);
                   AppDispatcher.handleAction({
-                    actionType: 'SELECT_COMMITSPERAUTHOR',
+                    actionType: 'SELECT_FILESPERAUTHOR',
                     data: event
                   });
                 } }
-                data={this.state.commitsPerAuthor}
+                data={this.state.filesPerAuthor}
                 keys={[
                   "commits",
                   "files"
@@ -162,4 +162,4 @@ class CommitsPerAuthor extends DashboardAbstract {
     }
 }
 
-export default CommitsPerAuthor;
+export default FilesPerAuthor;
