@@ -10,6 +10,15 @@ class Dashboard extends DashboardAbstract {
         super(props);
 
         this.state = {
+            architectureMetrics: {
+                "classes": "loading",
+                "interfaces": "loading",
+                "enums": "loading",
+                "annotations": "loading",
+                "methods": "loading",
+                "loc": "loading",
+                "fields": "loading"
+            },
             resourceManagementMetrics: {
                 "authors": "loading",
                 "commitsWithoutMerges": "loading",
@@ -21,8 +30,55 @@ class Dashboard extends DashboardAbstract {
     componentDidMount() {
         super.componentDidMount();
         if (databaseCredentialsProvided) {
+            this.readArchitectureMetrics();
             this.readResourceManagementMetrics();
         }
+    }
+
+    readArchitectureMetrics() {
+        var architectureMetrics = [];
+        var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
+
+        neo4jSession.run(
+            // architecture metrics (table 1)
+            // number of classes
+            'OPTIONAL MATCH (t:Type:Class)-[:HAS_SOURCE]->(:File) ' +
+            'WITH count(t) as classes ' +
+            // number of interfaces
+            'OPTIONAL MATCH (t:Type:Interface)-[:HAS_SOURCE]->(:File) ' +
+            'WITH classes, count(t) as interfaces ' +
+            // number of enums
+            'OPTIONAL MATCH (t:Type:Enum)-[:HAS_SOURCE]->(:File) ' +
+            'WITH classes, interfaces, count(t) as enums ' +
+            // number of annotations
+            'OPTIONAL MATCH (t:Type:Enum)-[:HAS_SOURCE]->(:File) ' +
+            'WITH  classes, interfaces, enums, count(t) as annotations ' +
+            // number of methods and lines of code
+            'OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[:DECLARES]->(m:Method) ' +
+            'WITH classes, interfaces, enums, annotations, count(m) as methods, sum(m.effectiveLineCount) as loc ' +
+            // number of fields
+            'OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[:DECLARES]->(f:Field) ' +
+            'RETURN classes, interfaces, enums, annotations, methods, loc, count(f) as fields'
+        ).then(function (result) {
+            result.records.forEach(function (record) {
+
+                architectureMetrics = {
+                    "classes": record.get(0).low,
+                    "interfaces": record.get(1).low,
+                    "enums": record.get(2).low,
+                    "annotations": record.get(3).low,
+                    "methods": record.get(4).low,
+                    "loc": record.get(5).low,
+                    "fields": record.get(6).low
+                };
+
+                console.log(architectureMetrics);
+            });
+        }).then( function(context) {
+            thisBackup.setState({architectureMetrics: architectureMetrics});
+        }).catch(function (error) {
+            console.log(error);
+        });
     }
 
     readResourceManagementMetrics() {
@@ -74,9 +130,11 @@ class Dashboard extends DashboardAbstract {
                                 Architecture
                             </CardHeader>
                             <CardBody>
-                                Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut
-                                laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation
-                                ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.
+                                <ListGroup>
+                                    {Object.keys(this.state.architectureMetrics).map(function(key) {
+                                        return <ListGroupItem key={key} className="justify-content-between">{key} <div className="float-right">{this.state.architectureMetrics[key]}</div></ListGroupItem>;
+                                    }, this)}
+                                </ListGroup>
                             </CardBody>
                         </Card>
                     </Col>
