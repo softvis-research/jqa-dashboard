@@ -86,7 +86,7 @@ class LatestCommits extends DashboardAbstract {
                                 accessor: "message"
                             }
                         ]}
-                        defaultPageSize = {20}
+                        defaultPageSize = {10}
                         className = "-striped -highlight"
                     />
                 </div>

@@ -37,7 +37,7 @@ class ResourceManagementActivity extends DashboardAbstract {
                     <Col xs="12" sm="6" md="6">
                         <Card>
                             <CardHeader>
-                                Commits per author with excluded merges
+                                Commits per author
                             </CardHeader>
                             <CardBody>
                                 <CommitsPerAuthor/>
@@ -47,7 +47,7 @@ class ResourceManagementActivity extends DashboardAbstract {
                     <Col xs="12" sm="6" md="6">
                         <Card>
                             <CardHeader>
-                                Files per author with excluded merges
+                                Files per author
                             </CardHeader>
                             <CardBody>
                                 <FilesPerAuthor/>
@@ -56,25 +56,23 @@ class ResourceManagementActivity extends DashboardAbstract {
                     </Col>
                 </Row>
                 <Row>
-                    <Col xs="12" sm="12" md="12">
-                        <Card>
-                            <CardHeader>
-                                Latest 20 commits
-                            </CardHeader>
-                            <CardBody>
-                                <LatestCommits/>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col xs="12" sm="12" md="12">
+                    <Col xs="12" sm="12" md="6">
                         <Card className="commit-calendar">
                             <CardHeader>
                                 Commit-Calendar
                             </CardHeader>
                             <CardBody>
                                 <CommitsTimescale/>
+                            </CardBody>
+                        </Card>
+                    </Col>
+                    <Col xs="12" sm="12" md="6">
+                        <Card>
+                            <CardHeader>
+                                Latest 20 commits
+                            </CardHeader>
+                            <CardBody>
+                                <LatestCommits/>
                             </CardBody>
                         </Card>
                     </Col>

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 var AppDispatcher = require('../../../AppDispatcher');
 
-import {ResponsiveCalendar} from 'nivo';
+import {ResponsiveCalendar} from '@nivo/calendar';
 
 import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../AbstractDashboardComponent';
 
@@ -93,7 +93,7 @@ class CommitsTimescale extends DashboardAbstract {
           return(redirect);
         }
 
-        const maxDateDiff = 10;
+        const maxDateDiff = 2;
 
         var fromDateAr = this.state.commitsFrom.split("-");
         var toDateAr = this.state.commitsTo.split("-");
@@ -108,7 +108,7 @@ class CommitsTimescale extends DashboardAbstract {
 
         return (
           <div>
-            <div style={{height: "600px"}}>
+            <div style={{height: "440px"}}>
               <ResponsiveCalendar
                   from={fromDate}
                   to={this.state.commitsTo}
@@ -146,14 +146,17 @@ class CommitsTimescale extends DashboardAbstract {
                       {
                           "anchor": "bottom-right",
                           "direction": "row",
-                          "translateY": 36,
+                          "translateY": 0,
                           "itemCount": 4,
-                          "itemWidth": 34,
-                          "itemHeight": 36,
-                          "itemDirection": "top-to-bottom"
+                          "itemWidth": 20,
+                          "itemHeight": 35,
+                          "itemsSpacing": 5,
+                          "symbolSize": 20,
+                          "itemDirection": "top-to-bottom",
+                          "justify": true
                       }
                   ]}
-                  direction="vertical"
+                  direction="horizontal"
               />
             </div>
           </div>

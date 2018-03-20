@@ -13,11 +13,7 @@ export default {
                 {
                     name: 'Structure',
                     url: '/architecture/structure',
-                    icon: 'fa fa-sitemap',
-                    badge: {
-                        variant: 'info',
-                        text: 'TODO'
-                    }
+                    icon: 'fa fa-sitemap'
                 },
                 {
                     name: 'File Types',
@@ -69,7 +65,11 @@ export default {
                 {
                     name: 'Hotspots',
                     url: '/risk-management/hotspots',
-                    icon: 'icon-fire'
+                    icon: 'icon-fire',
+                    badge: {
+                        variant: 'info',
+                        text: 'TODO'
+                    }
                 },
                 {
                     name: 'Refactoring Targets',

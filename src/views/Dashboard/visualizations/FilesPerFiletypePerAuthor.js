@@ -3,7 +3,7 @@ var AppDispatcher = require('../../../AppDispatcher');
 
 import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../AbstractDashboardComponent';
 
-import {ResponsiveBar} from 'nivo';
+import {ResponsiveBar} from '@nivo/bar';
 
 var authorToFilterBy;
 
@@ -194,14 +194,17 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
                 motionDamping={15}
                 legends={[
                   {
-                    "dataFrom": "keys",
-                    "anchor": "bottom-right",
-                    "direction": "column",
-                    "translateX": 120,
-                    "itemWidth": 100,
-                    "itemHeight": 20,
-                    "itemsSpacing": 2,
-                    "symbolSize": 20
+                      "dataFrom": "keys",
+                      "anchor": "top-right",
+                      "direction": "row",
+                      "translateX": 0,
+                      "translateY": -20,
+                      "itemWidth": 20,
+                      "itemHeight": 35,
+                      "itemsSpacing": 10,
+                      "symbolSize": 20,
+                      "itemDirection": "top-to-bottom",
+                      "justify": true
                   }
                 ]}
               />

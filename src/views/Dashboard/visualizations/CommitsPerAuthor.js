@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 var AppDispatcher = require('../../../AppDispatcher');
 
-import {ResponsiveBar} from 'nivo';
+import {ResponsiveBar} from '@nivo/bar';
 
 import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../AbstractDashboardComponent';
 
@@ -146,9 +146,10 @@ class CommitsPerAuthor extends DashboardAbstract {
                 legends={[
                   {
                     "dataFrom": "keys",
-                    "anchor": "bottom-right",
+                    "anchor": "top-right",
                     "direction": "column",
-                    "translateX": 120,
+                    "translateX": 25,
+                    "translateY": -35,
                     "itemWidth": 100,
                     "itemHeight": 20,
                     "itemsSpacing": 2,

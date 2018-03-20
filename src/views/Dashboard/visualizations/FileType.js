@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../AbstractDashboardComponent';
 
-import {ResponsivePie} from 'nivo';
+import {ResponsivePie} from '@nivo/pie';
 
 class FileType extends DashboardAbstract {
 
@@ -109,13 +109,15 @@ class FileType extends DashboardAbstract {
                   motionDamping={15}
                   legends={[
                     {
-                      "anchor": "bottom",
-                      "direction": "row",
+                      "anchor": "top-right",
+                      "direction": "column",
+                      "translateX": -140,
                       "translateY": 56,
-                      "itemWidth": 100,
-                      "itemHeight": 14,
-                      "symbolSize": 14,
-                      "symbolShape": "circle"
+                      "itemWidth": 20,
+                      "itemHeight": 20,
+                      "symbolSize": 20,
+                      "itemsSpacing": 5,
+                      "symbolShape": "square"
                     }
                   ]}
                 />
