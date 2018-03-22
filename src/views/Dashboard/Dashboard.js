@@ -187,12 +187,28 @@ class Dashboard extends DashboardAbstract {
                             <CardBody>
                                 <ListGroup className="margin-bottom">
                                     {Object.keys(this.state.architectureMetrics).map(function(key) {
-                                        return <ListGroupItem key={key} className="justify-content-between">{key} <div className="float-right">{this.state.architectureMetrics[key]}</div></ListGroupItem>;
+
+                                        var label = key
+                                        // insert a space before all caps
+                                            .replace(/([A-Z])/g, ' $1')
+                                            .toLowerCase()
+                                            // uppercase the first character
+                                            .replace(/^./, function(str){ return str.toUpperCase(); });
+
+                                        return <ListGroupItem key={key} className="justify-content-between">{label} <div className="float-right">{this.state.architectureMetrics[key]}</div></ListGroupItem>;
                                     }, this)}
                                 </ListGroup>
                                 <ListGroup>
                                     {Object.keys(this.state.relationMetrics).map(function(key) {
-                                        return <ListGroupItem key={key} className="justify-content-between">{key} <div className="float-right">{this.state.relationMetrics[key]}</div></ListGroupItem>;
+
+                                        var label = key
+                                        // insert a space before all caps
+                                            .replace(/([A-Z])/g, ' $1')
+                                            .toLowerCase()
+                                            // uppercase the first character
+                                            .replace(/^./, function(str){ return str.toUpperCase(); });
+
+                                        return <ListGroupItem key={key} className="justify-content-between">{label} <div className="float-right">{this.state.relationMetrics[key]}</div></ListGroupItem>;
                                     }, this)}
                                 </ListGroup>
                             </CardBody>
@@ -206,7 +222,15 @@ class Dashboard extends DashboardAbstract {
                             <CardBody>
                                 <ListGroup>
                                     {Object.keys(this.state.resourceManagementMetrics).map(function(key) {
-                                        return <ListGroupItem key={key} className="justify-content-between">{key} <div className="float-right">{this.state.resourceManagementMetrics[key]}</div></ListGroupItem>;
+
+                                        var label = key
+                                            // insert a space before all caps
+                                            .replace(/([A-Z])/g, ' $1')
+                                            .toLowerCase()
+                                            // uppercase the first character
+                                            .replace(/^./, function(str){ return str.toUpperCase(); });
+
+                                        return <ListGroupItem key={key} className="justify-content-between">{label} <div className="float-right">{this.state.resourceManagementMetrics[key]}</div></ListGroupItem>;
                                     }, this)}
                                 </ListGroup>
                             </CardBody>
