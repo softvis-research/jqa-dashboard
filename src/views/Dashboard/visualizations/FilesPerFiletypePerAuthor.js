@@ -4,6 +4,8 @@ var AppDispatcher = require('../../../AppDispatcher');
 import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../AbstractDashboardComponent';
 
 import {ResponsiveBar} from '@nivo/bar';
+import {LegendSvgItem} from '@nivo/legends';
+var stringToColour = require('string-to-color');
 
 var authorToFilterBy;
 
@@ -103,16 +105,18 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
             aggregatedKeys.push(filetype);
           }
         });
-      }).then( function(context) {
-        var grouping = [];
+      })./* then( function(context) { //try to set all keys in every dataset to satisfy legend
         aggregatedData.forEach(function (record) {
-
+            aggregatedKeys.forEach(function(key) {
+                if (!record[key]) {
+                    record[key] = 0;
+                }
+            })
         })
-
-      }).then( function(context) {
+      }). */then( function(context) {
         thisBackup.setState(
           {
-            data: aggregatedData,
+            data: aggregatedData.reverse(),
             dataKeys: aggregatedKeys
           }
         );
@@ -127,18 +131,30 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
           return(redirect);
         }
 
+        var legendItems = [];
+        var yPosition = 0;
+        for (var i = 0; i < this.state.dataKeys.length; i++) {
+            var label = this.state.dataKeys[i];
+            if (label.indexOf('/') !== -1) {
+                continue; //filter out obviously broken elements
+            }
+            yPosition += 20;
+            var legendSvgItem = <LegendSvgItem key={i} x={0} y={yPosition} width={20} height={35} label={label} fill={stringToColour(label)} />;
+            legendItems.push(legendSvgItem);
+        }
+
         //TODO: calculate height from this.state.dataKeys.length
         return (
           <div>
-            <div style={{height: "4000px"}}> 
+            <div style={{height: "4000px", width: "85%", float: "left"}}>
               <ResponsiveBar
                 onClick={ function(event) { console.log(event) } }
                 data={this.state.data}
                 keys={this.state.dataKeys}
                 indexBy="author"
                 margin={{
-                  "top": 50,
-                  "right": 50,
+                  "top": 0,
+                  "right": 20,
                   "bottom": 50,
                   "left": 150
                 }}
@@ -146,7 +162,10 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
                 groupMode="stacked"
                 layout="horizontal"
                 colors="nivo"
-                colorBy="id"
+                //colorBy="id"
+                colorBy={function (e) {
+                    return stringToColour(e.id);
+                }}
                 defs={[
                   {
                     "id": "dots",
@@ -173,7 +192,7 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
                   "tickSize": 5,
                   "tickPadding": 5,
                   "tickRotation": 0,
-                  "legend": "Filetypes",
+                  "legend": "Number of files",
                   "legendPosition": "center",
                   "legendOffset": 36
                 }}
@@ -182,7 +201,7 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
                   "tickSize": 5,
                   "tickPadding": 5,
                   "tickRotation": 0,
-                  "legend": "Number of files",
+                  "legend": "Authors",
                   "legendPosition": "center",
                   "legendOffset": -140
                 }}
@@ -192,22 +211,10 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
                 animate={true}
                 motionStiffness={90}
                 motionDamping={15}
-                legends={[
-                  {
-                      "dataFrom": "keys",
-                      "anchor": "top-right",
-                      "direction": "row",
-                      "translateX": 0,
-                      "translateY": -20,
-                      "itemWidth": 20,
-                      "itemHeight": 35,
-                      "itemsSpacing": 10,
-                      "symbolSize": 20,
-                      "itemDirection": "top-to-bottom",
-                      "justify": true
-                  }
-                ]}
               />
+            </div>
+            <div style={{width: "14%", float: "left", marginTop: "45px"}}>
+              <svg id={"dummyLegend"} style={{overflow:"visible"}}>{legendItems}</svg>
             </div>
           </div>
         )

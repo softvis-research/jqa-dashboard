@@ -112,8 +112,6 @@ class CommitsTimescale extends DashboardAbstract {
               <ResponsiveCalendar
                   from={fromDate}
                   to={this.state.commitsTo}
-                  //from="2015-03-01"
-                  //to="2016-07-12"
                   onClick={ function(event) {
                     console.log(event);
                     /*
