@@ -128,7 +128,7 @@ class DashboardAbstract extends Component {
         .run("match (n) return n limit 1") //this should be as generic as possible =)
         .then( function() {
             databaseCredentialsCorrect = true;
-            thisBackup.runSetupScripts();
+            //thisBackup.runSetupScripts(); //this dashboard mustn't alter the database (at least for now)
         })
         .catch( function(error) {
             databaseCredentialsCorrect = false;
@@ -137,7 +137,7 @@ class DashboardAbstract extends Component {
         }); //handle wrong credentials
       } //end if
     }
-
+/*
     runSetupScripts() {
         var currentVersion = -1;
         var oldVersion = -1;
@@ -173,7 +173,7 @@ class DashboardAbstract extends Component {
             }
         });
     }
-
+*/
     componentDidMount() {
 
     }

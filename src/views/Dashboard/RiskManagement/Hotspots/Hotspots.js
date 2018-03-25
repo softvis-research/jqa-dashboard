@@ -16,6 +16,8 @@ var treebeardCustomTheme = require('./TreebeardCustomTheme');
 // demo: http://alexcurtis.github.io/react-treebeard/
 
 var dynamicBreadcrumbSeparator = " > ";
+var stringToColour = require('string-to-color');
+var totalComplexity = 0;
 
 class RiskManagementHotspots extends DashboardAbstract {
 
@@ -88,16 +90,66 @@ class RiskManagementHotspots extends DashboardAbstract {
         var hierarchicalData = [];
         var projectName = "PROJECTNAME"; // acts as root as there are multiple root packages in some cases
         var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
-        neo4jSession.run("MATCH (package:Package) RETURN package.fqn as fqn, 0 as complexity, 1 as loc UNION MATCH (package)-[:CONTAINS]->(class:Type), (class)-[:DECLARES]->(method:Method) RETURN class.fqn as fqn, sum(method.cyclomaticComplexity) as complexity, sum(method.effectiveLineCount) as loc")
+        neo4jSession.run(
+            "// hotspots query returning fqn, commits, complexity, loc\n" +
+            "MATCH\n" +
+            "  (c:Commit)-[:CONTAINS_CHANGE]->()-[:MODIFIES]->(f:File)\n" +
+            "WHERE NOT\n" +
+            "  c:Merge\n" +
+            "WITH\n" +
+            "  f, count(c) as commits\n" +
+            "MATCH\n" +
+            "  (t:Type)-[:HAS_SOURCE]->(f),\n" +
+            "  (t)-[:DECLARES]->(m:Method)\n" +
+            "WHERE\n" +
+            "  f.relativePath STARTS WITH 'src'\n" +
+            "RETURN\n" +
+            "  t.fqn as fqn, commits, sum(m.cyclomaticComplexity) as complexity, sum(m.effectiveLineCount) as loc"
+        )
             .then(function (result) {
+
+                var collectedNames = [];
+
                 // collect results
                 result.records.forEach(function (record) {
+                    var name = record.get("fqn");
+                    totalComplexity += record.get("complexity").low;
+
+                    if (collectedNames[name]) { //if name already present add complexity and loc
+                        for (var i = 0; i < flatData.length; i++) {
+                            if (flatData[i].name === name) {
+                                console.log("----");
+                                console.log(flatData[i]);
+                                flatData[i].complexity += record.get("complexity").low;
+                                flatData[i].loc += record.get("loc").low;
+                                console.log(flatData[i]);
+                            }
+                        }
+
+                        return; //continue in forEach
+                    }
+                    collectedNames[name] = 1;
+
                     var recordConverted = {
-                        "name": record.get("fqn"),
+                        "name": name,
                         "complexity": record.get("complexity").low,
                         "loc": record.get("loc").low
                     };
+
                     flatData.push(recordConverted);
+
+                    //fill packages to allow stratify()
+                    while (name.lastIndexOf(".") !== -1) {
+                        name = name.substring(0, name.lastIndexOf("."));
+                        if (!collectedNames[name]) {
+                            collectedNames[name] = 1;
+                            flatData.push({
+                                "name": name,
+                                "complexity": 0,
+                                "loc": 0
+                            });
+                        }
+                    }
                 });
 
                 // add projectname as root
@@ -147,6 +199,7 @@ class RiskManagementHotspots extends DashboardAbstract {
                 hierarchicalData.complexity = hierarchicalData.data.complexity;
             }).then( function(context) {
                 thisBackup.setState({hotSpotData: hierarchicalData});
+                console.log(totalComplexity);
             })
             .catch(function (error) {
                 console.log(error);
@@ -335,7 +388,11 @@ class RiskManagementHotspots extends DashboardAbstract {
                                         identity="name"
                                         value="loc"
                                         colors="nivo"
-                                        colorBy="depth"
+                                        colorBy={function (e) {
+                                            var complexity = e.complexity;
+                                            var saturation = complexity / totalComplexity;
+                                            return 'hsl(0, ' + saturation + '%, 50%)';
+                                        }}
                                         padding={6}
                                         labelTextColor="inherit:darker(0.8)"
                                         borderWidth={2}
