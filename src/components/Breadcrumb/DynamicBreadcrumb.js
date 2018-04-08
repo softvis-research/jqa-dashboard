@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import ReactDOMServer from 'react-dom/server';
+import {Breadcrumb, BreadcrumbItem} from 'reactstrap';
 
 class DynamicBreadcrumb extends Component {
 
@@ -9,25 +9,26 @@ class DynamicBreadcrumb extends Component {
         var key = '';
         for (var i = 0; i < this.props.items.length; i++) {
             var propname = this.props.items[i];
-            var renderSeparator = (i < this.props.items.length - 1);
+            //var renderSeparator = (i < this.props.items.length - 1);
 
             key = key + (i !== 0 ? this.props.separator : '') + propname;
-            var currentItem = items[i];
+            var active = (i === this.props.items.length - 1);
             items.push(
-                <span id={key} className={'breadcrumb-item'} key={key} onClick={this.props.onClickHandler}>
-                    {propname}
-                </span>
+                <BreadcrumbItem
+                    id={key}
+                    key={key}
+                    className={active ? "active breadcrumb-item" : "breadcrumb-item"}
+                    tag={active ? "span" : "a"}
+                    onClick={this.props.onClickHandler}>
+                        {propname}
+                </BreadcrumbItem>
             );
-
-            if (renderSeparator) {
-                items.push(
-                    <span key={'separator-' + key}>{this.props.separator}</span>
-                );
-            }
         }
-        
+
         return (
-            <div className="dynamic-breadcrumb">{items}</div>
+            <Breadcrumb className="dynamic-breadcrumb">
+                {items}
+            </Breadcrumb>
         );
     }
 

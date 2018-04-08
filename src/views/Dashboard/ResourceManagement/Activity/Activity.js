@@ -59,7 +59,7 @@ class ResourceManagementActivity extends DashboardAbstract {
                     <Col xs="12" sm="12" md="6">
                         <Card className="commit-calendar">
                             <CardHeader>
-                                Commit-Calendar
+                                Commits over time
                             </CardHeader>
                             <CardBody>
                                 <CommitsTimescale/>

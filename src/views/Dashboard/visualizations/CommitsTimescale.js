@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 var AppDispatcher = require('../../../AppDispatcher');
 
 import {ResponsiveCalendar} from '@nivo/calendar';
+import {LegendSvgItem} from '@nivo/legends';
 
 import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../AbstractDashboardComponent';
 
@@ -106,8 +107,23 @@ class CommitsTimescale extends DashboardAbstract {
             fromDate = newDate.getFullYear() + "-" + newDate.getMonth() + "-" + newDate.getDate();
         }
 
+        var colors = [
+            "#c6e48b",
+            "#7bc96f",
+            "#239a3b",
+            '#192127'
+        ];
+
+        var legendItems = [];
+        var xPosition = 0;
+        for (var i = 0; i < colors.length; i++) {
+            xPosition += 20;
+            var legendSvgItem = <LegendSvgItem key={i} x={xPosition} y={0} width={20} height={35} label={''} fill={colors[i]} />;
+            legendItems.push(legendSvgItem);
+        }
+
         return (
-          <div>
+          <div className="calender-wrapper">
             <div style={{height: "440px"}}>
               <ResponsiveCalendar
                   from={fromDate}
@@ -123,12 +139,7 @@ class CommitsTimescale extends DashboardAbstract {
                    }}
                     data={this.state.commitsTimescale}
                   emptyColor="#eeeeee"
-                  colors={[
-                      "#61cdbb",
-                      "#97e3d5",
-                      "#e8c1a0",
-                      "#f47560"
-                  ]}
+                  colors={colors}
                   margin={{
                       "top": 10,
                       "right": 10,
@@ -140,22 +151,13 @@ class CommitsTimescale extends DashboardAbstract {
                   monthLegendOffset={10}
                   dayBorderWidth={1}
                   dayBorderColor="#ffffff"
-                  legends={[
-                      {
-                          "anchor": "bottom-right",
-                          "direction": "row",
-                          "translateY": 0,
-                          "itemCount": 4,
-                          "itemWidth": 20,
-                          "itemHeight": 35,
-                          "itemsSpacing": 5,
-                          "symbolSize": 20,
-                          "itemDirection": "top-to-bottom",
-                          "justify": true
-                      }
-                  ]}
                   direction="horizontal"
               />
+            </div>
+            <div className="calendar-legend">
+                <div className="less float-left">less</div>
+                <svg id={"dummyLegend"} style={{float: "left", overflow:"visible", width: ((colors.length + 1) * 20) + 16}}>{legendItems}</svg>
+                <div className="more float-left">more</div>
             </div>
           </div>
         )

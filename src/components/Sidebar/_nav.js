@@ -8,17 +8,15 @@ export default {
         {
             name: 'Architecture',
             url: '/architecture',
-            icon: 'fa fa-cubes',
+            icon: 'fa fa-sitemap',
             children: [
                 {
                     name: 'Structure',
-                    url: '/architecture/structure',
-                    icon: 'fa fa-sitemap'
+                    url: '/architecture/structure'
                 },
                 {
                     name: 'File Types',
-                    url: '/architecture/file-types',
-                    icon: 'icon-docs'
+                    url: '/architecture/file-types'
                 }
             ]
         },
@@ -29,18 +27,15 @@ export default {
             children: [
                 {
                     name: 'Activity',
-                    url: '/resource-management/activity',
-                    icon: 'fa fa-heartbeat'
+                    url: '/resource-management/activity'
                 },
                 {
                     name: 'Knowledge Distribution',
-                    url: '/resource-management/knowledge-distribution',
-                    icon: 'icon-bulb'
+                    url: '/resource-management/knowledge-distribution'
                 },
                 {
                     name: 'Code Churn',
                     url: '/resource-management/code-churn',
-                    icon: 'fa fa-area-chart',
                     badge: {
                         variant: 'info',
                         text: 'TODO'
@@ -49,7 +44,6 @@ export default {
                 {
                     name: 'Code Ownership',
                     url: '/resource-management/code-ownership',
-                    icon: 'fa fa-code',
                     badge: {
                         variant: 'info',
                         text: 'FEATURE'
@@ -64,17 +58,11 @@ export default {
             children: [
                 {
                     name: 'Hotspots',
-                    url: '/risk-management/hotspots',
-                    icon: 'icon-fire',
-                    badge: {
-                        variant: 'info',
-                        text: 'TODO'
-                    }
+                    url: '/risk-management/hotspots'
                 },
                 {
                     name: 'Refactoring Targets',
                     url: '/risk-management/refactoring-targets',
-                    icon: 'fa fa-refresh',
                     badge: {
                         variant: 'info',
                         text: 'FEATURE'
@@ -83,7 +71,6 @@ export default {
                 {
                     name: 'Temporal Coupling',
                     url: '/risk-management/temporal-coupling',
-                    icon: 'fa fa-clock-o',
                     badge: {
                         variant: 'info',
                         text: 'FEATURE'
@@ -99,7 +86,6 @@ export default {
                 {
                     name: 'Test Coverage',
                     url: '/quality-management/test-coverage',
-                    icon: 'fa fa-tasks',
                     badge: {
                         variant: 'info',
                         text: 'FEATURE'
@@ -108,7 +94,6 @@ export default {
                 {
                     name: 'Clone Detection',
                     url: '/quality-management/clone-detection',
-                    icon: 'fa fa-clone',
                     badge: {
                         variant: 'info',
                         text: 'FEATURE'

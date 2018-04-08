@@ -88,7 +88,7 @@ class FilesPerAuthor extends DashboardAbstract {
                 ]}
                 indexBy="author"
                 margin={{
-                  "top": 50,
+                  "top": 0,
                   "right": 50,
                   "bottom": 50,
                   "left": 150
@@ -122,11 +122,11 @@ class FilesPerAuthor extends DashboardAbstract {
                 axisBottom={{
                   "orient": "bottom",
                   "tickSize": 5,
-                  "tickPadding": 5,
+                  "tickPadding": 15,
                   "tickRotation": 0,
-                  "legend": "Number",
+                  "legend": "# Files",
                   "legendPosition": "center",
-                  "legendOffset": 36
+                  "legendOffset": 46
                 }}
                 axisLeft={{
                   "orient": "left",
@@ -143,19 +143,6 @@ class FilesPerAuthor extends DashboardAbstract {
                 animate={true}
                 motionStiffness={90}
                 motionDamping={15}
-                legends={[
-                  {
-                      "dataFrom": "keys",
-                      "anchor": "top-right",
-                      "direction": "column",
-                      "translateX": 49,
-                      "translateY": -35,
-                      "itemWidth": 100,
-                      "itemHeight": 20,
-                      "itemsSpacing": 2,
-                      "symbolSize": 20
-                  }
-                ]}
               />
             </div>
           </div>

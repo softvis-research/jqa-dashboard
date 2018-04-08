@@ -19,6 +19,9 @@ import "codemirror/addon/lint/lint.css";
 import "codemirror/addon/hint/show-hint.css";
 import "cypher-codemirror/dist/cypher-codemirror-syntax.css";
 
+import SimpleBar from 'SimpleBar';
+import "simplebar/dist/simplebar.css";
+
 // Containers
 import Full from './containers/Full/'
 

@@ -3,11 +3,14 @@ import PropTypes from 'prop-types';
 import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../AbstractDashboardComponent';
 import {Row, Col, Card, CardHeader, CardBody} from 'reactstrap';
 import DynamicBreadcrumb from '../../../../components/Breadcrumb/DynamicBreadcrumb';
+import SimpleBar from 'SimpleBar';
 
 var AppDispatcher = require('../../../../AppDispatcher');
 
 import {ResponsiveBubbleHtml} from 'nivo';
 import * as d3 from "d3";
+
+var IDENTIFIER_PROJECT_NAME = "projectName";
 
 import {Treebeard} from 'react-treebeard';
 var treebeardCustomTheme = require('./TreebeardCustomTheme');
@@ -16,6 +19,8 @@ var treebeardCustomTheme = require('./TreebeardCustomTheme');
 // demo: http://alexcurtis.github.io/react-treebeard/
 
 var dynamicBreadcrumbSeparator = " > ";
+
+var maxComplexity = 0;
 
 class ArchitectureStructure extends DashboardAbstract {
 
@@ -86,18 +91,62 @@ class ArchitectureStructure extends DashboardAbstract {
     readStructure() {
         var flatData = [];
         var hierarchicalData = [];
-        var projectName = "PROJECTNAME"; // acts as root as there are multiple root packages in some cases
+        var projectName = localStorage.getItem(IDENTIFIER_PROJECT_NAME); // "PROJECTNAME"; // acts as root as there are multiple root packages in some cases
         var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
-        neo4jSession.run("MATCH (package:Package) RETURN package.fqn as fqn, 0 as complexity, 1 as loc UNION MATCH (package)-[:CONTAINS]->(class:Type), (class)-[:DECLARES]->(method:Method) RETURN class.fqn as fqn, sum(method.cyclomaticComplexity) as complexity, sum(method.effectiveLineCount) as loc")
+        neo4jSession.run("MATCH\n" +
+            " (t:Type)-[:HAS_SOURCE]->(f),\n" +
+            " (t)-[:DECLARES]->(m:Method)\n" +
+            "WHERE\n" +
+            " f.relativePath STARTS WITH 'src'\n" +
+            "RETURN\n " +
+            " t.fqn as fqn, sum(m.cyclomaticComplexity) as complexity, sum(m.effectiveLineCount) as loc")
             .then(function (result) {
+                var collectedNames = [];
+
+                maxComplexity = 0; //reset value
                 // collect results
                 result.records.forEach(function (record) {
+                    var name = record.get("fqn");
+                    var currentComplexity = record.get("complexity").low;
+
+                    if (currentComplexity > maxComplexity) {
+                        maxComplexity = currentComplexity;
+                    }
+
+                    if (collectedNames[name]) { //if name already present add complexity and loc
+                        for (var i = 0; i < flatData.length; i++) {
+                            if (flatData[i].name === name) {
+                                console.log("----");
+                                console.log(flatData[i]);
+                                flatData[i].complexity += currentComplexity;
+                                flatData[i].loc += record.get("loc").low;
+                                console.log(flatData[i]);
+                            }
+                        }
+
+                        return; //continue in forEach
+                    }
+                    collectedNames[name] = 1;
+
                     var recordConverted = {
-                        "name": record.get("fqn"),
-                        "complexity": record.get("complexity").low,
+                        "name": name,
+                        "complexity": currentComplexity,
                         "loc": record.get("loc").low
                     };
                     flatData.push(recordConverted);
+
+                    //fill packages to allow stratify()
+                    while (name.lastIndexOf(".") !== -1) {
+                        name = name.substring(0, name.lastIndexOf("."));
+                        if (!collectedNames[name]) {
+                            collectedNames[name] = 1;
+                            flatData.push({
+                                "name": name,
+                                "complexity": 0,
+                                "loc": 0
+                            });
+                        }
+                    }
                 });
 
                 // add projectname as root
@@ -297,86 +346,88 @@ class ArchitectureStructure extends DashboardAbstract {
                     <Col xs="12" sm="12" md="12">
                         <Card>
                             <CardHeader>
-                                Breadcrumb
+                                Structure
                             </CardHeader>
                             <CardBody>
-                                <DynamicBreadcrumb
-                                    items={this.state.breadCrumbData}
-                                    onClickHandler={this.breadcrumbClicked}
-                                    separator={dynamicBreadcrumbSeparator}
-                                />
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col xs="12" sm="6" md="8">
-                        <Card>
-                            <CardHeader>
-                                Hotspots
-                            </CardHeader>
-                            <CardBody className={'hotspot-component'}>
-                                <div style={{height: "600px"}}>
-                                    <ResponsiveBubbleHtml
-                                        onClick={ function(event) {
-                                            AppDispatcher.handleAction({
-                                                actionType: 'SELECT_HOTSPOT_PACKAGE',
-                                                data: event
-                                            });
-                                        }
-                                        }
-                                        root={this.state.hotSpotData}
-                                        margin={{
-                                            "top": 20,
-                                            "right": 20,
-                                            "bottom": 20,
-                                            "left": 20
-                                        }}
-                                        identity="name"
-                                        value="loc"
-                                        colors="nivo"
-                                        colorBy="depth"
-                                        padding={6}
-                                        labelTextColor="inherit:darker(0.8)"
-                                        borderWidth={2}
-                                        defs={[
-                                            {
-                                                "id": "lines",
-                                                "type": "patternLines",
-                                                "background": "none",
-                                                "color": "inherit",
-                                                "rotation": -45,
-                                                "lineWidth": 5,
-                                                "spacing": 8
-                                            }
-                                        ]}
-                                        fill={[
-                                            {
-                                                "match": {
-                                                    "depth": 1
-                                                },
-                                                "id": "lines"
-                                            }
-                                        ]}
-                                        animate={false}
-                                        motionStiffness={90}
-                                        motionDamping={12}
-                                    />
-                                </div>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                    <Col xs="12" sm="6" md="4">
-                        <Card>
-                            <CardHeader>
-                                Package Explorer
-                            </CardHeader>
-                            <CardBody>
-                                <Treebeard
-                                    data={this.state.hotSpotData}
-                                    onToggle={this.onToggle}
-                                    style={treebeardCustomTheme.default}
-                                />
+                                <Row>
+                                    <Col xs="12" sm="12" md="12">
+                                        <Card>
+                                            <CardBody>
+                                                <DynamicBreadcrumb
+                                                    items={this.state.breadCrumbData}
+                                                    onClickHandler={this.breadcrumbClicked}
+                                                    separator={dynamicBreadcrumbSeparator}
+                                                />
+                                            </CardBody>
+                                        </Card>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col xs="12" sm="6" md="4">
+                                        <Card id="treebeard-component" data-simplebar style={{height: "635px", overflow: "hidden"}}>
+                                            <CardBody>
+                                                <Treebeard
+                                                    data={this.state.hotSpotData}
+                                                    onToggle={this.onToggle}
+                                                    style={treebeardCustomTheme.default}
+                                                />
+                                            </CardBody>
+                                        </Card>
+                                    </Col>
+                                    <Col xs="12" sm="6" md="8">
+                                        <Card id="hotspot-component">
+                                            <CardBody>
+                                                <div className={'hotspot-component'} style={{height: "600px"}}>
+                                                    <ResponsiveBubbleHtml
+                                                        onClick={ function(event) {
+                                                            AppDispatcher.handleAction({
+                                                                actionType: 'SELECT_HOTSPOT_PACKAGE',
+                                                                data: event
+                                                            });
+                                                        }
+                                                        }
+                                                        root={this.state.hotSpotData}
+                                                        margin={{
+                                                            "top": 20,
+                                                            "right": 20,
+                                                            "bottom": 20,
+                                                            "left": 20
+                                                        }}
+                                                        identity="name"
+                                                        value="loc"
+                                                        colors="nivo"
+                                                        colorBy="depth"
+                                                        padding={6}
+                                                        labelTextColor="inherit:darker(0.8)"
+                                                        borderWidth={2}
+                                                        defs={[
+                                                            {
+                                                                "id": "lines",
+                                                                "type": "patternLines",
+                                                                "background": "none",
+                                                                "color": "inherit",
+                                                                "rotation": -45,
+                                                                "lineWidth": 5,
+                                                                "spacing": 8
+                                                            }
+                                                        ]}
+                                                        fill={[
+                                                            {
+                                                                "match": {
+                                                                    "depth": 1
+                                                                },
+                                                                "id": "lines"
+                                                            }
+                                                        ]}
+                                                        animate={false}
+                                                        motionStiffness={90}
+                                                        motionDamping={12}
+                                                    />
+                                                </div>
+                                            </CardBody>
+                                        </Card>
+                                    </Col>
+                                </Row>
                             </CardBody>
                         </Card>
                     </Col>

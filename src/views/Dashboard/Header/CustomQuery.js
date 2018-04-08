@@ -9,7 +9,7 @@ import { Render } from "graph-app-kit/components/Render";
 import { Chart } from "graph-app-kit/components/Chart";
 import { CypherEditor } from "graph-app-kit/components/Editor";
 
-import {Badge, Row, Col, Card, CardHeader, CardFooter, CardBody, Label, Input} from 'reactstrap';
+import {Button, Badge, Row, Col, Card, CardHeader, CardFooter, CardBody, Label, Input} from 'reactstrap';
 
 import ReactTable from 'react-table';
 
@@ -20,7 +20,7 @@ class CustomQuery extends DashboardAbstract {
 
         this.state = {
             readData: [{
-                "aplaceholder": "Please tye a query and click \"Send query\"",
+                "aplaceholder": "Please tye a query and click \"Send\"",
             }],
             headerData: [
                 {
@@ -42,6 +42,33 @@ class CustomQuery extends DashboardAbstract {
 
     componentWillUnmount() {
         super.componentWillUnmount();
+    }
+
+    clear(event) {
+
+        //TODO: this function does in fact clear the query but the codeMirror does not show it. the reason is currently unknown
+        //document.getElementById("cypheredit").value = '';
+        var element = document.querySelector('.ReactCodeMirror textarea');
+        if ("createEvent" in document) {
+            var evt = document.createEvent("HTMLEvents");
+            evt.initEvent("change", false, true);
+            element.dispatchEvent(evt);
+        } else {
+            element.fireEvent("onchange");
+        }
+
+        this.setState({
+            query: '',
+            readData: [{
+                "aplaceholder": "Please type a query and click \"Send\"",
+            }],
+            headerData: [
+                {
+                    Header: "Result",
+                    accessor: "aplaceholder"
+                }
+            ],
+        });
     }
 
     sendQuery(event) {
@@ -122,6 +149,7 @@ class CustomQuery extends DashboardAbstract {
                             </CardHeader>
                             <CardBody>
                                 <CypherEditor
+                                    className="cypheredit"
                                     value={this.state.query}
                                     options={{
                                         mode: "cypher",
@@ -130,13 +158,14 @@ class CustomQuery extends DashboardAbstract {
                                     }}
                                     onValueChange={this.updateStateQuery.bind(this)}
                                 />
-                                <button onClick={this.sendQuery.bind(this)} className="btn btn-success send-query btn-lg">Send query</button>
+                                <Button onClick={this.sendQuery.bind(this)} className="btn btn-success send-query float-right" color="success">Send</Button>
+                                <Button onClick={this.clear.bind(this)} className="btn btn-success send-query float-right margin-right" color="danger">Reset</Button>
 
                                 <ReactTable
                                     data = {this.state.readData}
                                     columns = {this.state.headerData}
                                     defaultPageSize = {20}
-                                    className = "-striped -highlight"
+                                    className = "-striped -highlight clear"
                                     minRows = {1}
                                 />
                             </CardBody>

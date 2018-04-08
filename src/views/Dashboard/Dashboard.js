@@ -180,61 +180,69 @@ class Dashboard extends DashboardAbstract {
             <div className="animated fadeIn">
                 <Row>
                     <Col xs="12" sm="6" md="3">
-                        <Card>
-                            <CardHeader>
-                                Architecture
-                            </CardHeader>
-                            <CardBody>
-                                <ListGroup className="margin-bottom">
-                                    {Object.keys(this.state.architectureMetrics).map(function(key) {
+                        <a href="#/architecture/structure">
+                            <Card>
+                                <CardHeader>
+                                    Architecture
+                                </CardHeader>
+                                <CardBody>
+                                    <strong>Architecture metrics</strong>
+                                    <ListGroup className="margin-bottom">
+                                        {Object.keys(this.state.architectureMetrics).map(function(key) {
 
-                                        var label = key
-                                        // insert a space before all caps
-                                            .replace(/([A-Z])/g, ' $1')
-                                            .toLowerCase()
-                                            // uppercase the first character
-                                            .replace(/^./, function(str){ return str.toUpperCase(); });
+                                            var label = key
+                                            // insert a space before all caps
+                                                .replace(/([A-Z])/g, ' $1')
+                                                .toLowerCase()
+                                                // uppercase the first character
+                                                .replace(/^./, function(str){ return str.toUpperCase(); });
 
-                                        return <ListGroupItem key={key} className="justify-content-between">{label} <div className="float-right">{this.state.architectureMetrics[key]}</div></ListGroupItem>;
-                                    }, this)}
-                                </ListGroup>
-                                <ListGroup>
-                                    {Object.keys(this.state.relationMetrics).map(function(key) {
+                                            return <ListGroupItem key={key} className="justify-content-between">{label} <div className="float-right">{this.state.architectureMetrics[key]}</div></ListGroupItem>;
+                                        }, this)}
+                                    </ListGroup>
 
-                                        var label = key
-                                        // insert a space before all caps
-                                            .replace(/([A-Z])/g, ' $1')
-                                            .toLowerCase()
-                                            // uppercase the first character
-                                            .replace(/^./, function(str){ return str.toUpperCase(); });
+                                    <strong>Relation metrics</strong>
+                                    <ListGroup>
+                                        {Object.keys(this.state.relationMetrics).map(function(key) {
 
-                                        return <ListGroupItem key={key} className="justify-content-between">{label} <div className="float-right">{this.state.relationMetrics[key]}</div></ListGroupItem>;
-                                    }, this)}
-                                </ListGroup>
-                            </CardBody>
-                        </Card>
+                                            var label = key
+                                            // insert a space before all caps
+                                                .replace(/([A-Z])/g, ' $1')
+                                                .toLowerCase()
+                                                // uppercase the first character
+                                                .replace(/^./, function(str){ return str.toUpperCase(); });
+
+                                            return <ListGroupItem key={key} className="justify-content-between">{label} <div className="float-right">{this.state.relationMetrics[key]}</div></ListGroupItem>;
+                                        }, this)}
+                                    </ListGroup>
+                                </CardBody>
+                            </Card>
+                        </a>
                     </Col>
                     <Col xs="12" sm="6" md="3">
-                        <Card>
-                            <CardHeader>
-                                Resource Management
-                            </CardHeader>
-                            <CardBody>
-                                <ListGroup>
-                                    {Object.keys(this.state.resourceManagementMetrics).map(function(key) {
+                        <a href="#/resource-management/activity">
+                            <Card>
+                                <CardHeader>
+                                    Resource Management
+                                </CardHeader>
+                                <CardBody>
+                                    <strong>Activity metrics</strong>
+                                    <ListGroup>
+                                        {Object.keys(this.state.resourceManagementMetrics).map(function(key) {
 
-                                        var label = key
-                                            // insert a space before all caps
-                                            .replace(/([A-Z])/g, ' $1')
-                                            .toLowerCase()
-                                            // uppercase the first character
-                                            .replace(/^./, function(str){ return str.toUpperCase(); });
+                                            var label = key
+                                                // insert a space before all caps
+                                                .replace(/([A-Z])/g, ' $1')
+                                                .toLowerCase()
+                                                // uppercase the first character
+                                                .replace(/^./, function(str){ return str.toUpperCase(); });
 
-                                        return <ListGroupItem key={key} className="justify-content-between">{label} <div className="float-right">{this.state.resourceManagementMetrics[key]}</div></ListGroupItem>;
-                                    }, this)}
-                                </ListGroup>
-                            </CardBody>
-                        </Card>
+                                            return <ListGroupItem key={key} className="justify-content-between">{label} <div className="float-right">{this.state.resourceManagementMetrics[key]}</div></ListGroupItem>;
+                                        }, this)}
+                                    </ListGroup>
+                                </CardBody>
+                            </Card>
+                        </a>
                     </Col>
                     <Col xs="12" sm="6" md="3">
                         <Card>

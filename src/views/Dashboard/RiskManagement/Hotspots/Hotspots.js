@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../AbstractDashboardComponent';
 import {Row, Col, Card, CardHeader, CardBody} from 'reactstrap';
 import DynamicBreadcrumb from '../../../../components/Breadcrumb/DynamicBreadcrumb';
+import SimpleBar from 'SimpleBar';
 
 var AppDispatcher = require('../../../../AppDispatcher');
 
@@ -15,9 +16,10 @@ var treebeardCustomTheme = require('./TreebeardCustomTheme');
 // TODO: add search input from example: https://github.com/alexcurtis/react-treebeard/tree/master/example
 // demo: http://alexcurtis.github.io/react-treebeard/
 
+var IDENTIFIER_PROJECT_NAME = "projectName";
 var dynamicBreadcrumbSeparator = " > ";
 var stringToColour = require('string-to-color');
-var totalComplexity = 0;
+var maxComplexity = 0;
 
 class RiskManagementHotspots extends DashboardAbstract {
 
@@ -86,124 +88,144 @@ class RiskManagementHotspots extends DashboardAbstract {
     }
 
     readStructure() {
+
         var flatData = [];
         var hierarchicalData = [];
-        var projectName = "PROJECTNAME"; // acts as root as there are multiple root packages in some cases
+        var projectName = localStorage.getItem(IDENTIFIER_PROJECT_NAME); // "PROJECTNAME"; // acts as root as there are multiple root packages in some cases
         var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
+
         neo4jSession.run(
-            "// hotspots query returning fqn, commits, complexity, loc\n" +
             "MATCH\n" +
-            "  (c:Commit)-[:CONTAINS_CHANGE]->()-[:MODIFIES]->(f:File)\n" +
+            " (c:Commit)-[:CONTAINS_CHANGE]->()-[:MODIFIES]->(f:File)\n" +
             "WHERE NOT\n" +
-            "  c:Merge\n" +
+            " c:Merge\n" +
             "WITH\n" +
-            "  f, count(c) as commits\n" +
+            " f, count(c) as commits\n" +
             "MATCH\n" +
-            "  (t:Type)-[:HAS_SOURCE]->(f),\n" +
-            "  (t)-[:DECLARES]->(m:Method)\n" +
+            " (t:Type)-[:HAS_SOURCE]->(f),\n" +
+            " (t)-[:DECLARES]->(m:Method)\n" +
             "WHERE\n" +
-            "  f.relativePath STARTS WITH 'src'\n" +
+            " f.relativePath STARTS WITH 'src'\n" +
             "RETURN\n" +
-            "  t.fqn as fqn, commits, sum(m.cyclomaticComplexity) as complexity, sum(m.effectiveLineCount) as loc"
-        )
-            .then(function (result) {
+            " t.fqn as fqn, sum(commits) as commits, sum(m.cyclomaticComplexity) as complexity, sum(m.effectiveLineCount) as loc"
+        ).then(function (result) {
+            var collectedNames = [];
 
-                var collectedNames = [];
+            maxComplexity = 0; //reset value
 
-                // collect results
-                result.records.forEach(function (record) {
-                    var name = record.get("fqn");
-                    totalComplexity += record.get("complexity").low;
+            // collect results
+            result.records.forEach(function (record) {
+                var name = record.get("fqn");
+                var currentComplexity = record.get("complexity").low;
 
-                    if (collectedNames[name]) { //if name already present add complexity and loc
-                        for (var i = 0; i < flatData.length; i++) {
-                            if (flatData[i].name === name) {
-                                console.log("----");
-                                console.log(flatData[i]);
-                                flatData[i].complexity += record.get("complexity").low;
-                                flatData[i].loc += record.get("loc").low;
-                                console.log(flatData[i]);
-                            }
-                        }
-
-                        return; //continue in forEach
-                    }
-                    collectedNames[name] = 1;
-
-                    var recordConverted = {
-                        "name": name,
-                        "complexity": record.get("complexity").low,
-                        "loc": record.get("loc").low
-                    };
-
-                    flatData.push(recordConverted);
-
-                    //fill packages to allow stratify()
-                    while (name.lastIndexOf(".") !== -1) {
-                        name = name.substring(0, name.lastIndexOf("."));
-                        if (!collectedNames[name]) {
-                            collectedNames[name] = 1;
-                            flatData.push({
-                                "name": name,
-                                "complexity": 0,
-                                "loc": 0
-                            });
-                        }
-                    }
-                });
-
-                // add projectname as root
-                var root = {
-                    "name": projectName,
-                    "complexity": 0,
-                    "loc": 1 // at least 1 to make it visible
-                };
-                flatData.push(root);
-
-                // turn flat json into hierarchical json
-                var stratify = d3.stratify()
-                    .id(function (d) {
-                        return d.name;
-                    })
-                    .parentId(function (d) {
-                        if (d.name.lastIndexOf(".") != -1) { // classes and subpackes
-                            return d.name.substring(0, d.name.lastIndexOf("."));
-                        } else if (d.name != projectName) { // a root package
-                            return projectName;
-                        } else { // project name as root
-                            return "";
-                        }
-                    });
-                hierarchicalData = stratify(flatData);
-
-                //normalize recursively all childs (move information from .data to the element's root where nivo expects it)
-                var normalize = function(hierarchicalData) {
-                    for (var i = 0; i < hierarchicalData.children.length; i++) {
-                        var lastDot = hierarchicalData.children[i].data.name.lastIndexOf(".");
-                        hierarchicalData.children[i].name = hierarchicalData.children[i].data.name.substring(lastDot + 1);
-                        hierarchicalData.children[i].loc = hierarchicalData.children[i].data.loc;
-                        hierarchicalData.children[i].complexity = hierarchicalData.children[i].data.complexity;
-                        if (hierarchicalData.children[i].children) {
-                            normalize(hierarchicalData.children[i]);
-                        }
-                    }
+                if (currentComplexity > maxComplexity) {
+                    maxComplexity = currentComplexity;
                 }
 
-                normalize(hierarchicalData);
+                if (collectedNames[name]) { //if name already present add complexity and loc
+                    for (var i = 0; i < flatData.length; i++) {
+                        if (flatData[i].name === name) {
+                            console.log("----");
+                            console.log(flatData[i]);
+                            flatData[i].complexity += currentComplexity;
+                            flatData[i].loc += record.get("loc").low;
+                            flatData[i].commits += record.get("commits").low;
+                            console.log(flatData[i]);
+                        }
+                    }
 
-                neo4jSession.close();
+                    return; //continue in forEach
+                }
+                collectedNames[name] = 1;
 
-                //normalize the root element
-                hierarchicalData.name = hierarchicalData.id;
-                hierarchicalData.loc = hierarchicalData.data.loc;
-                hierarchicalData.complexity = hierarchicalData.data.complexity;
-            }).then( function(context) {
-                thisBackup.setState({hotSpotData: hierarchicalData});
-                console.log(totalComplexity);
-            })
-            .catch(function (error) {
-                console.log(error);
+                var recordConverted = {
+                    "name": name,
+                    "complexity": currentComplexity,
+                    "loc": record.get("loc").low,
+                    "commits": record.get("commits").low,
+                    "level": 0,
+                    "role": "leaf"
+                };
+
+                flatData.push(recordConverted);
+
+                //fill packages to allow stratify()
+                var level = 0;
+                while (name.lastIndexOf(".") !== -1) {
+
+                    level = name.split(".").length - 1;
+
+                    name = name.substring(0, name.lastIndexOf("."));
+                    if (!collectedNames[name]) {
+                        collectedNames[name] = 1;
+                        flatData.push({
+                            "name": name,
+                            "complexity": 0,
+                            "loc": 0,
+                            "commits": 0,
+                            "level": level,
+                            "role": "node"
+                        });
+                    }
+                }
             });
+
+            // add projectname as root
+            var root = {
+                "name": projectName,
+                "complexity": 0,
+                "loc": 1, // at least 1 to make it visible
+                "commits": 0,
+                "level": 0,
+                "role": "node"
+            };
+            flatData.push(root);
+
+            // turn flat json into hierarchical json
+            var stratify = d3.stratify()
+                .id(function (d) {
+                    return d.name;
+                })
+                .parentId(function (d) {
+                    if (d.name.lastIndexOf(".") != -1) { // classes and subpackes
+                        return d.name.substring(0, d.name.lastIndexOf("."));
+                    } else if (d.name != projectName) { // a root package
+                        return projectName;
+                    } else { // project name as root
+                        return "";
+                    }
+                });
+            hierarchicalData = stratify(flatData);
+
+            //normalize recursively all childs (move information from .data to the element's root where nivo expects it)
+            var normalize = function(hierarchicalData) {
+                for (var i = 0; i < hierarchicalData.children.length; i++) {
+                    var lastDot = hierarchicalData.children[i].data.name.lastIndexOf(".");
+                    hierarchicalData.children[i].name = hierarchicalData.children[i].data.name.substring(lastDot + 1);
+                    hierarchicalData.children[i].loc = hierarchicalData.children[i].data.loc;
+                    hierarchicalData.children[i].complexity = hierarchicalData.children[i].data.complexity;
+                    if (hierarchicalData.children[i].children) {
+                        normalize(hierarchicalData.children[i]);
+                    }
+                }
+            };
+
+            normalize(hierarchicalData);
+
+            neo4jSession.close();
+
+            //normalize the root element
+            hierarchicalData.name = hierarchicalData.id;
+            hierarchicalData.loc = hierarchicalData.data.loc;
+            hierarchicalData.complexity = hierarchicalData.data.complexity;
+            hierarchicalData.commits = hierarchicalData.data.commits;
+        }).then( function(context) {
+            thisBackup.setState({hotSpotData: hierarchicalData});
+            console.log(maxComplexity);
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
     }
 
     triggerClickOnNode(node) {
@@ -231,6 +253,9 @@ class RiskManagementHotspots extends DashboardAbstract {
             node.toggled = toggled;
         }
         this.setState({ cursor: node });
+
+        var el = new SimpleBar(document.getElementById('treebeard-component'));
+        el.recalculate()
     }
 
     handleAction(event) {
@@ -256,7 +281,7 @@ class RiskManagementHotspots extends DashboardAbstract {
                         markSelectedPackageAsActive(hierarchicalData.children[i]);
                     }
                 }
-            }
+            };
             markSelectedPackageAsActive(hotspotClone);
 
             var markAllPackagesAsUntoggled = function(hierarchicalData) {
@@ -267,7 +292,7 @@ class RiskManagementHotspots extends DashboardAbstract {
                         markAllPackagesAsUntoggled(hierarchicalData.children[i]);
                     }
                 }
-            }
+            };
 
             markAllPackagesAsUntoggled(hotspotClone);
 
@@ -281,7 +306,7 @@ class RiskManagementHotspots extends DashboardAbstract {
                         markSelectedPackageAsToggled(hierarchicalData.children[i], targetElementName);
                     }
                 }
-            }
+            };
 
             var elementToDoList = selectedPackage.split(".");
             var currentName = "";
@@ -316,7 +341,7 @@ class RiskManagementHotspots extends DashboardAbstract {
                         }
                     }
                 }
-            }
+            };
             var node = findNodeByName(this.state.hotSpotData);
             //setTimeout to prevent "Cannot dispatch in the middle of a dispatch"
             // when the !!time is out!! the dispatch is completed and the next click can be handled
@@ -350,90 +375,107 @@ class RiskManagementHotspots extends DashboardAbstract {
                     <Col xs="12" sm="12" md="12">
                         <Card>
                             <CardHeader>
-                                Breadcrumb
-                            </CardHeader>
-                            <CardBody>
-                                <DynamicBreadcrumb
-                                    items={this.state.breadCrumbData}
-                                    onClickHandler={this.breadcrumbClicked}
-                                    separator={dynamicBreadcrumbSeparator}
-                                />
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col xs="12" sm="6" md="8">
-                        <Card>
-                            <CardHeader>
                                 Hotspots
                             </CardHeader>
-                            <CardBody className={'hotspot-component'}>
-                                <div style={{height: "600px"}}>
-                                    <ResponsiveBubbleHtml
-                                        onClick={ function(event) {
-                                            AppDispatcher.handleAction({
-                                                actionType: 'SELECT_HOTSPOT_PACKAGE',
-                                                data: event
-                                            });
-                                        }
-                                        }
-                                        root={this.state.hotSpotData}
-                                        margin={{
-                                            "top": 20,
-                                            "right": 20,
-                                            "bottom": 20,
-                                            "left": 20
-                                        }}
-                                        identity="name"
-                                        value="loc"
-                                        colors="nivo"
-                                        colorBy={function (e) {
-                                            var complexity = e.complexity;
-                                            var saturation = complexity / totalComplexity;
-                                            return 'hsl(0, ' + saturation + '%, 50%)';
-                                        }}
-                                        padding={6}
-                                        labelTextColor="inherit:darker(0.8)"
-                                        borderWidth={2}
-                                        defs={[
-                                            {
-                                                "id": "lines",
-                                                "type": "patternLines",
-                                                "background": "none",
-                                                "color": "inherit",
-                                                "rotation": -45,
-                                                "lineWidth": 5,
-                                                "spacing": 8
-                                            }
-                                        ]}
-                                        fill={[
-                                            {
-                                                "match": {
-                                                    "depth": 1
-                                                },
-                                                "id": "lines"
-                                            }
-                                        ]}
-                                        animate={false}
-                                        motionStiffness={90}
-                                        motionDamping={12}
-                                    />
-                                </div>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                    <Col xs="12" sm="6" md="4">
-                        <Card>
-                            <CardHeader>
-                                Package Explorer
-                            </CardHeader>
                             <CardBody>
-                                <Treebeard
-                                    data={this.state.hotSpotData}
-                                    onToggle={this.onToggle}
-                                    style={treebeardCustomTheme.default}
-                                />
+                                <Row>
+                                    <Col xs="12" sm="12" md="12">
+                                        <Card>
+                                            <CardBody>
+                                                <DynamicBreadcrumb
+                                                    items={this.state.breadCrumbData}
+                                                    onClickHandler={this.breadcrumbClicked}
+                                                    separator={dynamicBreadcrumbSeparator}
+                                                />
+                                            </CardBody>
+                                        </Card>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col xs="12" sm="6" md="4">
+                                        <Card id="treebeard-component" data-simplebar style={{height: "635px", overflow: "hidden"}}>
+                                            <CardBody>
+                                                <Treebeard
+                                                    data={this.state.hotSpotData}
+                                                    onToggle={this.onToggle}
+                                                    style={treebeardCustomTheme.default}
+                                                />
+                                            </CardBody>
+                                        </Card>
+                                    </Col>
+                                    <Col xs="12" sm="6" md="8">
+                                        <Card id="hotspot-component">
+                                            <CardBody>
+                                                <div className={'hotspot-component'} style={{height: "600px"}}>
+                                                    <ResponsiveBubbleHtml
+                                                        onClick={ function(event) {
+                                                            AppDispatcher.handleAction({
+                                                                actionType: 'SELECT_HOTSPOT_PACKAGE',
+                                                                data: event
+                                                            });
+                                                        } }
+                                                        root={this.state.hotSpotData}
+                                                        margin={{
+                                                            "top": 20,
+                                                            "right": 20,
+                                                            "bottom": 20,
+                                                            "left": 20
+                                                        }}
+                                                        identity="name"
+                                                        value="loc"
+                                                        colors="nivo"
+                                                        colorBy={ function (e) {
+                                                            var complexity = e.complexity;
+                                                            var data = e.data;
+
+                                                            var role = "undefined";
+                                                            if (data && data.role) {
+                                                                role = data.role;
+                                                            }
+
+                                                            var saturation = complexity / maxComplexity;
+                                                            if (complexity === 0 && role === "node") {
+                                                                var level = data.level;
+                                                                var r = 228 - (11 * level);
+                                                                var g = 242 - (6 * level);
+                                                                var b = 243 - (6 * level);
+                                                                return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+                                                            } else {
+                                                                return 'rgba(139, 0, 0, ' + saturation + ')';
+                                                            }
+
+                                                        } }
+                                                        padding={6}
+                                                        labelTextColor="inherit:darker(0.8)"
+                                                        borderWidth={2}
+                                                        defs={[
+                                                            {
+                                                                "id": "lines",
+                                                                "type": "patternLines",
+                                                                "background": "none",
+                                                                "color": "inherit",
+                                                                "rotation": -45,
+                                                                "lineWidth": 5,
+                                                                "spacing": 8
+                                                            }
+                                                        ]}
+                                                        fill={[
+                                                            {
+                                                                "match": {
+                                                                    "depth": 1
+                                                                },
+                                                                "id": "lines"
+                                                            }
+                                                        ]}
+                                                        animate={false}
+                                                        motionStiffness={90}
+                                                        motionDamping={12}
+                                                    />
+                                                </div>
+                                            </CardBody>
+                                        </Card>
+                                    </Col>
+                                </Row>
                             </CardBody>
                         </Card>
                     </Col>

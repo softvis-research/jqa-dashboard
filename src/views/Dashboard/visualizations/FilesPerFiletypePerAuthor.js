@@ -190,11 +190,11 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
                 axisBottom={{
                   "orient": "bottom",
                   "tickSize": 5,
-                  "tickPadding": 5,
+                  "tickPadding": 15,
                   "tickRotation": 0,
-                  "legend": "Number of files",
+                  "legend": "# Files",
                   "legendPosition": "center",
-                  "legendOffset": 36
+                  "legendOffset": 46
                 }}
                 axisLeft={{
                   "orient": "left",
@@ -222,4 +222,3 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
 }
 
 export default FilesPerFiletypePerAuthor;
-
