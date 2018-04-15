@@ -85,7 +85,8 @@ a {
   margin-right: 10px;
 }
 
-.hotspot-component {
+.hotspot-component,
+.structure-component {
   overflow: hidden;
 }
 
@@ -93,8 +94,14 @@ a {
   min-height: 650px !important;
 }
 
-.hotspot-component div div div div div div:hover {
+.hotspot-component div div div div div:hover,
+.structure-component div div div div div:hover {
   border: 2px solid rgb(163, 177, 178) !important;
+}
+
+.hotspot-component strong,
+.structure-component strong {
+  font-weight: normal !important;
 }
 
 .calendar-wrapper {
@@ -122,7 +129,8 @@ a {
 }
 
 #treebeard-component,
-#hotspot-component {
+#hotspot-component,
+#structure-component {
   margin-bottom: 0;
 }
 
@@ -139,3 +147,4 @@ a.breadcrumb-item {
     cursor: pointer;
   }
 }
+

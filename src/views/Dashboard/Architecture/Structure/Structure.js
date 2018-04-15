@@ -84,6 +84,33 @@ class ArchitectureStructure extends DashboardAbstract {
         }
     }
 
+    componentDidUpdate() {
+        var targetNode = document.querySelector('.structure-component > div > div');
+
+        // Callback function to execute when mutations are observed
+        var structureCallback = function(mutationsList) {
+            for(var mutation of mutationsList) {
+                if (mutation.type === 'childList') {
+                    var strongElement = document.querySelector(".structure-component strong");
+                    if (strongElement) {
+                        var parent = strongElement.parentElement;
+                        var str = parent.innerHTML.split(':');
+
+                        if (document.getElementsByClassName('structure-loc-label').length === 0) {
+                            parent.insertAdjacentHTML('afterend', "<span class='structure-loc-label'> LOC</span>");
+                        }
+                    }
+                }
+            }
+        };
+
+        // Create an observer instance linked to the callback function
+        var observer = new MutationObserver(structureCallback);
+
+        // Start observing the target node for configured mutations
+        observer.observe(targetNode, {childList: true});
+    }
+
     componentWillUnmount() {
         super.componentWillUnmount();
     }
@@ -375,9 +402,9 @@ class ArchitectureStructure extends DashboardAbstract {
                                         </Card>
                                     </Col>
                                     <Col xs="12" sm="6" md="8">
-                                        <Card id="hotspot-component">
+                                        <Card id="structure-component">
                                             <CardBody>
-                                                <div className={'hotspot-component'} style={{height: "600px"}}>
+                                                <div className={'structure-component'} style={{height: "600px"}}>
                                                     <ResponsiveBubbleHtml
                                                         onClick={ function(event) {
                                                             AppDispatcher.handleAction({

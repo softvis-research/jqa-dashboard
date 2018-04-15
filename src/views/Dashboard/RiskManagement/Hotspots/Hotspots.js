@@ -68,7 +68,7 @@ class RiskManagementHotspots extends DashboardAbstract {
         };
 
         this.onToggle = this.onToggle.bind(this);
-//        this.breadcrumbClicked = this.breadcrumbClicked.bind(this);
+        this.getCommits = this.getCommits.bind(this);
     }
 
     componentWillMount() {
@@ -76,11 +76,86 @@ class RiskManagementHotspots extends DashboardAbstract {
     }
 
     componentDidMount() {
+        var thisBackup = this;
         super.componentDidMount();
 
         if (databaseCredentialsProvided) {
             this.readStructure();
         }
+
+        // put id of hovered element into state
+        document.querySelector('.hotspot-component').onmouseover = function(e) {
+            var targ;
+            if (!e) var e = window.event;
+            if (e.target) targ = e.target;
+            else if (e.srcElement) targ = e.srcElement;
+            if (targ.nodeType == 3) // defeat Safari bug
+                targ = targ.parentNode;
+
+            if (typeof(targ.id) !== "undefined" && targ.id !== '') {
+                thisBackup.setState({ hoveredNode: targ.id });
+
+                var strongElement = document.querySelector(".hotspot-component strong");
+                if (strongElement) {
+                    var parent = strongElement.parentElement;
+                    var str = parent.innerHTML.split(':');
+
+                    // check is label is already set
+                    if (document.getElementsByClassName('hotspots-loc-label').length === 0) {
+                        // we use insertAdjacentHTML because innerHTML sadly removes all listeners
+                        parent.insertAdjacentHTML('afterend', "<span class='hotspots-loc-label'> LOC</span>");
+                    }
+                }
+
+                // clean commits label
+                if (document.getElementsByClassName('hotspots-commits-label').length !== 0) {
+                    var grandParent = parent.parentElement;
+                    grandParent.removeChild(document.getElementById('hotspots-commits-label'));
+                }
+
+                //console.log('id: ' + thisBackup.state.hoveredNode);
+                var commits = thisBackup.getCommits(thisBackup.state.hoveredNode);
+                var locLabelElement = document.querySelector(".hotspots-loc-label");
+
+                if (typeof(commits) !== 'undefined') {
+                    locLabelElement.insertAdjacentHTML('afterend', "<span id='hotspots-commits-label' class='hotspots-commits-label'>, " + commits + " Commits</span>");
+                }
+
+            }
+        };
+
+    }
+
+    getCommits(name) {
+        var result = _.find(this.state.commitsData, function(data) {
+            return data.name === name;
+        });
+
+        if (typeof(result) === 'object' && typeof(result.commits) !== 'undefined') {
+            return result.commits;
+        }
+    }
+
+    componentDidUpdate() {
+        //var targetNode = document.querySelector('.hotspot-component > div > div');
+        //var thisBackup = this;
+        // Callback function to execute when mutations are observed
+        // TODO: check if onmouseover listener is more efficient
+        //var hotspotCallback = function(mutationsList) {
+        //    for(var mutation of mutationsList) {
+        //        console.log(mutation.type);
+        //        if (mutation.type === 'childList') {
+        //
+        //
+        //          }
+        //           }
+        //};
+
+        // Create an observer instance linked to the callback function
+        //var observer = new MutationObserver(hotspotCallback);
+
+        // Start observing the target node for configured mutations
+        //observer.observe(targetNode, {childList: true, attributes: true});
     }
 
     componentWillUnmount() {
@@ -90,6 +165,7 @@ class RiskManagementHotspots extends DashboardAbstract {
     readStructure() {
 
         var flatData = [];
+        var commitsData = [];
         var hierarchicalData = [];
         var projectName = localStorage.getItem(IDENTIFIER_PROJECT_NAME); // "PROJECTNAME"; // acts as root as there are multiple root packages in some cases
         var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
@@ -148,6 +224,12 @@ class RiskManagementHotspots extends DashboardAbstract {
                 };
 
                 flatData.push(recordConverted);
+                commitsData.push(
+                    {
+                        name: recordConverted.name.replace(/[^\w]/gi, '-'),
+                        commits: recordConverted.commits
+                    }
+                );
 
                 //fill packages to allow stratify()
                 var level = 0;
@@ -221,7 +303,8 @@ class RiskManagementHotspots extends DashboardAbstract {
             hierarchicalData.commits = hierarchicalData.data.commits;
         }).then( function(context) {
             thisBackup.setState({hotSpotData: hierarchicalData});
-            console.log(maxComplexity);
+            thisBackup.setState({commitsData: commitsData});
+            //console.log(maxComplexity);
         })
         .catch(function (error) {
             console.log(error);
