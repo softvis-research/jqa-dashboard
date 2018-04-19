@@ -3,6 +3,7 @@ const routes = {
     '/architecture': 'Architecture',
     '/architecture/structure': 'Structure',
     '/architecture/file-types': 'File Types',
+    '/architecture/dependencies': 'Dependencies',
     '/resource-management': 'Resource Management',
     '/resource-management/code-ownership': 'Code Ownership',
     '/resource-management/code-churn': 'Code Churn',

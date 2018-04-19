@@ -16,6 +16,7 @@ import Dashboard from '../../views/Dashboard/Dashboard';
 // architecture
 import ArchitectureStructure from '../../views/Dashboard/Architecture/Structure/Structure';
 import ArchitectureFileTypes from '../../views/Dashboard/Architecture/FileTypes/FileTypes';
+import ArchitectureDependencies from '../../views/Dashboard/Architecture/Dependencies/Dependencies';
 
 // resource management
 import ResourceManagementCodeOwnership from '../../views/Dashboard/ResourceManagement/CodeOwnership/CodeOwnership';
@@ -49,6 +50,7 @@ class Full extends Component {
                                 <Route path="/dashboard" name="Dashboard" component={Dashboard}/>
                                 <Route path="/architecture/structure" name="Structure" component={ArchitectureStructure}/>
                                 <Route path="/architecture/file-types" name="File Types" component={ArchitectureFileTypes}/>
+                                <Route path="/architecture/dependencies" name="Dependencies" component={ArchitectureDependencies}/>
                                 <Route path="/resource-management/code-ownership" name="Code Ownership" component={ResourceManagementCodeOwnership}/>
                                 <Route path="/resource-management/knowledge-distribution" name="Knowledge Distribution" component={ResourceManagementKnowledgeDistribution}/>
                                 <Route path="/resource-management/code-churn" name="Code Churn" component={ResourceManagementCodeChurn}/>

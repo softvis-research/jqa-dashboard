@@ -17,6 +17,10 @@ export default {
                 {
                     name: 'File Types',
                     url: '/architecture/file-types'
+                },
+                {
+                    name: 'Dependencies',
+                    url: '/architecture/dependencies'
                 }
             ]
         },
