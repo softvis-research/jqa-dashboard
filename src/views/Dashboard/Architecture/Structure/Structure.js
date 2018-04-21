@@ -158,19 +158,23 @@ class ArchitectureStructure extends DashboardAbstract {
                     var recordConverted = {
                         "name": name,
                         "complexity": currentComplexity,
-                        "loc": record.get("loc").low
+                        "loc": record.get("loc").low,
+                        "level": name.split(".").length
                     };
                     flatData.push(recordConverted);
 
+                    var level = 0;
                     //fill packages to allow stratify()
                     while (name.lastIndexOf(".") !== -1) {
+                        level = name.split(".").length - 1;
                         name = name.substring(0, name.lastIndexOf("."));
                         if (!collectedNames[name]) {
                             collectedNames[name] = 1;
                             flatData.push({
                                 "name": name,
                                 "complexity": 0,
-                                "loc": 0
+                                "loc": 0,
+                                "level": level
                             });
                         }
                     }
@@ -180,7 +184,8 @@ class ArchitectureStructure extends DashboardAbstract {
                 var root = {
                     "name": projectName,
                     "complexity": 0,
-                    "loc": 1 // at least 1 to make it visible
+                    "loc": 1, // at least 1 to make it visible
+                    "level": 0
                 };
                 flatData.push(root);
 
@@ -423,7 +428,19 @@ class ArchitectureStructure extends DashboardAbstract {
                                                         identity="name"
                                                         value="loc"
                                                         colors="nivo"
-                                                        colorBy="depth"
+                                                        colorBy={ function (e) {
+
+                                                            var data = e.data;
+
+                                                            if (data && typeof(data.level) !== "undefined") {
+                                                                var level = data.level;
+                                                                var r = 228 - (11 * level);
+                                                                var g = 242 - (6 * level);
+                                                                var b = 243 - (6 * level);
+                                                                return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+                                                            }
+
+                                                        } }
                                                         padding={6}
                                                         labelTextColor="inherit:darker(0.8)"
                                                         borderWidth={2}
