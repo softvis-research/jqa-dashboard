@@ -16,6 +16,7 @@ import Dashboard from '../../views/Dashboard/Dashboard';
 // architecture
 import ArchitectureStructure from '../../views/Dashboard/Architecture/Structure/Structure';
 import ArchitectureFileTypes from '../../views/Dashboard/Architecture/FileTypes/FileTypes';
+import ArchitectureDependencies from '../../views/Dashboard/Architecture/Dependencies/Dependencies';
 
 // resource management
 import ResourceManagementCodeOwnership from '../../views/Dashboard/ResourceManagement/CodeOwnership/CodeOwnership';
@@ -31,6 +32,7 @@ import RiskManagementTemporalCoupling from '../../views/Dashboard/RiskManagement
 // quality management
 import QualityManagementTestCoverage from '../../views/Dashboard/QualityManagement/TestCoverage/TestCoverage';
 import QualityManagementCloneDetection from '../../views/Dashboard/QualityManagement/CloneDetection/CloneDetection';
+import QualityManagementPMD from '../../views/Dashboard/QualityManagement/PMD/PMD';
 
 var gotoSettings = false;
 
@@ -49,6 +51,7 @@ class Full extends Component {
                                 <Route path="/dashboard" name="Dashboard" component={Dashboard}/>
                                 <Route path="/architecture/structure" name="Structure" component={ArchitectureStructure}/>
                                 <Route path="/architecture/file-types" name="File Types" component={ArchitectureFileTypes}/>
+                                <Route path="/architecture/dependencies" name="Dependencies" component={ArchitectureDependencies}/>
                                 <Route path="/resource-management/code-ownership" name="Code Ownership" component={ResourceManagementCodeOwnership}/>
                                 <Route path="/resource-management/knowledge-distribution" name="Knowledge Distribution" component={ResourceManagementKnowledgeDistribution}/>
                                 <Route path="/resource-management/code-churn" name="Code Churn" component={ResourceManagementCodeChurn}/>
@@ -58,6 +61,7 @@ class Full extends Component {
                                 <Route path="/risk-management/temporal-coupling" name="Temporal Coupling" component={RiskManagementTemporalCoupling}/>
                                 <Route path="/quality-management/test-coverage" name="Test Coverage" component={QualityManagementTestCoverage}/>
                                 <Route path="/quality-management/clone-detection" name="Clone Detection" component={QualityManagementCloneDetection}/>
+                                <Route path="/quality-management/pmd" name="PMD" component={QualityManagementPMD}/>
                                 <Route path="/custom-query" name="Custom Cypher Query" component={CustomQuery}/>
                                 <Route path="/settings" name="Settings" component={Settings}/>
                                 <Redirect from="/" to="/dashboard"/>

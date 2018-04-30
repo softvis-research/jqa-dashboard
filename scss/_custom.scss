@@ -148,3 +148,28 @@ a.breadcrumb-item {
   }
 }
 
+.pmd-card {
+  .card-body {
+    padding: 0;
+    .alert{
+      margin: 15px;
+      padding: .75rem 1.25rem !important;
+    }
+    label {
+      font-weight: 700;
+      margin-right: 5px;
+      &.equal-width {
+        min-width: 68px;
+      }
+    }
+  }
+  .row {
+    clear: both;
+  }
+}
+
+.alert-worstcase {
+  background-color: #ff9999;
+  border-color: #ff8080;
+  color: #800000;
+}

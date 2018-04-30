@@ -519,9 +519,9 @@ class RiskManagementHotspots extends DashboardAbstract {
                                                             var saturation = complexity / maxComplexity;
                                                             if (complexity === 0 && role === "node") {
                                                                 var level = data.level;
-                                                                var r = 228 - (11 * level);
-                                                                var g = 242 - (6 * level);
-                                                                var b = 243 - (6 * level);
+                                                                var r = 228 - (11 * level * 2);
+                                                                var g = 242 - (6 * level * 2);
+                                                                var b = 243 - (6 * level * 2);
                                                                 return 'rgb(' + r + ', ' + g + ', ' + b + ')';
                                                             } else {
                                                                 return 'rgba(139, 0, 0, ' + saturation + ')';

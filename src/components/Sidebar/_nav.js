@@ -17,6 +17,10 @@ export default {
                 {
                     name: 'File Types',
                     url: '/architecture/file-types'
+                },
+                {
+                    name: 'Dependencies',
+                    url: '/architecture/dependencies'
                 }
             ]
         },
@@ -33,6 +37,7 @@ export default {
                     name: 'Knowledge Distribution',
                     url: '/resource-management/knowledge-distribution'
                 },
+                /*
                 {
                     name: 'Code Churn',
                     url: '/resource-management/code-churn',
@@ -49,6 +54,7 @@ export default {
                         text: 'FEATURE'
                     }
                 }
+                */
             ]
         },
         {
@@ -60,6 +66,7 @@ export default {
                     name: 'Hotspots',
                     url: '/risk-management/hotspots'
                 },
+                /*
                 {
                     name: 'Refactoring Targets',
                     url: '/risk-management/refactoring-targets',
@@ -76,6 +83,7 @@ export default {
                         text: 'FEATURE'
                     }
                 }
+                */
             ]
         },
         {
@@ -83,6 +91,11 @@ export default {
             url: '/quality-management',
             icon: 'icon-badge',
             children: [
+                {
+                    name: 'PMD',
+                    url: '/quality-management/pmd'
+                },
+                /*
                 {
                     name: 'Test Coverage',
                     url: '/quality-management/test-coverage',
@@ -99,6 +112,7 @@ export default {
                         text: 'FEATURE'
                     }
                 },
+                */
             ]
         }
     ]

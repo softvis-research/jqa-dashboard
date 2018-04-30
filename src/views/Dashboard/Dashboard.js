@@ -31,6 +31,9 @@ class Dashboard extends DashboardAbstract {
                 "authors": "loading",
                 "commitsWithoutMerges": "loading",
                 "commitsWithMerges": "loading"
+            },
+            qualityManagementMetrics: {
+                "violations": "loading"
             }
         };
     }
@@ -41,6 +44,7 @@ class Dashboard extends DashboardAbstract {
             this.readArchitectureMetrics();
             this.readRelationMetrics();
             this.readResourceManagementMetrics();
+            this.readQualityManagementMetrics();
         }
     }
 
@@ -170,6 +174,29 @@ class Dashboard extends DashboardAbstract {
         });
     }
 
+    readQualityManagementMetrics() {
+        var qualityManagementMetrics = [];
+        var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
+
+        neo4jSession.run(
+            // number of violations
+            'MATCH (:Report)-[:HAS_FILES]->(file:File:Pmd)-[:HAS_VIOLATIONS]->(violation:Violation) RETURN count(violation)'
+        ).then(function (result) {
+            result.records.forEach(function (record) {
+
+                qualityManagementMetrics = {
+                    "violations": record.get(0).low
+                };
+
+                console.log(qualityManagementMetrics);
+            });
+        }).then( function(context) {
+            thisBackup.setState({qualityManagementMetrics: qualityManagementMetrics});
+        }).catch(function (error) {
+            console.log(error);
+        });
+    }
+
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
@@ -257,16 +284,29 @@ class Dashboard extends DashboardAbstract {
                         </Card>
                     </Col>
                     <Col xs="12" sm="6" md="3">
-                        <Card>
-                            <CardHeader>
-                                Quality Management
-                            </CardHeader>
-                            <CardBody>
-                                Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut
-                                laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation
-                                ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.
-                            </CardBody>
-                        </Card>
+                        <a href="#/quality-management/pmd">
+                            <Card>
+                                <CardHeader>
+                                    Quality Management
+                                </CardHeader>
+                                <CardBody>
+                                    <strong>PMD</strong>
+                                    <ListGroup>
+                                        {Object.keys(this.state.qualityManagementMetrics).map(function(key) {
+
+                                            var label = key
+                                            // insert a space before all caps
+                                                .replace(/([A-Z])/g, ' $1')
+                                                .toLowerCase()
+                                                // uppercase the first character
+                                                .replace(/^./, function(str){ return str.toUpperCase(); });
+
+                                            return <ListGroupItem key={key} className="justify-content-between">{label} <div className="float-right">{this.state.qualityManagementMetrics[key]}</div></ListGroupItem>;
+                                        }, this)}
+                                    </ListGroup>
+                                </CardBody>
+                            </Card>
+                        </a>
                     </Col>
                 </Row>
             </div>
