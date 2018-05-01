@@ -7,12 +7,17 @@ import Adapter from 'enzyme-adapter-react-16';
 Enzyme.configure({ adapter: new Adapter() });
 
 //component to test
-import DynamicBreadcrumb from '../src/components/Breadcrumb/DynamicBreadcrumb'
+import Hotspots from './Hotspots';
+import {expect} from "chai";
 
-describe('DynamicBreadcrumbTest', () => {
+describe('<Hotspots />', () => {
 
     it('should render without throwing an error', () => {
-        expect( shallow( <DynamicBreadcrumb items={['a', 'b', 'c']}/> ).exists(<span></span>) ).toBe(true)
+        var wrapper = shallow( <Hotspots/> );
+        var html = wrapper.html();
+
+        expect(html).to.contain('<div class="card-header">Hotspots</div>');
+        //expect(html).to.contain('<svg>');
     });
 
 });

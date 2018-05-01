@@ -16,17 +16,7 @@ class CommitsTimescale extends DashboardAbstract {
         this.state = {
             commitsFrom: '2017-01-01',
             commitsTo: '2019-01-01',
-            commitsTimescale: [
-                {
-                    "day": now.getFullYear() + "-" + now.getMonth() + "-" + now.getDate(),
-                    "value": 42
-                },
-                {
-                    "day": now.getFullYear() + "-" + now.getMonth() + "-" + (now.getDate() - 1),
-                    "value": 23
-                },
-
-            ]
+            commitsTimescale: []
         };
     }
 
@@ -94,6 +84,10 @@ class CommitsTimescale extends DashboardAbstract {
           return(redirect);
         }
 
+        if (this.state.commitsTimescale.length === 0) {
+            return '';
+        }
+
         const maxDateDiff = 2;
 
         var fromDateAr = this.state.commitsFrom.split("-");
@@ -123,8 +117,8 @@ class CommitsTimescale extends DashboardAbstract {
         }
 
         return (
-          <div className="calender-wrapper">
-            <div style={{height: "440px"}}>
+          <div className="calendar-wrapper">
+            <div style={{height: "404px"}}>
               <ResponsiveCalendar
                   from={fromDate}
                   to={this.state.commitsTo}

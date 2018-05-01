@@ -17,8 +17,7 @@ class ResourceManagementActivity extends DashboardAbstract {
     constructor(props) {
         super(props);
 
-        this.state = {
-        };
+        this.state = {};
     }
 
     componentDidMount() {

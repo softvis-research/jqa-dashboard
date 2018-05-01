@@ -14,51 +14,8 @@ class ArchitectureDependencies extends DashboardAbstract {
         super(props);
 
         this.state = {
-            finalMatrixData:
-                [
-                    [
-                        87,
-                        358,
-                        1244,
-                        1895,
-                        441
-                    ],
-                    [
-                        45,
-                        193,
-                        161,
-                        463,
-                        1
-                    ],
-                    [
-                        237,
-                        1981,
-                        441,
-                        383,
-                        1564
-                    ],
-                    [
-                        120,
-                        1416,
-                        505,
-                        194,
-                        434
-                    ],
-                    [
-                        1868,
-                        1993,
-                        158,
-                        133,
-                        1236
-                    ]
-                ],
-            finalMatrixKeys: [
-                "John",
-                "Raoul",
-                "Jane",
-                "Marcel",
-                "Ibrahim"
-            ]
+            finalMatrixData: [],
+            finalMatrixKeys: []
         };
     }
 
@@ -115,7 +72,7 @@ class ArchitectureDependencies extends DashboardAbstract {
             }
         }).then( function(context) {
             //console.log(chordData);
-            //chordData = matrixUtilities.flip(chordData); //myaybe TODO: if called components should be more visible than callers this could be useful
+            //chordData = matrixUtilities.flip(chordData); //maybe TODO: if called components should be more visible than callers this could be useful
             thisBackup.setState({
                 finalMatrixData: chordData,
                 finalMatrixKeys: keyList
@@ -130,7 +87,11 @@ class ArchitectureDependencies extends DashboardAbstract {
         if (redirect.length > 0) {
           return(redirect);
         }
-        
+
+        if (this.state.finalMatrixData.length === 0) {
+            return '';
+        }
+
         return (
             <div>
                 <Row>

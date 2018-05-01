@@ -15,16 +15,8 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
         super(props);
 
         this.state = {
-            data: [
-              {
-                "author": "Dummy",
-                "filetype": "dum",
-                "files": 1,
-              }
-            ],
-            dataKeys: [
-              "Dummy"
-            ]
+            data: [],
+            dataKeys: []
         };
     }
 
@@ -129,6 +121,10 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
         var redirect = super.render();
         if (redirect.length > 0) {
           return(redirect);
+        }
+
+        if (this.state.data.length === 0) {
+            return '';
         }
 
         var legendItems = [];

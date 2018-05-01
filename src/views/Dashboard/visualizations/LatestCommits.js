@@ -9,13 +9,7 @@ class LatestCommits extends DashboardAbstract {
         super(props);
 
         this.state = {
-            latestCommits: [
-                {
-                    "author": "Dummy",
-                    "date": '2018-01-01',
-                    "message": 'Dummy'
-                }
-            ]
+            latestCommits: []
         };
     }
 
@@ -66,7 +60,11 @@ class LatestCommits extends DashboardAbstract {
         if (redirect.length > 0) {
           return(redirect);
         }
-        
+
+        if (this.state.latestCommits.length === 0) {
+            return '';
+        }
+
         return (
             <div>
                 <div>

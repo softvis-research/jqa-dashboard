@@ -10,8 +10,7 @@ class ResourceManagementKnowledgeDistribution extends DashboardAbstract {
     constructor(props) {
         super(props);
 
-        this.state = {
-        };
+        this.state = {};
     }
 
     componentDidMount() {

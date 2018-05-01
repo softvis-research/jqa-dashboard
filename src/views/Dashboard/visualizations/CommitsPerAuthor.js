@@ -11,12 +11,7 @@ class CommitsPerAuthor extends DashboardAbstract {
         super(props);
 
         this.state = {
-            commitsPerAuthor: [
-              {
-                "author": "Dummy",
-                "commits": 1
-              }
-            ]
+            commitsPerAuthor: []
         };
     }
 
@@ -68,6 +63,10 @@ class CommitsPerAuthor extends DashboardAbstract {
         var redirect = super.render();
         if (redirect.length > 0) {
           return(redirect);
+        }
+
+        if (this.state.commitsPerAuthor.length === 0) {
+            return '';
         }
 
         return (

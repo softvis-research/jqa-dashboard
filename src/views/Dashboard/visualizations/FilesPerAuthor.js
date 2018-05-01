@@ -11,12 +11,7 @@ class FilesPerAuthor extends DashboardAbstract {
         super(props);
 
         this.state = {
-            filesPerAuthor: [
-              {
-                "author": "Dummy",
-                "files": 1
-              }
-            ]
+            filesPerAuthor: []
         };
     }
 
@@ -68,6 +63,10 @@ class FilesPerAuthor extends DashboardAbstract {
         var redirect = super.render();
         if (redirect.length > 0) {
           return(redirect);
+        }
+
+        if (this.state.filesPerAuthor.length === 0) {
+            return '';
         }
 
         return (

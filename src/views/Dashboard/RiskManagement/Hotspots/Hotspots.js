@@ -28,7 +28,7 @@ class RiskManagementHotspots extends DashboardAbstract {
 
         this.state = {
             hotSpotData:
-                { 
+                {
                     "name": "nivo",
                     "test": "testval",
                     "children": [
@@ -84,7 +84,11 @@ class RiskManagementHotspots extends DashboardAbstract {
         }
 
         // put id of hovered element into state
-        document.querySelector('.hotspot-component').onmouseover = function(e) {
+        var hotspotComponent = document.querySelector('.hotspot-component');
+        if (!hotspotComponent) {
+            return;
+        }
+        hotspotComponent.onmouseover = function(e) {
             var targ;
             if (!e) var e = window.event;
             if (e.target) targ = e.target;
@@ -306,9 +310,9 @@ class RiskManagementHotspots extends DashboardAbstract {
             thisBackup.setState({commitsData: commitsData});
             //console.log(maxComplexity);
         })
-        .catch(function (error) {
-            console.log(error);
-        });
+            .catch(function (error) {
+                console.log(error);
+            });
     }
 
     triggerClickOnNode(node) {
@@ -346,99 +350,99 @@ class RiskManagementHotspots extends DashboardAbstract {
 
         var action = event.action;
         switch (action.actionType) {
-          // Respond to CART_ADD action
-          case 'SELECT_HOTSPOT_PACKAGE':
-            var selectedPackage = event.action.data.data.id;
+            // Respond to CART_ADD action
+            case 'SELECT_HOTSPOT_PACKAGE':
+                var selectedPackage = event.action.data.data.id;
 
-            var hotspotClone = this.state.hotSpotData;
+                var hotspotClone = this.state.hotSpotData;
 
-            var markSelectedPackageAsActive = function(hierarchicalData) {
-                for (var i = 0; i < hierarchicalData.children.length; i++) {
-                    if (hierarchicalData.children[i].id === selectedPackage) {
-                        hierarchicalData.children[i].active = true;
-                    } else {
-                        hierarchicalData.children[i].active = false;
-                    }
+                var markSelectedPackageAsActive = function(hierarchicalData) {
+                    for (var i = 0; i < hierarchicalData.children.length; i++) {
+                        if (hierarchicalData.children[i].id === selectedPackage) {
+                            hierarchicalData.children[i].active = true;
+                        } else {
+                            hierarchicalData.children[i].active = false;
+                        }
 
-                    if (hierarchicalData.children[i].children) {
-                        markSelectedPackageAsActive(hierarchicalData.children[i]);
-                    }
-                }
-            };
-            markSelectedPackageAsActive(hotspotClone);
-
-            var markAllPackagesAsUntoggled = function(hierarchicalData) {
-                for (var i = 0; i < hierarchicalData.children.length; i++) {
-                    hierarchicalData.children[i].toggled = false;
-
-                    if (hierarchicalData.children[i].children) {
-                        markAllPackagesAsUntoggled(hierarchicalData.children[i]);
-                    }
-                }
-            };
-
-            markAllPackagesAsUntoggled(hotspotClone);
-
-            var markSelectedPackageAsToggled = function(hierarchicalData, targetElementName) {
-                for (var i = 0; i < hierarchicalData.children.length; i++) {
-                    if (hierarchicalData.children[i].id === targetElementName) {
-                        hierarchicalData.children[i].toggled = true;
-                    }
-
-                    if (hierarchicalData.children[i].children) {
-                        markSelectedPackageAsToggled(hierarchicalData.children[i], targetElementName);
-                    }
-                }
-            };
-
-            var elementToDoList = selectedPackage.split(".");
-            var currentName = "";
-            for (var i = 0; i < elementToDoList.length; i++) {
-                if (i > 0 ) {
-                    currentName += '.' + elementToDoList[i];
-                } else {
-                    currentName = elementToDoList[i];
-                }
-                markSelectedPackageAsToggled(hotspotClone, currentName);
-            }
-            hotspotClone.toggled = true;
-
-            this.setState({
-                hotSpotData: hotspotClone,
-                breadCrumbData: selectedPackage.split(".")
-            });
-
-            break;
-          case 'SELECT_HOTSPOT_PACKAGE_FROM_BREADCRUMB':
-            var elementName = event.action.data;
-            var findNodeByName = function(hierarchicalData) {
-                for (var i = 0; i < hierarchicalData.children.length; i++) {
-                    if (hierarchicalData.children[i].id === elementName) {
-                        return hierarchicalData.children[i];
-                    } else {
                         if (hierarchicalData.children[i].children) {
-                            var node = findNodeByName(hierarchicalData.children[i]);
-                            if (typeof node !== 'undefined') {
-                                return node;
+                            markSelectedPackageAsActive(hierarchicalData.children[i]);
+                        }
+                    }
+                };
+                markSelectedPackageAsActive(hotspotClone);
+
+                var markAllPackagesAsUntoggled = function(hierarchicalData) {
+                    for (var i = 0; i < hierarchicalData.children.length; i++) {
+                        hierarchicalData.children[i].toggled = false;
+
+                        if (hierarchicalData.children[i].children) {
+                            markAllPackagesAsUntoggled(hierarchicalData.children[i]);
+                        }
+                    }
+                };
+
+                markAllPackagesAsUntoggled(hotspotClone);
+
+                var markSelectedPackageAsToggled = function(hierarchicalData, targetElementName) {
+                    for (var i = 0; i < hierarchicalData.children.length; i++) {
+                        if (hierarchicalData.children[i].id === targetElementName) {
+                            hierarchicalData.children[i].toggled = true;
+                        }
+
+                        if (hierarchicalData.children[i].children) {
+                            markSelectedPackageAsToggled(hierarchicalData.children[i], targetElementName);
+                        }
+                    }
+                };
+
+                var elementToDoList = selectedPackage.split(".");
+                var currentName = "";
+                for (var i = 0; i < elementToDoList.length; i++) {
+                    if (i > 0 ) {
+                        currentName += '.' + elementToDoList[i];
+                    } else {
+                        currentName = elementToDoList[i];
+                    }
+                    markSelectedPackageAsToggled(hotspotClone, currentName);
+                }
+                hotspotClone.toggled = true;
+
+                this.setState({
+                    hotSpotData: hotspotClone,
+                    breadCrumbData: selectedPackage.split(".")
+                });
+
+                break;
+            case 'SELECT_HOTSPOT_PACKAGE_FROM_BREADCRUMB':
+                var elementName = event.action.data;
+                var findNodeByName = function(hierarchicalData) {
+                    for (var i = 0; i < hierarchicalData.children.length; i++) {
+                        if (hierarchicalData.children[i].id === elementName) {
+                            return hierarchicalData.children[i];
+                        } else {
+                            if (hierarchicalData.children[i].children) {
+                                var node = findNodeByName(hierarchicalData.children[i]);
+                                if (typeof node !== 'undefined') {
+                                    return node;
+                                }
                             }
                         }
                     }
-                }
-            };
-            var node = findNodeByName(this.state.hotSpotData);
-            //setTimeout to prevent "Cannot dispatch in the middle of a dispatch"
-            // when the !!time is out!! the dispatch is completed and the next click can be handled
-            setTimeout(function() { this.triggerClickOnNode(node) }.bind(this), 50);
-          break;
-          default:
-            return true;
+                };
+                var node = findNodeByName(this.state.hotSpotData);
+                //setTimeout to prevent "Cannot dispatch in the middle of a dispatch"
+                // when the !!time is out!! the dispatch is completed and the next click can be handled
+                setTimeout(function() { this.triggerClickOnNode(node) }.bind(this), 50);
+                break;
+            default:
+                return true;
         }
     }
 
     breadcrumbClicked(clickEvent) {
         var element = clickEvent.target;
         var elementName = (element.id + "").replace(new RegExp(dynamicBreadcrumbSeparator, 'g'), '.');
-        
+
         //var clickedPackage = element.id; //e.g. org.junit.tests.experimental...
         AppDispatcher.handleAction({
             actionType: 'SELECT_HOTSPOT_PACKAGE_FROM_BREADCRUMB',
@@ -449,7 +453,7 @@ class RiskManagementHotspots extends DashboardAbstract {
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
-          return(redirect);
+            return(redirect);
         }
 
         return (

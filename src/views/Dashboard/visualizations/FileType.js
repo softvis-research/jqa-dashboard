@@ -9,13 +9,7 @@ class FileType extends DashboardAbstract {
         super(props);
 
         this.state = {
-            filetypeData: [
-              {
-                "id": "dummy",
-                "label": "dummy",
-                "value": 1
-              }
-            ]
+            filetypeData: []
         };
     }
 
@@ -69,7 +63,11 @@ class FileType extends DashboardAbstract {
         if (redirect.length > 0) {
           return(redirect);
         }
-        
+
+        if (this.state.filetypeData.length === 0) {
+            return '';
+        }
+
         return (
             <div>
               <div style={{height:"600px"}}>

@@ -16,20 +16,7 @@ class QualityManagementPMD extends DashboardAbstract {
 
         this.state = {
             pmdData: {
-                "loading": [{
-                    "fqn": "loading",
-                    "package": "loading",
-                    "className": "loading",
-                    "method": "loading",
-                    "beginLine": "loading",
-                    "endLine": "loading",
-                    "beginColumn": "loading",
-                    "endColumn": "loading",
-                    "message": "loading",
-                    "ruleSet": "loading",
-                    "priority": "3",
-                    "externalInfoUrl": "loading"
-                }]
+                "loading": [] //indicator for no data
             },
             alertColors: [
                 'worstcase',
@@ -91,6 +78,10 @@ class QualityManagementPMD extends DashboardAbstract {
 
         if (redirect.length > 0) {
             return(redirect);
+        }
+
+        if (this.state.pmdData.loading) {
+            return '';
         }
 
         return (
