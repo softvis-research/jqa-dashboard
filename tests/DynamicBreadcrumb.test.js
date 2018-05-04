@@ -8,7 +8,7 @@ import Adapter from 'enzyme-adapter-react-16';
 Enzyme.configure({ adapter: new Adapter() });
 
 //component to test
-import DynamicBreadcrumb from './DynamicBreadcrumb';
+import DynamicBreadcrumb from '../src/components/Breadcrumb/DynamicBreadcrumb';
 
 describe('DynamicBreadcrumbTest', () => {
 

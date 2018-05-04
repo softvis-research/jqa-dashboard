@@ -10,6 +10,8 @@ var AppDispatcher = require('../../../../AppDispatcher');
 import {ResponsiveBubbleHtml} from 'nivo';
 import * as d3 from "d3";
 
+var $ = require("jquery");
+
 import {Treebeard} from 'react-treebeard';
 var treebeardCustomTheme = require('./TreebeardCustomTheme');
 // from here: https://github.com/alexcurtis/react-treebeard
@@ -19,7 +21,7 @@ var treebeardCustomTheme = require('./TreebeardCustomTheme');
 var IDENTIFIER_PROJECT_NAME = "projectName";
 var dynamicBreadcrumbSeparator = " > ";
 var stringToColour = require('string-to-color');
-var maxComplexity = 0;
+var maxCommits = 0;
 
 class RiskManagementHotspots extends DashboardAbstract {
 
@@ -27,43 +29,8 @@ class RiskManagementHotspots extends DashboardAbstract {
         super(props);
 
         this.state = {
-            hotSpotData:
-                {
-                    "name": "nivo",
-                    "test": "testval",
-                    "children": [
-                        {
-                            "name": "dummy",
-                            "loc": 1
-                        }
-                    ]
-                },
-            treeViewData:
-                {
-                    name: 'root',
-                    toggled: true,
-                    children: [
-                        {
-                            name: 'parent',
-                            children: [
-                                { name: 'child1' },
-                                { name: 'child2' }
-                            ]
-                        },
-                        {
-                            name: 'parent',
-                            children: [
-                                {
-                                    name: 'nested parent',
-                                    children: [
-                                        { name: 'nested child 1' },
-                                        { name: 'nested child 2' }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                },
+            hotSpotData: {},
+            treeViewData: {},
             breadCrumbData: ['']
         };
 
@@ -80,54 +47,36 @@ class RiskManagementHotspots extends DashboardAbstract {
         super.componentDidMount();
 
         if (databaseCredentialsProvided) {
-            this.readStructure();
+            this.readHotspots();
         }
 
-        // put id of hovered element into state
-        var hotspotComponent = document.querySelector('.hotspot-component');
-        if (!hotspotComponent) {
-            return;
-        }
-        hotspotComponent.onmouseover = function(e) {
-            var targ;
-            if (!e) var e = window.event;
-            if (e.target) targ = e.target;
-            else if (e.srcElement) targ = e.srcElement;
-            if (targ.nodeType == 3) // defeat Safari bug
-                targ = targ.parentNode;
+        // add LOC to tooltip
+        $(document).on('mouseover', '.hotspot-component > div > div > div > div > div',  function () {
+            var hoveredNode = $(this).prop('id');
+            //set timeout because tooltip is dynamically added to the DOM by nivo
+            setTimeout(function () {
+                thisBackup.setState({ hoveredNode: hoveredNode });
 
-            if (typeof(targ.id) !== "undefined" && targ.id !== '') {
-                thisBackup.setState({ hoveredNode: targ.id });
+                var tooltipElement = $(".hotspot-component strong").parent();
+                var locLabelElement = $(".hotspots-loc-label");
 
-                var strongElement = document.querySelector(".hotspot-component strong");
-                if (strongElement) {
-                    var parent = strongElement.parentElement;
-                    var str = parent.innerHTML.split(':');
-
-                    // check is label is already set
-                    if (document.getElementsByClassName('hotspots-loc-label').length === 0) {
-                        // we use insertAdjacentHTML because innerHTML sadly removes all listeners
-                        parent.insertAdjacentHTML('afterend', "<span class='hotspots-loc-label'> LOC</span>");
-                    }
+                if (locLabelElement.length === 0) {
+                    // use append because innerHTML sadly removes all listeners
+                    tooltipElement.append("<span class='hotspots-loc-label'> LOC</span>");
                 }
 
                 // clean commits label
-                if (document.getElementsByClassName('hotspots-commits-label').length !== 0) {
-                    var grandParent = parent.parentElement;
-                    grandParent.removeChild(document.getElementById('hotspots-commits-label'));
+                if ($('.hotspots-commits-label').length !== 0) {
+                    $('#hotspots-commits-label').remove();
                 }
 
-                //console.log('id: ' + thisBackup.state.hoveredNode);
                 var commits = thisBackup.getCommits(thisBackup.state.hoveredNode);
-                var locLabelElement = document.querySelector(".hotspots-loc-label");
-
                 if (typeof(commits) !== 'undefined') {
-                    locLabelElement.insertAdjacentHTML('afterend', "<span id='hotspots-commits-label' class='hotspots-commits-label'>, " + commits + " Commits</span>");
+                    locLabelElement.append("<span id='hotspots-commits-label' class='hotspots-commits-label'>, " + commits + " Commits</span>");
                 }
 
-            }
-        };
-
+            }, 20);
+        });
     }
 
     getCommits(name) {
@@ -140,33 +89,11 @@ class RiskManagementHotspots extends DashboardAbstract {
         }
     }
 
-    componentDidUpdate() {
-        //var targetNode = document.querySelector('.hotspot-component > div > div');
-        //var thisBackup = this;
-        // Callback function to execute when mutations are observed
-        // TODO: check if onmouseover listener is more efficient
-        //var hotspotCallback = function(mutationsList) {
-        //    for(var mutation of mutationsList) {
-        //        console.log(mutation.type);
-        //        if (mutation.type === 'childList') {
-        //
-        //
-        //          }
-        //           }
-        //};
-
-        // Create an observer instance linked to the callback function
-        //var observer = new MutationObserver(hotspotCallback);
-
-        // Start observing the target node for configured mutations
-        //observer.observe(targetNode, {childList: true, attributes: true});
-    }
-
     componentWillUnmount() {
         super.componentWillUnmount();
     }
 
-    readStructure() {
+    readHotspots() {
 
         var flatData = [];
         var commitsData = [];
@@ -191,26 +118,26 @@ class RiskManagementHotspots extends DashboardAbstract {
         ).then(function (result) {
             var collectedNames = [];
 
-            maxComplexity = 0; //reset value
+            maxCommits = 0; //reset value
 
             // collect results
             result.records.forEach(function (record) {
                 var name = record.get("fqn");
-                var currentComplexity = record.get("complexity").low;
+                var currentCommmits = record.get("commits").low;
 
-                if (currentComplexity > maxComplexity) {
-                    maxComplexity = currentComplexity;
+                if (currentCommmits > maxCommits) {
+                    maxCommits = currentCommmits;
                 }
 
                 if (collectedNames[name]) { //if name already present add complexity and loc
                     for (var i = 0; i < flatData.length; i++) {
                         if (flatData[i].name === name) {
-                            console.log("----");
-                            console.log(flatData[i]);
-                            flatData[i].complexity += currentComplexity;
+                            //console.log("----");
+                            //console.log(flatData[i]);
+                            flatData[i].complexity += record.get("complexity").low;
                             flatData[i].loc += record.get("loc").low;
-                            flatData[i].commits += record.get("commits").low;
-                            console.log(flatData[i]);
+                            flatData[i].commits += currentCommmits;
+                            //console.log(flatData[i]);
                         }
                     }
 
@@ -220,9 +147,9 @@ class RiskManagementHotspots extends DashboardAbstract {
 
                 var recordConverted = {
                     "name": name,
-                    "complexity": currentComplexity,
+                    "complexity": record.get("complexity").low,
                     "loc": record.get("loc").low,
-                    "commits": record.get("commits").low,
+                    "commits": currentCommmits,
                     "level": 0,
                     "role": "leaf"
                 };
@@ -255,19 +182,6 @@ class RiskManagementHotspots extends DashboardAbstract {
                     }
                 }
             });
-
-            // add projectname as root
-            var root = {
-                "name": projectName,
-                "complexity": 0,
-                "loc": 1, // at least 1 to make it visible
-                "commits": 0,
-                "level": 0,
-                "role": "node"
-            };
-            flatData.push(root);
-
-            // turn flat json into hierarchical json
             var stratify = d3.stratify()
                 .id(function (d) {
                     return d.name;
@@ -281,7 +195,24 @@ class RiskManagementHotspots extends DashboardAbstract {
                         return "";
                     }
                 });
-            hierarchicalData = stratify(flatData);
+
+            try {
+                hierarchicalData = stratify(flatData);
+            } catch (e) {
+                // add projectname as root
+                var root = {
+                    "name": projectName,
+                    "complexity": 0,
+                    "loc": 1, // at least 1 to make it visible
+                    "commits": 0,
+                    "level": 0,
+                    "role": "node"
+                };
+                flatData.push(root);
+                hierarchicalData = stratify(flatData);
+            }
+
+            // turn flat json into hierarchical json
 
             //normalize recursively all childs (move information from .data to the element's root where nivo expects it)
             var normalize = function(hierarchicalData) {
@@ -308,7 +239,6 @@ class RiskManagementHotspots extends DashboardAbstract {
         }).then( function(context) {
             thisBackup.setState({hotSpotData: hierarchicalData});
             thisBackup.setState({commitsData: commitsData});
-            //console.log(maxComplexity);
         })
             .catch(function (error) {
                 console.log(error);
@@ -456,6 +386,10 @@ class RiskManagementHotspots extends DashboardAbstract {
             return(redirect);
         }
 
+        if (!this.state.hotSpotData.name) {
+            return '';
+        }
+
         return (
             <div>
                 <Row>
@@ -512,7 +446,9 @@ class RiskManagementHotspots extends DashboardAbstract {
                                                         value="loc"
                                                         colors="nivo"
                                                         colorBy={ function (e) {
-                                                            var complexity = e.complexity;
+
+                                                            //TODO: clean up this code :)
+
                                                             var data = e.data;
 
                                                             var role = "undefined";
@@ -520,17 +456,16 @@ class RiskManagementHotspots extends DashboardAbstract {
                                                                 role = data.role;
                                                             }
 
-                                                            var saturation = complexity / maxComplexity;
-                                                            if (complexity === 0 && role === "node") {
+                                                            if (data && data.commits && data.commits > 0 && role === "leaf") {
+                                                                var saturation = data.commits / maxCommits;
+                                                                return 'rgba(139, 0, 0, ' + saturation + ')';
+                                                            } else if (data) {
                                                                 var level = data.level;
                                                                 var r = 228 - (11 * level * 2);
                                                                 var g = 242 - (6 * level * 2);
                                                                 var b = 243 - (6 * level * 2);
                                                                 return 'rgb(' + r + ', ' + g + ', ' + b + ')';
-                                                            } else {
-                                                                return 'rgba(139, 0, 0, ' + saturation + ')';
                                                             }
-
                                                         } }
                                                         padding={6}
                                                         labelTextColor="inherit:darker(0.8)"

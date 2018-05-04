@@ -10,6 +10,8 @@ var AppDispatcher = require('../../../../AppDispatcher');
 import {ResponsiveBubbleHtml} from 'nivo';
 import * as d3 from "d3";
 
+var $ = require("jquery");
+
 var IDENTIFIER_PROJECT_NAME = "projectName";
 
 import {Treebeard} from 'react-treebeard';
@@ -28,43 +30,8 @@ class ArchitectureStructure extends DashboardAbstract {
         super(props);
 
         this.state = {
-            hotSpotData:
-                {
-                    "name": "nivo",
-                    "test": "testval",
-                    "children": [
-                        {
-                            "name": "dummy",
-                            "loc": 1
-                        }
-                    ]
-                },
-            treeViewData:
-                {
-                    name: 'root',
-                    toggled: true,
-                    children: [
-                        {
-                            name: 'parent',
-                            children: [
-                                { name: 'child1' },
-                                { name: 'child2' }
-                            ]
-                        },
-                        {
-                            name: 'parent',
-                            children: [
-                                {
-                                    name: 'nested parent',
-                                    children: [
-                                        { name: 'nested child 1' },
-                                        { name: 'nested child 2' }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                },
+            hotSpotData: {},
+            treeViewData: {},
             breadCrumbData: ['']
         };
 
@@ -82,33 +49,17 @@ class ArchitectureStructure extends DashboardAbstract {
         if (databaseCredentialsProvided) {
             this.readStructure();
         }
-    }
 
-    componentDidUpdate() {
-        var targetNode = document.querySelector('.structure-component > div > div');
-
-        // Callback function to execute when mutations are observed
-        var structureCallback = function(mutationsList) {
-            for(var mutation of mutationsList) {
-                if (mutation.type === 'childList') {
-                    var strongElement = document.querySelector(".structure-component strong");
-                    if (strongElement) {
-                        var parent = strongElement.parentElement;
-                        var str = parent.innerHTML.split(':');
-
-                        if (document.getElementsByClassName('structure-loc-label').length === 0) {
-                            parent.insertAdjacentHTML('afterend', "<span class='structure-loc-label'> LOC</span>");
-                        }
-                    }
+        // add LOC to tooltip
+        $(document).on('mouseover', '.structure-component > div > div > div > div > div',  function () {
+            //set timeout because tooltip is dynamically added to the DOM by nivo
+            setTimeout(function () {
+                var tooltipElement = $(".structure-component strong").parent();
+                if ($(".structure-loc-label").length === 0) {
+                    tooltipElement.append("<span class='structure-loc-label'> LOC</span>");
                 }
-            }
-        };
-
-        // Create an observer instance linked to the callback function
-        var observer = new MutationObserver(structureCallback);
-
-        // Start observing the target node for configured mutations
-        observer.observe(targetNode, {childList: true});
+            }, 20);
+        });
     }
 
     componentWillUnmount() {
@@ -180,16 +131,6 @@ class ArchitectureStructure extends DashboardAbstract {
                     }
                 });
 
-                // add projectname as root
-                var root = {
-                    "name": projectName,
-                    "complexity": 0,
-                    "loc": 1, // at least 1 to make it visible
-                    "level": 0
-                };
-                flatData.push(root);
-
-                // turn flat json into hierarchical json
                 var stratify = d3.stratify()
                     .id(function (d) {
                         return d.name;
@@ -203,7 +144,23 @@ class ArchitectureStructure extends DashboardAbstract {
                             return "";
                         }
                     });
-                hierarchicalData = stratify(flatData);
+
+                // add projectname as root
+                try {
+                    hierarchicalData = stratify(flatData);
+                } catch (e) {
+                    var root = {
+                        "name": projectName,
+                        "complexity": 0,
+                        "loc": 1, // at least 1 to make it visible
+                        "level": 0
+                    };
+                    flatData.push(root);
+                    hierarchicalData = stratify(flatData);
+                }
+
+                // turn flat json into hierarchical json
+
 
                 //normalize recursively all childs (move information from .data to the element's root where nivo expects it)
                 var normalize = function(hierarchicalData) {
@@ -370,6 +327,10 @@ class ArchitectureStructure extends DashboardAbstract {
         var redirect = super.render();
         if (redirect.length > 0) {
             return(redirect);
+        }
+
+        if (!this.state.hotSpotData.name) {
+            return '';
         }
 
         return (
