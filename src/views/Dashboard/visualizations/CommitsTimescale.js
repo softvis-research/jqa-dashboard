@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
 var AppDispatcher = require('../../../AppDispatcher');
 
+import DateRangePicker from 'react-bootstrap-daterangepicker';
+// you will need the css that comes with bootstrap@3. if you are using
+// a tool like webpack, you can do the following:
+import 'bootstrap/dist/css/bootstrap.css';
+// you will also need the css that comes with bootstrap-daterangepicker
+import 'bootstrap-daterangepicker/daterangepicker.css';
+var moment = require('moment');
+
 import {ResponsiveCalendar} from '@nivo/calendar';
 import {LegendSvgItem} from '@nivo/legends';
 
@@ -117,43 +125,98 @@ class CommitsTimescale extends DashboardAbstract {
         }
 
         return (
-          <div className="calendar-wrapper">
-            <div style={{height: "404px"}}>
-              <ResponsiveCalendar
-                  from={fromDate}
-                  to={this.state.commitsTo}
-                  onClick={ function(event) {
-                    console.log(event);
-                    /*
-                    AppDispatcher.handleAction({
-                      actionType: 'SELECT_COMMITSPERAUTHOR',
-                      data: event
-                    });
-                    */
-                   }}
-                    data={this.state.commitsTimescale}
-                  emptyColor="#eeeeee"
-                  colors={colors}
-                  margin={{
-                      "top": 10,
-                      "right": 10,
-                      "bottom": 10,
-                      "left": 30
-                  }}
-                  yearSpacing={30}
-                  monthBorderColor="#ffffff"
-                  monthLegendOffset={10}
-                  dayBorderWidth={1}
-                  dayBorderColor="#ffffff"
-                  direction="horizontal"
-              />
+            <div className="calendar-wrapper">
+                <DateRangePicker
+                    startDate="1/1/2014"
+                    endDate="3/1/2019"
+                    alwaysShowCalendars
+                    minDate="04/30/2018"
+                    maxDate="05/06/2018"
+                    opens="left"
+                    ranges={{
+                        'Today': [moment(), moment()],
+                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                        'This Month': [moment().startOf('month'), moment().endOf('month')],
+                        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    }}
+                    locale={{
+                        "format": "MM/DD/YYYY",
+                        "separator": " - ",
+                        "applyLabel": "Apply",
+                        "cancelLabel": "Cancel",
+                        "fromLabel": "From",
+                        "toLabel": "To",
+                        "customRangeLabel": "Custom",
+                        "weekLabel": "W",
+                        "daysOfWeek": [
+                        "Su",
+                        "Mo",
+                        "Tu",
+                        "We",
+                        "Th",
+                        "Fr",
+                        "Sa"
+                        ],
+                        "monthNames": [
+                        "January",
+                        "February",
+                        "March",
+                        "April",
+                        "May",
+                        "June",
+                        "July",
+                        "August",
+                        "September",
+                        "October",
+                        "November",
+                        "December"
+                        ],
+                        "firstDay": 1
+                    }}
+                >
+                    <div id="daterange" className="selectbox pull-right float-right">
+                        <i className="fa fa-calendar"></i>
+                        <span>April 7, 2018 - May 6, 2018</span> <b className="caret"></b>
+                    </div>
+                </DateRangePicker>
+                <div style={{height: "404px", paddingTop: "60px"}}>
+                    <ResponsiveCalendar
+                        from={fromDate}
+                        to={this.state.commitsTo}
+                        onClick={ function(event) {
+                        console.log(event);
+                        /*
+                        AppDispatcher.handleAction({
+                          actionType: 'SELECT_COMMITSPERAUTHOR',
+                          data: event
+                        });
+                        */
+                        }}
+                        data={this.state.commitsTimescale}
+                        emptyColor="#eeeeee"
+                        colors={colors}
+                        margin={{
+                          "top": 10,
+                          "right": 10,
+                          "bottom": 10,
+                          "left": 30
+                        }}
+                        yearSpacing={30}
+                        monthBorderColor="#ffffff"
+                        monthLegendOffset={10}
+                        dayBorderWidth={1}
+                        dayBorderColor="#ffffff"
+                        direction="horizontal"
+                    />
+                </div>
+                <div className="calendar-legend">
+                    <div className="less float-left">less</div>
+                    <svg id={"dummyLegend"} style={{float: "left", overflow:"visible", width: ((colors.length + 1) * 20) + 16}}>{legendItems}</svg>
+                    <div className="more float-left">more</div>
+                </div>
             </div>
-            <div className="calendar-legend">
-                <div className="less float-left">less</div>
-                <svg id={"dummyLegend"} style={{float: "left", overflow:"visible", width: ((colors.length + 1) * 20) + 16}}>{legendItems}</svg>
-                <div className="more float-left">more</div>
-            </div>
-          </div>
         )
     }
 }
