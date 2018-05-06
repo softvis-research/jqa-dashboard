@@ -19,8 +19,10 @@ Prototypical implementation of a web-based dashboard for software visualization
 * to prevent "FATAL ERROR: CALL_AND_RETRY_LAST Allocation failed - JavaScript heap out of memory" when recompiling often you have to increase max_old_space_size
 * you can use these commands to do this automatically
 
+```
 1. npm install -g increase-memory-limit
 2. increase-memory-limit
+```
 
 ## External Credits ##
 
