@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../AbstractDashboardComponent';
-import {Row, Col, Card, CardHeader, CardBody} from 'reactstrap';
+import {Row, Col, Card, CardHeader, CardBody, Button, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 import DynamicBreadcrumb from '../../../../components/Breadcrumb/DynamicBreadcrumb';
 import SimpleBar from 'SimpleBar';
 
@@ -32,11 +32,12 @@ class ArchitectureStructure extends DashboardAbstract {
         this.state = {
             hotSpotData: {},
             treeViewData: {},
-            breadCrumbData: ['']
+            breadCrumbData: [''],
+            info: false
         };
 
         this.onToggle = this.onToggle.bind(this);
-//        this.breadcrumbClicked = this.breadcrumbClicked.bind(this);
+        this.toggleInfo = this.toggleInfo.bind(this);
     }
 
     componentWillMount() {
@@ -67,11 +68,13 @@ class ArchitectureStructure extends DashboardAbstract {
     }
 
     readStructure() {
+
         var flatData = [];
         var hierarchicalData = [];
         var projectName = localStorage.getItem(IDENTIFIER_PROJECT_NAME); // "PROJECTNAME"; // acts as root as there are multiple root packages in some cases
         var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
-        neo4jSession.run("MATCH\n" +
+        neo4jSession.run(
+            "MATCH\n" +
             " (t:Type)-[:HAS_SOURCE]->(f),\n" +
             " (t)-[:DECLARES]->(m:Method)\n" +
             "WHERE\n" +
@@ -114,8 +117,8 @@ class ArchitectureStructure extends DashboardAbstract {
                     };
                     flatData.push(recordConverted);
 
-                    var level = 0;
                     //fill packages to allow stratify()
+                    var level = 0;
                     while (name.lastIndexOf(".") !== -1) {
                         level = name.split(".").length - 1;
                         name = name.substring(0, name.lastIndexOf("."));
@@ -223,7 +226,6 @@ class ArchitectureStructure extends DashboardAbstract {
 
         var action = event.action;
         switch (action.actionType) {
-            // Respond to CART_ADD action
             case 'SELECT_HOTSPOT_PACKAGE':
                 var selectedPackage = event.action.data.data.id;
 
@@ -241,7 +243,8 @@ class ArchitectureStructure extends DashboardAbstract {
                             markSelectedPackageAsActive(hierarchicalData.children[i]);
                         }
                     }
-                }
+                };
+
                 markSelectedPackageAsActive(hotspotClone);
 
                 var markAllPackagesAsUntoggled = function(hierarchicalData) {
@@ -252,7 +255,7 @@ class ArchitectureStructure extends DashboardAbstract {
                             markAllPackagesAsUntoggled(hierarchicalData.children[i]);
                         }
                     }
-                }
+                };
 
                 markAllPackagesAsUntoggled(hotspotClone);
 
@@ -266,7 +269,7 @@ class ArchitectureStructure extends DashboardAbstract {
                             markSelectedPackageAsToggled(hierarchicalData.children[i], targetElementName);
                         }
                     }
-                }
+                };
 
                 var elementToDoList = selectedPackage.split(".");
                 var currentName = "";
@@ -301,7 +304,8 @@ class ArchitectureStructure extends DashboardAbstract {
                             }
                         }
                     }
-                }
+                };
+
                 var node = findNodeByName(this.state.hotSpotData);
                 //setTimeout to prevent "Cannot dispatch in the middle of a dispatch"
                 // when the !!time is out!! the dispatch is completed and the next click can be handled
@@ -323,6 +327,12 @@ class ArchitectureStructure extends DashboardAbstract {
         });
     }
 
+    toggleInfo() {
+        this.setState({
+            info: !this.state.info
+        });
+    }
+
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
@@ -340,6 +350,25 @@ class ArchitectureStructure extends DashboardAbstract {
                         <Card>
                             <CardHeader>
                                 Structure
+                                <div className="card-actions">
+                                    <a href="javascript: void(0)" onClick={this.toggleInfo}>
+                                        <i className="text-muted fa fa-question-circle"></i>
+                                    </a>
+                                    <Modal isOpen={this.state.info} toggle={this.toggleInfo}
+                                           className={this.props.className}>
+                                        <ModalHeader toggle={this.toggleInfo}>Structure</ModalHeader>
+                                        <ModalBody>
+                                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
+                                            et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                                            aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                                            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+                                            culpa qui officia deserunt mollit anim id est laborum.
+                                        </ModalBody>
+                                        <ModalFooter>
+                                            <Button color="secondary" onClick={this.toggleInfo}>Close</Button>
+                                        </ModalFooter>
+                                    </Modal>
+                                </div>
                             </CardHeader>
                             <CardBody>
                                 <Row>
@@ -403,7 +432,7 @@ class ArchitectureStructure extends DashboardAbstract {
 
                                                         } }
                                                         padding={6}
-                                                        labelTextColor="inherit:darker(0.8)"
+                                                        enableLabel={false}
                                                         borderWidth={2}
                                                         defs={[
                                                             {

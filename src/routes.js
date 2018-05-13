@@ -15,7 +15,7 @@ const routes = {
     '/risk-management/refactoring-targets': 'Refactoring Targets',
     '/risk-management/temporal-coupling': 'Temporal Coupling',
     '/quality-management': 'Quality Management',
-    '/quality-management/pmd': 'PMD',
+    '/quality-management/static-code-analysis-pmd': 'Static Code Analysis PMD',
     '/quality-management/test-coverage': 'Test Coverage',
     '/quality-management/clone-detection': 'Clone Detection',
     '/custom-query': 'Custom Cypher Query',

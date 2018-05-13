@@ -6,7 +6,10 @@ a {
   &:hover {
     text-decoration: none;
   }
-  .card {
+}
+
+.dashboard {
+  a {
     color: #151b1e;
   }
 }
@@ -222,4 +225,50 @@ a.breadcrumb-item {
   border-top: 4px solid;
   border-right: 4px solid transparent;
   border-left: 4px solid transparent;
+}
+
+.main .container-fluid {
+  padding: 0 25px;
+}
+
+.violation-message {
+  min-height: 40px;
+  display: block;
+}
+
+.class-method {
+  min-height: 25.3833px;
+}
+
+.card-header .card-actions a {
+  padding: 0.6rem 0;
+}
+
+.card-actions .fa {
+  font-size: 17px;
+  line-height: 23px;
+}
+
+.modal-header {
+  background-color: #f0f3f5;
+}
+
+.modal-footer {
+  padding: 1rem;
+  .btn-secondary {
+    background-color: #f0f0f0;
+    border-color: #c8ced3;
+  }
+}
+
+.bs-popover-bottom {
+  left: -15px !important;
+}
+
+.popover.bs-popover-bottom .arrow::before, .popover.bs-popover-auto[x-placement^="bottom"] .arrow::before, .popover.bs-popover-bottom .arrow::after, .popover.bs-popover-auto[x-placement^="bottom"] .arrow::after {
+  margin-left: 0.67rem !important;
+}
+
+.popover {
+  z-index: 1010 !important;
 }

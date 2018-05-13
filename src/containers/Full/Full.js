@@ -32,7 +32,7 @@ import RiskManagementTemporalCoupling from '../../views/Dashboard/RiskManagement
 // quality management
 import QualityManagementTestCoverage from '../../views/Dashboard/QualityManagement/TestCoverage/TestCoverage';
 import QualityManagementCloneDetection from '../../views/Dashboard/QualityManagement/CloneDetection/CloneDetection';
-import QualityManagementPMD from '../../views/Dashboard/QualityManagement/PMD/PMD';
+import QualityManagementStaticCodeAnalysisPMD from '../../views/Dashboard/QualityManagement/StaticCodeAnalysisPMD/StaticCodeAnalysisPMD';
 
 var gotoSettings = false;
 
@@ -61,7 +61,7 @@ class Full extends Component {
                                 <Route path="/risk-management/temporal-coupling" name="Temporal Coupling" component={RiskManagementTemporalCoupling}/>
                                 <Route path="/quality-management/test-coverage" name="Test Coverage" component={QualityManagementTestCoverage}/>
                                 <Route path="/quality-management/clone-detection" name="Clone Detection" component={QualityManagementCloneDetection}/>
-                                <Route path="/quality-management/pmd" name="PMD" component={QualityManagementPMD}/>
+                                <Route path="/quality-management/static-code-analysis-pmd" name="Static Code Analysis PMD" component={QualityManagementStaticCodeAnalysisPMD}/>
                                 <Route path="/custom-query" name="Custom Cypher Query" component={CustomQuery}/>
                                 <Route path="/settings" name="Settings" component={Settings}/>
                                 <Redirect from="/" to="/dashboard"/>

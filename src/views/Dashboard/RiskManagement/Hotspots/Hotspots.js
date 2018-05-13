@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../AbstractDashboardComponent';
-import {Row, Col, Card, CardHeader, CardBody} from 'reactstrap';
+import {Row, Col, Card, CardHeader, CardBody, Button, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
 import DynamicBreadcrumb from '../../../../components/Breadcrumb/DynamicBreadcrumb';
 import SimpleBar from 'SimpleBar';
 
@@ -31,11 +31,19 @@ class RiskManagementHotspots extends DashboardAbstract {
         this.state = {
             hotSpotData: {},
             treeViewData: {},
-            breadCrumbData: ['']
+            breadCrumbData: [''],
+            popoverOpen: false,
+            popovers: [
+                {
+                    placement: 'bottom',
+                    text: 'Bottom'
+                }
+            ]
         };
 
         this.onToggle = this.onToggle.bind(this);
         this.getCommits = this.getCommits.bind(this);
+        this.toggleInfo = this.toggleInfo.bind(this);
     }
 
     componentWillMount() {
@@ -165,9 +173,7 @@ class RiskManagementHotspots extends DashboardAbstract {
                 //fill packages to allow stratify()
                 var level = 0;
                 while (name.lastIndexOf(".") !== -1) {
-
                     level = name.split(".").length - 1;
-
                     name = name.substring(0, name.lastIndexOf("."));
                     if (!collectedNames[name]) {
                         collectedNames[name] = 1;
@@ -380,6 +386,12 @@ class RiskManagementHotspots extends DashboardAbstract {
         });
     }
 
+    toggleInfo() {
+        this.setState({
+            popoverOpen: !this.state.popoverOpen
+        });
+    }
+
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
@@ -397,6 +409,20 @@ class RiskManagementHotspots extends DashboardAbstract {
                         <Card>
                             <CardHeader>
                                 Hotspots
+                                <div className="card-actions">
+                                    <a href="javascript: void(0)" onClick={this.toggleInfo} id="Popover1">
+                                        <i className="text-muted fa fa-question-circle"></i>
+                                    </a>
+                                    <Popover placement="bottom" isOpen={this.state.popoverOpen} target="Popover1" toggle={this.toggleInfo}>
+                                        <PopoverHeader>Hotspots</PopoverHeader>
+                                        <PopoverBody>
+                                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
+                                            et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                                            aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                                            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+                                            culpa qui officia deserunt mollit anim id est laborum.                                        </PopoverBody>
+                                    </Popover>
+                                </div>
                             </CardHeader>
                             <CardBody>
                                 <Row>
@@ -468,7 +494,7 @@ class RiskManagementHotspots extends DashboardAbstract {
                                                             }
                                                         } }
                                                         padding={6}
-                                                        labelTextColor="inherit:darker(0.8)"
+                                                        enableLabel={false}
                                                         borderWidth={2}
                                                         defs={[
                                                             {

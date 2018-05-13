@@ -10,7 +10,7 @@ class Dashboard extends DashboardAbstract {
         super(props);
 
         this.state = {
-            architectureMetrics: {
+            structureMetrics: {
                 "classes": "loading",
                 "interfaces": "loading",
                 "enums": "loading",
@@ -19,7 +19,7 @@ class Dashboard extends DashboardAbstract {
                 "loc": "loading",
                 "fields": "loading"
             },
-            relationMetrics: {
+            dependencyMetrics: {
                 "dependencies": "loading",
                 "extends": "loading",
                 "implements": "loading",
@@ -27,13 +27,16 @@ class Dashboard extends DashboardAbstract {
                 "reads": "loading",
                 "writes": "loading"
             },
-            resourceManagementMetrics: {
+            activityMetrics: {
                 "authors": "loading",
                 "commitsWithoutMerges": "loading",
                 "commitsWithMerges": "loading"
             },
-            qualityManagementMetrics: {
+            staticCodeAnalysisPMDMetrics: {
                 "violations": "loading"
+            },
+            testCoverageMetrics: {
+                "overallTestCoverage": "loading"
             }
         };
     }
@@ -41,15 +44,16 @@ class Dashboard extends DashboardAbstract {
     componentDidMount() {
         super.componentDidMount();
         if (databaseCredentialsProvided) {
-            this.readArchitectureMetrics();
-            this.readRelationMetrics();
-            this.readResourceManagementMetrics();
-            this.readQualityManagementMetrics();
+            this.readStructureMetrics();
+            this.readDependencyMetrics();
+            this.readActivityMetrics();
+            this.readStaticCodeAnalysisPMDMetrics();
+            this.readTestCoverageMetrics();
         }
     }
 
-    readArchitectureMetrics() {
-        var architectureMetrics = [];
+    readStructureMetrics() {
+        var structureMetrics = [];
         var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
 
         neo4jSession.run(
@@ -75,7 +79,7 @@ class Dashboard extends DashboardAbstract {
         ).then(function (result) {
             result.records.forEach(function (record) {
 
-                architectureMetrics = {
+                structureMetrics = {
                     "classes": record.get(0).low,
                     "interfaces": record.get(1).low,
                     "enums": record.get(2).low,
@@ -85,17 +89,17 @@ class Dashboard extends DashboardAbstract {
                     "fields": record.get(6).low
                 };
 
-                console.log(architectureMetrics);
+                //console.log(structureMetrics);
             });
         }).then( function(context) {
-            thisBackup.setState({architectureMetrics: architectureMetrics});
+            thisBackup.setState({structureMetrics: structureMetrics});
         }).catch(function (error) {
             console.log(error);
         });
     }
 
-    readRelationMetrics() {
-        var relationMetrics = [];
+    readDependencyMetrics() {
+        var dependencyMetrics = [];
         var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
 
         neo4jSession.run(
@@ -122,7 +126,7 @@ class Dashboard extends DashboardAbstract {
         ).then(function (result) {
             result.records.forEach(function (record) {
 
-                relationMetrics = {
+                dependencyMetrics = {
                     "dependencies": record.get(0).low,
                     "extends": record.get(1).low,
                     "implements": record.get(2).low,
@@ -131,17 +135,17 @@ class Dashboard extends DashboardAbstract {
                     "writes": record.get(5).low
                 };
 
-                console.log(relationMetrics);
+                //console.log(dependencyMetrics);
             });
         }).then( function(context) {
-            thisBackup.setState({relationMetrics: relationMetrics});
+            thisBackup.setState({dependencyMetrics: dependencyMetrics});
         }).catch(function (error) {
             console.log(error);
         });
     }
 
-    readResourceManagementMetrics() {
-        var resourceManagementMetrics = [];
+    readActivityMetrics() {
+        var activityMetrics = [];
         var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
 
         neo4jSession.run(
@@ -159,23 +163,23 @@ class Dashboard extends DashboardAbstract {
         ).then(function (result) {
             result.records.forEach(function (record) {
 
-                resourceManagementMetrics = {
+                activityMetrics = {
                     "authors": record.get(0).low,
                     "commitsWithoutMerges": record.get(1).low,
                     "commitsWithMerges": record.get(2).low
                 };
 
-                console.log(resourceManagementMetrics);
+                //console.log(activityMetrics);
             });
         }).then( function(context) {
-            thisBackup.setState({resourceManagementMetrics: resourceManagementMetrics});
+            thisBackup.setState({activityMetrics: activityMetrics});
         }).catch(function (error) {
             console.log(error);
         });
     }
 
-    readQualityManagementMetrics() {
-        var qualityManagementMetrics = [];
+    readStaticCodeAnalysisPMDMetrics() {
+        var staticCodeAnalysisPMDMetrics = [];
         var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
 
         neo4jSession.run(
@@ -184,14 +188,37 @@ class Dashboard extends DashboardAbstract {
         ).then(function (result) {
             result.records.forEach(function (record) {
 
-                qualityManagementMetrics = {
+                staticCodeAnalysisPMDMetrics = {
                     "violations": record.get(0).low
                 };
 
-                console.log(qualityManagementMetrics);
+                //console.log(staticCodeAnalysisPMDMetrics);
             });
         }).then( function(context) {
-            thisBackup.setState({qualityManagementMetrics: qualityManagementMetrics});
+            thisBackup.setState({staticCodeAnalysisPMDMetrics: staticCodeAnalysisPMDMetrics});
+        }).catch(function (error) {
+            console.log(error);
+        });
+    }
+
+    readTestCoverageMetrics() {
+        var testCoverageMetrics = [];
+        var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
+
+        neo4jSession.run(
+            // number of violations
+            "MATCH (c:Jacoco:Class)-[:HAS_METHODS]->(m:Method:Jacoco)-[:HAS_COUNTERS]->(t:Counter) WHERE t.type='INSTRUCTION'  RETURN (sum(t.covered)*100)/(sum(t.covered)+sum(t.missed)) as coverage"
+        ).then(function (result) {
+            result.records.forEach(function (record) {
+
+                testCoverageMetrics = {
+                    "overallTestCoverage": record.get(0).low
+                };
+
+                //console.log(testCoverageMetrics);
+            });
+        }).then( function(context) {
+            thisBackup.setState({testCoverageMetrics: testCoverageMetrics});
         }).catch(function (error) {
             console.log(error);
         });
@@ -204,18 +231,18 @@ class Dashboard extends DashboardAbstract {
         }
 
         return (
-            <div className="animated fadeIn">
+            <div className="animated fadeIn dashboard">
                 <Row>
                     <Col xs="12" sm="6" md="3">
-                        <a href="#/architecture/structure">
-                            <Card>
-                                <CardHeader>
-                                    Architecture
-                                </CardHeader>
-                                <CardBody>
-                                    <strong>Architecture metrics</strong>
+                        <Card>
+                            <CardHeader>
+                                Architecture
+                            </CardHeader>
+                            <CardBody>
+                                <a href="#/architecture/structure">
+                                    <strong>Structure metrics</strong>
                                     <ListGroup className="margin-bottom">
-                                        {Object.keys(this.state.architectureMetrics).map(function(key) {
+                                        {Object.keys(this.state.structureMetrics).map(function(key) {
 
                                             var label = key
                                             // insert a space before all caps
@@ -224,13 +251,15 @@ class Dashboard extends DashboardAbstract {
                                                 // uppercase the first character
                                                 .replace(/^./, function(str){ return str.toUpperCase(); });
 
-                                            return <ListGroupItem key={key} className="justify-content-between">{label} <div className="float-right">{this.state.architectureMetrics[key]}</div></ListGroupItem>;
+                                            return <ListGroupItem key={key} className="justify-content-between">{label} <div className="float-right">{this.state.structureMetrics[key]}</div></ListGroupItem>;
                                         }, this)}
                                     </ListGroup>
+                                </a>
 
-                                    <strong>Relation metrics</strong>
+                                <a href="#/architecture/dependencies">
+                                    <strong>Dependency metrics</strong>
                                     <ListGroup>
-                                        {Object.keys(this.state.relationMetrics).map(function(key) {
+                                        {Object.keys(this.state.dependencyMetrics).map(function(key) {
 
                                             var label = key
                                             // insert a space before all caps
@@ -239,23 +268,23 @@ class Dashboard extends DashboardAbstract {
                                                 // uppercase the first character
                                                 .replace(/^./, function(str){ return str.toUpperCase(); });
 
-                                            return <ListGroupItem key={key} className="justify-content-between">{label} <div className="float-right">{this.state.relationMetrics[key]}</div></ListGroupItem>;
+                                            return <ListGroupItem key={key} className="justify-content-between">{label} <div className="float-right">{this.state.dependencyMetrics[key]}</div></ListGroupItem>;
                                         }, this)}
                                     </ListGroup>
-                                </CardBody>
-                            </Card>
-                        </a>
+                                </a>
+                            </CardBody>
+                        </Card>
                     </Col>
                     <Col xs="12" sm="6" md="3">
-                        <a href="#/resource-management/activity">
-                            <Card>
-                                <CardHeader>
-                                    Resource Management
-                                </CardHeader>
-                                <CardBody>
+                        <Card>
+                            <CardHeader>
+                                Resource Management
+                            </CardHeader>
+                            <CardBody>
+                                <a href="#/resource-management/activity">
                                     <strong>Activity metrics</strong>
                                     <ListGroup>
-                                        {Object.keys(this.state.resourceManagementMetrics).map(function(key) {
+                                        {Object.keys(this.state.activityMetrics).map(function(key) {
 
                                             var label = key
                                                 // insert a space before all caps
@@ -264,12 +293,12 @@ class Dashboard extends DashboardAbstract {
                                                 // uppercase the first character
                                                 .replace(/^./, function(str){ return str.toUpperCase(); });
 
-                                            return <ListGroupItem key={key} className="justify-content-between">{label} <div className="float-right">{this.state.resourceManagementMetrics[key]}</div></ListGroupItem>;
+                                            return <ListGroupItem key={key} className="justify-content-between">{label} <div className="float-right">{this.state.activityMetrics[key]}</div></ListGroupItem>;
                                         }, this)}
                                     </ListGroup>
-                                </CardBody>
-                            </Card>
-                        </a>
+                                </a>
+                            </CardBody>
+                        </Card>
                     </Col>
                     <Col xs="12" sm="6" md="3">
                         <Card>
@@ -284,15 +313,15 @@ class Dashboard extends DashboardAbstract {
                         </Card>
                     </Col>
                     <Col xs="12" sm="6" md="3">
-                        <a href="#/quality-management/pmd">
-                            <Card>
-                                <CardHeader>
-                                    Quality Management
-                                </CardHeader>
-                                <CardBody>
-                                    <strong>PMD</strong>
-                                    <ListGroup>
-                                        {Object.keys(this.state.qualityManagementMetrics).map(function(key) {
+                        <Card>
+                            <CardHeader>
+                                Quality Management
+                            </CardHeader>
+                            <CardBody>
+                                <a href="#/quality-management/static-code-analysis-pmd">
+                                    <strong>Static Code Analysis PMD metrics</strong>
+                                    <ListGroup className="margin-bottom">
+                                        {Object.keys(this.state.staticCodeAnalysisPMDMetrics).map(function(key) {
 
                                             var label = key
                                             // insert a space before all caps
@@ -301,12 +330,29 @@ class Dashboard extends DashboardAbstract {
                                                 // uppercase the first character
                                                 .replace(/^./, function(str){ return str.toUpperCase(); });
 
-                                            return <ListGroupItem key={key} className="justify-content-between">{label} <div className="float-right">{this.state.qualityManagementMetrics[key]}</div></ListGroupItem>;
+                                            return <ListGroupItem key={key} className="justify-content-between">{label} <div className="float-right">{this.state.staticCodeAnalysisPMDMetrics[key]}</div></ListGroupItem>;
                                         }, this)}
                                     </ListGroup>
-                                </CardBody>
-                            </Card>
-                        </a>
+                                </a>
+
+                                <a href="#/quality-management/test-coverage">
+                                    <strong>Test Coverage metrics</strong>
+                                    <ListGroup>
+                                        {Object.keys(this.state.testCoverageMetrics).map(function(key) {
+
+                                            var label = key
+                                            // insert a space before all caps
+                                                .replace(/([A-Z])/g, ' $1')
+                                                .toLowerCase()
+                                                // uppercase the first character
+                                                .replace(/^./, function(str){ return str.toUpperCase(); });
+
+                                            return <ListGroupItem key={key} className="justify-content-between">{label} <div className="float-right">{this.state.testCoverageMetrics[key]}%</div></ListGroupItem>;
+                                        }, this)}
+                                    </ListGroup>
+                                </a>
+                            </CardBody>
+                        </Card>
                     </Col>
                 </Row>
             </div>

@@ -151,29 +151,42 @@ class CommitsTimescale extends DashboardAbstract {
                         "customRangeLabel": "Custom",
                         "weekLabel": "W",
                         "daysOfWeek": [
-                        "Su",
-                        "Mo",
-                        "Tu",
-                        "We",
-                        "Th",
-                        "Fr",
-                        "Sa"
+                            "Su",
+                            "Mo",
+                            "Tu",
+                            "We",
+                            "Th",
+                            "Fr",
+                            "Sa"
                         ],
                         "monthNames": [
-                        "January",
-                        "February",
-                        "March",
-                        "April",
-                        "May",
-                        "June",
-                        "July",
-                        "August",
-                        "September",
-                        "October",
-                        "November",
-                        "December"
+                            "January",
+                            "February",
+                            "March",
+                            "April",
+                            "May",
+                            "June",
+                            "July",
+                            "August",
+                            "September",
+                            "October",
+                            "November",
+                            "December"
                         ],
                         "firstDay": 1
+                    }}
+                    onApply={function(event, picker) {
+                        var startDate = picker.minDate["_i"].split('/');
+                        var endDate   = picker.maxDate["_i"].split('/');
+
+                        AppDispatcher.handleAction({
+                            actionType: 'SET_STATE',
+                            data: {
+                                commitsFrom: startDate[2] + "-" + startDate[0] + "-" + startDate[1],
+                                commitsTo: endDate[2] + "-" + endDate[0] + "-" + endDate[1]
+                            }
+                        });
+//                        console.log(picker);
                     }}
                 >
                     <div id="daterange" className="selectbox pull-right float-right">

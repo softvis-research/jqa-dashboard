@@ -195,8 +195,13 @@ class DashboardAbstract extends Component {
       AppDispatcher.unregister(this.state.dispatcherEventId);
     }
 
-    handleAction() {
-
+    handleAction(event) {
+        var action = event.action;
+        switch (action.actionType) {
+            case 'SET_STATE':
+                var stateData = event.action.data;
+                this.setState(stateData);
+        }
     }
 
     render() {
