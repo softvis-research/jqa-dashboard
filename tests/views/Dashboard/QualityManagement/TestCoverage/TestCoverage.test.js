@@ -20,7 +20,7 @@ describe('<TestCoverage />', () => {
         */
         var html = wrapper.html();
 
-        expect(html).to.contain('<div class="card-header">Currently empty</div>');
+        expect(html).to.contain('<div class="card-header">Test Coverage');
     });
 
 });

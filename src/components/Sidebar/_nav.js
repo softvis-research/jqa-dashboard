@@ -92,8 +92,14 @@ export default {
             icon: 'icon-badge',
             children: [
                 {
-                    name: 'Static Code Analysis PMD',
-                    url: '/quality-management/static-code-analysis-pmd'
+                    name: 'Static Code Analysis',
+                    url: '/quality-management/static-code-analysis',
+                    children: [
+                        {
+                            name: 'PMD',
+                            url: '/quality-management/static-code-analysis/pmd'
+                        }
+                    ]
                 },
                 {
                     name: 'Test Coverage',

@@ -57,7 +57,7 @@ describe('<Structure />', () => {
 
         var html = wrapper.html();
 
-        expect(html).to.contain('<div class="card-header">Structure</div>');
+        expect(html).to.contain('<div class="card-header">Structure');
         //expect(html).to.contain('<svg>');
     });
 

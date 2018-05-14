@@ -122,7 +122,7 @@ class RiskManagementHotspots extends DashboardAbstract {
             "WHERE\n" +
             " f.relativePath STARTS WITH 'src'\n" +
             "RETURN\n" +
-            " t.fqn as fqn, sum(commits) as commits, sum(m.cyclomaticComplexity) as complexity, sum(m.effectiveLineCount) as loc"
+            " t.fqn as fqn, sum(commits) as commits, sum(m.cyclomaticComplexity) as complexity, sum(m.effectiveLineCount) as loc ORDER BY fqn ASCENDING"
         ).then(function (result) {
             var collectedNames = [];
 

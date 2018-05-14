@@ -55,7 +55,7 @@ describe('<Hotspots />', () => {
         });
         var html = wrapper.html();
 
-        expect(html).to.contain('<div class="card-header">Hotspots</div>');
+        expect(html).to.contain('<div class="card-header">Hotspots');
         //expect(html).to.contain('<svg>');
     });
 

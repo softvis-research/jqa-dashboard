@@ -17,188 +17,7 @@ class QualityManagementTestCoverage extends DashboardAbstract {
         super(props);
 
         this.state = {
-            testCoverageData: {
-                "name": "nivo",
-                "children": [
-                    {
-                        "name": "viz",
-                        "children": [
-                            {
-                                "name": "stack",
-                                "children": [
-                                    {
-                                        "name": "chart",
-                                        "color": "hsl(81, 70%, 50%)",
-                                        "coverage": 44805
-                                    }
-                                ]
-                            },
-                            {
-                                "name": "pie",
-                                "color": "hsl(238, 70%, 50%)",
-                                "children": [
-                                    {
-                                        "name": "chart",
-                                        "color": "hsl(91, 70%, 50%)",
-                                        "children": [
-                                            {
-                                                "name": "pie",
-                                                "color": "hsl(343, 70%, 50%)",
-                                                "children": [
-                                                    {
-                                                        "name": "outline",
-                                                        "coverage": 177607
-                                                    },
-                                                    {
-                                                        "name": "slices",
-                                                        "coverage": 69099
-                                                    },
-                                                    {
-                                                        "name": "bbox",
-                                                        "coverage": 29706
-                                                    }
-                                                ]
-                                            },
-                                            {
-                                                "name": "donut",
-                                                "coverage": 47826
-                                            },
-                                            {
-                                                "name": "gauge",
-                                                "coverage": 182543
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "name": "legends",
-                                        "coverage": 117658
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "name": "colors",
-                        "children": [
-                            {
-                                "name": "rgb",
-                                "coverage": 27772
-                            },
-                            {
-                                "name": "hsl",
-                                "coverage": 173717
-                            }
-                        ]
-                    },
-                    {
-                        "name": "utils",
-                        "children": [
-                            {
-                                "name": "randomize",
-                                "coverage": 125645
-                            },
-                            {
-                                "name": "resetClock",
-                                "coverage": 38590
-                            },
-                            {
-                                "name": "noop",
-                                "coverage": 74833
-                            }
-                        ]
-                    },
-                    {
-                        "name": "generators",
-                        "color": "hsl(49, 70%, 50%)",
-                        "children": [
-                            {
-                                "name": "address",
-                                "coverage": 79920
-                            }
-                        ]
-                    },
-                    {
-                        "name": "set",
-                        "color": "hsl(147, 70%, 50%)",
-                        "children": [
-                            {
-                                "name": "clone",
-                                "coverage": 50094
-                            },
-                            {
-                                "name": "intersect",
-                                "coverage": 74340
-                            }
-                        ]
-                    },
-                    {
-                        "name": "text",
-                        "children": [
-                            {
-                                "name": "trim",
-                                "coverage": 122660
-                            }
-                        ]
-                    },
-                    {
-                        "name": "misc",
-                        "color": "hsl(18, 70%, 50%)",
-                        "children": [
-                            {
-                                "name": "whatever",
-                                "color": "hsl(270, 70%, 50%)",
-                                "children": [
-                                    {
-                                        "name": "hey",
-                                        "color": "hsl(191, 70%, 50%)",
-                                        "coverage": 32524
-                                    },
-                                    {
-                                        "name": "WTF",
-                                        "color": "hsl(222, 70%, 50%)",
-                                        "coverage": 16215
-                                    }
-                                ]
-                            },
-                            {
-                                "name": "other",
-                                "coverage": 118451
-                            },
-                            {
-                                "name": "crap",
-                                "children": [
-                                    {
-                                        "name": "crapA",
-                                        "coverage": 38672
-                                    },
-                                    {
-                                        "name": "crapB",
-                                        "children": [
-                                            {
-                                                "name": "crapB1",
-                                                "coverage": 101748
-                                            },
-                                            {
-                                                "name": "crapB2",
-                                                "coverage": 56027
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "name": "crapC",
-                                        "children": [
-                                            {
-                                                "name": "crapC1",
-                                                "coverage": 101089
-                                            }
-                                        ]
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            }
+            testCoverageData: {}
         };
 
     }
@@ -225,99 +44,127 @@ class QualityManagementTestCoverage extends DashboardAbstract {
         var hierarchicalData = [];
         var projectName = localStorage.getItem(IDENTIFIER_PROJECT_NAME); // "PROJECTNAME"; // acts as root as there are multiple root packages in some cases
         var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
+        var collectedNames = [];
+
         neo4jSession.run(
             "MATCH (c:Jacoco:Class)-[:HAS_METHODS]->(m:Method:Jacoco)-[:HAS_COUNTERS]->(t:Counter) " +
             "WHERE t.type='INSTRUCTION' " +
             "RETURN c.fqn as fqn, m.signature as signature,(t.covered*100)/(t.covered+t.missed) as coverage")
-            .then(function (result) {
-                var collectedNames = [];
+        .then(function (result) {
+            var idCounter = 1;
+            // collect results
+            result.records.forEach(function (record) {
+                var name = record.get("fqn");
 
-                // collect results
-                result.records.forEach(function (record) {
-                    var name = record.get("fqn");
+                //add signature as element
+                var recordConverted = {
+                    "id": idCounter,
+                    "name": record.get("signature"),
+                    "fqn": name,
+                    "coverage": record.get("coverage").low,
+                    "level": name.split(".").length + 1
+                };
+                flatData.push(recordConverted);
 
-                    var recordConverted = {
+                //add current fqn to elements
+                if (!collectedNames[name]) {
+                    idCounter++;
+                    collectedNames[name] = idCounter;
+                    flatData.push({
+                        "id": idCounter,
                         "name": name,
-                        "signature": record.get("signature"),
-                        "coverage": record.get("coverage").low,
+                        "coverage": 0,
                         "level": name.split(".").length
-                    };
-                    flatData.push(recordConverted);
+                    });
+                }
 
-                    //fill packages to allow stratify()
-                    var level = 0;
-                    while (name.lastIndexOf(".") !== -1) {
-                        level = name.split(".").length - 1;
-                        name = name.substring(0, name.lastIndexOf("."));
-                        if (!collectedNames[name]) {
-                            collectedNames[name] = 1;
-                            flatData.push({
-                                "name": name,
-                                "complexity": 0,
-                                "coverage": 0,
-                                "level": level
-                            });
-                        }
+                //fill packages to allow stratify()
+                var level = 0;
+                while (name.lastIndexOf(".") !== -1) {
+                    idCounter++;
+                    level = name.split(".").length - 1;
+                    name = name.substring(0, name.lastIndexOf("."));
+                    if (!collectedNames[name]) {
+                        collectedNames[name] = idCounter;
+                        flatData.push({
+                            "id": idCounter,
+                            "name": name,
+                            "coverage": 0,
+                            "level": level
+                        });
+                    }
+                }
+                idCounter++;
+            });
+
+            var stratify = d3.stratify()
+                .id(function (d) {
+                    return d.id;
+                })
+                .parentId(function (d) {
+                    if (d.fqn) {
+                        return collectedNames[d.fqn];
+                    }
+
+                    if (d.name.lastIndexOf(".") !== -1) { // classes and subpackes
+                        return collectedNames[d.name.substring(0, d.name.lastIndexOf("."))];
+                    }
+
+                    if (d.name !== projectName) { // a root package
+                        return collectedNames[projectName];
+                    } else { // project name as root
+                        return undefined;
                     }
                 });
 
-                var stratify = d3.stratify()
-                    .id(function (d) {
-                        return d.name;
-                    })
-                    .parentId(function (d) {
-                        if (d.name.lastIndexOf(".") != -1) { // classes and subpackes
-                            return d.name.substring(0, d.name.lastIndexOf("."));
-                        } else if (d.name != projectName) { // a root package
-                            return projectName;
-                        } else { // project name as root
-                            return "";
-                        }
-                    });
+            // add projectname as root
+            try {
+                hierarchicalData = stratify(flatData);
+            } catch (e) {
+                var root = {
+                    "id": 0,
+                    "name": projectName,
+                    "coverage": 0,
+                    "level": 0
+                };
+                flatData.push(root);
+                collectedNames[projectName] = 0;
+                hierarchicalData = stratify(flatData);
+            }
 
-                // add projectname as root
-                try {
-                    hierarchicalData = stratify(flatData);
-                } catch (e) {
-                    var root = {
-                        "name": projectName,
-                        "level": 0
-                    };
-                    flatData.push(root);
-                    hierarchicalData = stratify(flatData);
-                }
+            //normalize recursively all childs (move information from .data to the element's root where nivo expects it)
+            var normalize = function(hierarchicalData) {
+                for (var i = 0; i < hierarchicalData.children.length; i++) {
+                    hierarchicalData.children[i].key = hierarchicalData.children[i].data.id;
+                    hierarchicalData.children[i].coverage = hierarchicalData.children[i].data.coverage;
 
-                // turn flat json into hierarchical json
-
-
-                //normalize recursively all childs (move information from .data to the element's root where nivo expects it)
-                var normalize = function(hierarchicalData) {
-                    for (var i = 0; i < hierarchicalData.children.length; i++) {
+                    if (!hierarchicalData.children[i].data.fqn) {
                         var lastDot = hierarchicalData.children[i].data.name.lastIndexOf(".");
                         hierarchicalData.children[i].name = hierarchicalData.children[i].data.name.substring(lastDot + 1);
-                        //hierarchicalData.children[i].signature = hierarchicalData.children[i].data.signature;
-                        hierarchicalData.children[i].coverage = hierarchicalData.children[i].data.coverage;
-                        if (hierarchicalData.children[i].children) {
-                            normalize(hierarchicalData.children[i]);
-                        }
+                    } else {
+                        hierarchicalData.children[i].name = hierarchicalData.children[i].data.name;
+                    }
+
+                    if (hierarchicalData.children[i].children) {
+                        normalize(hierarchicalData.children[i]);
                     }
                 }
+            };
 
-                normalize(hierarchicalData);
+            normalize(hierarchicalData);
+            //normalize the root element
+            hierarchicalData.key = hierarchicalData.data.id;
+            hierarchicalData.name = hierarchicalData.data.name;
+            hierarchicalData.coverage = hierarchicalData.data.coverage;
 
-                neo4jSession.close();
-
-                //normalize the root element
-                hierarchicalData.name = hierarchicalData.id;
-                //hierarchicalData.loc = hierarchicalData.data.loc;
-                //hierarchicalData.complexity = hierarchicalData.data.complexity;
-            }).then( function(context) {
-            //thisBackup.setState({testCoverageData: hierarchicalData});
-            console.log(hierarchicalData);
+            neo4jSession.close();
+        }).then( function(context) {
+            thisBackup.setState({testCoverageData: hierarchicalData});
+//            console.log(hierarchicalData);
         })
-            .catch(function (error) {
-                console.log(error);
-            });
+        .catch(function (error) {
+            console.log(error);
+        });
     }
 
     render() {
@@ -329,7 +176,7 @@ class QualityManagementTestCoverage extends DashboardAbstract {
         if (!this.state.testCoverageData.name) {
             return '';
         }
-        console.log(this.state.testCoverageData);
+//        console.log(this.state.testCoverageData);
 
         return (
             <div>
@@ -347,8 +194,8 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                                                 root={this.state.testCoverageData}
                                                 identity="name"
                                                 value="coverage"
-                                                innerPadding={3}
-                                                outerPadding={3}
+                                                innerPadding={10}
+                                                outerPadding={10}
                                                 margin={{
                                                     "top": 10,
                                                     "right": 10,

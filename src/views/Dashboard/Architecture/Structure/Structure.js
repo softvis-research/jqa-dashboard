@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../AbstractDashboardComponent';
-import {Row, Col, Card, CardHeader, CardBody, Button, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
+import {Row, Col, Card, CardHeader, CardBody, Button, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
 import DynamicBreadcrumb from '../../../../components/Breadcrumb/DynamicBreadcrumb';
 import SimpleBar from 'SimpleBar';
 
@@ -33,7 +33,13 @@ class ArchitectureStructure extends DashboardAbstract {
             hotSpotData: {},
             treeViewData: {},
             breadCrumbData: [''],
-            info: false
+            popoverOpen: false,
+            popovers: [
+                {
+                    placement: 'bottom',
+                    text: 'Bottom'
+                }
+            ]
         };
 
         this.onToggle = this.onToggle.bind(this);
@@ -80,7 +86,7 @@ class ArchitectureStructure extends DashboardAbstract {
             "WHERE\n" +
             " f.relativePath STARTS WITH 'src'\n" +
             "RETURN\n " +
-            " t.fqn as fqn, sum(m.cyclomaticComplexity) as complexity, sum(m.effectiveLineCount) as loc")
+            " t.fqn as fqn, sum(m.cyclomaticComplexity) as complexity, sum(m.effectiveLineCount) as loc ORDER BY fqn ASCENDING")
             .then(function (result) {
                 var collectedNames = [];
 
@@ -329,7 +335,7 @@ class ArchitectureStructure extends DashboardAbstract {
 
     toggleInfo() {
         this.setState({
-            info: !this.state.info
+            popoverOpen: !this.state.popoverOpen
         });
     }
 
@@ -351,23 +357,18 @@ class ArchitectureStructure extends DashboardAbstract {
                             <CardHeader>
                                 Structure
                                 <div className="card-actions">
-                                    <a href="javascript: void(0)" onClick={this.toggleInfo}>
+                                    <a href="javascript: void(0)" onClick={this.toggleInfo} id="Popover2">
                                         <i className="text-muted fa fa-question-circle"></i>
                                     </a>
-                                    <Modal isOpen={this.state.info} toggle={this.toggleInfo}
-                                           className={this.props.className}>
-                                        <ModalHeader toggle={this.toggleInfo}>Structure</ModalHeader>
-                                        <ModalBody>
+                                    <Popover placement="bottom" isOpen={this.state.popoverOpen} target="Popover2" toggle={this.toggleInfo}>
+                                        <PopoverHeader>Structure</PopoverHeader>
+                                        <PopoverBody>
                                             Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
                                             et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
                                             aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
                                             cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                                            culpa qui officia deserunt mollit anim id est laborum.
-                                        </ModalBody>
-                                        <ModalFooter>
-                                            <Button color="secondary" onClick={this.toggleInfo}>Close</Button>
-                                        </ModalFooter>
-                                    </Modal>
+                                            culpa qui officia deserunt mollit anim id est laborum.                                        </PopoverBody>
+                                    </Popover>
                                 </div>
                             </CardHeader>
                             <CardBody>

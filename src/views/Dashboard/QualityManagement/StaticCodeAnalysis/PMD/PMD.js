@@ -1,13 +1,53 @@
 import React, { Component } from 'react';
 
-import DashboardAbstract, {databaseCredentialsProvided, neo4jSession} from '../../AbstractDashboardComponent';
+import DashboardAbstract, {databaseCredentialsProvided, neo4jSession} from '../../../AbstractDashboardComponent';
 
-import {Alert, Badge, Row, Col, Card, CardHeader, CardFooter, CardBody, Label, Input, ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText} from 'reactstrap';
+import {Alert, Badge, Row, Col, Card, CardHeader, CardFooter, CardBody, Label, Input, ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText, Button, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
 
 import SimpleBar from 'SimpleBar';
 
 var groupArray = require('group-array');
 var arraySort = require('array-sort');
+
+class PopoverItem extends Component {
+    constructor(props) {
+        super(props);
+
+        this.toggle = this.toggle.bind(this);
+        this.state = {
+            popoverOpen: false,
+            infoText: {
+                "Best Practices": "Rules which enforce generally accepted best practices.",
+                "Code Style": "Rules which enforce a specific coding style.",
+                "Design": "Rules that help you discover design issues.",
+                "Documentation": "Rules that are related to code documentation.",
+                "Error Prone": "Rules to detect constructs that are either broken, extremely confusing or prone to runtime errors.",
+                "Multithreading": "Rules that flag issues when dealing with multiple threads of execution.",
+                "Performance": "Rules that flag suboptimal code."
+            }
+        };
+    }
+
+    toggle() {
+        this.setState({
+            popoverOpen: !this.state.popoverOpen
+        });
+    }
+
+    render() {
+        return (
+            <span>
+                <a href="javascript: void(0)" className="mr-1" color="secondary" id={'Popover-' + this.props.id} onClick={this.toggle}>
+                    <i className="text-muted fa fa-question-circle"></i>
+                </a>
+                <Popover placement={'bottom'} isOpen={this.state.popoverOpen} target={'Popover-' + this.props.id} toggle={this.toggle}>
+                    <PopoverHeader>{this.props.type}</PopoverHeader>
+                    <PopoverBody>{this.state.infoText[this.props.type]}</PopoverBody>
+                </Popover>
+      </span>
+        );
+    }
+}
 
 class QualityManagementStaticCodeAnalysisPMD extends DashboardAbstract {
 
@@ -19,13 +59,15 @@ class QualityManagementStaticCodeAnalysisPMD extends DashboardAbstract {
                 "loading": [] //indicator for no data
             },
             alertColors: [
-                'worstcase',
-                'danger',
-                'warning',
-                'info',
-                'secondary'
+                "worstcase",
+                "danger",
+                "warning",
+                "info",
+                "secondary"
             ]
         };
+
+        this.toggleInfo = this.toggleInfo.bind(this);
     }
 
     componentDidMount() {
@@ -73,7 +115,14 @@ class QualityManagementStaticCodeAnalysisPMD extends DashboardAbstract {
         });
     }
 
+    toggleInfo() {
+        this.setState({
+            popoverOpen: !this.state.popoverOpen
+        });
+    }
+
     render() {
+        var thisBackup = this;
         var redirect = super.render();
 
         if (redirect.length > 0) {
@@ -96,6 +145,9 @@ class QualityManagementStaticCodeAnalysisPMD extends DashboardAbstract {
                                 <Card className={'pmd-card'}>
                                     <CardHeader>
                                         {key} ({this.state.pmdData[key].length})
+                                        <div className="card-actions">
+                                            <PopoverItem key={i} type={key} id={i} />
+                                        </div>
                                     </CardHeader>
                                     <CardBody data-simplebar style={{height: "549px", overflow: "hidden"}}>
                                         {

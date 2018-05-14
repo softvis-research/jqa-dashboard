@@ -318,7 +318,7 @@ class Dashboard extends DashboardAbstract {
                                 Quality Management
                             </CardHeader>
                             <CardBody>
-                                <a href="#/quality-management/static-code-analysis-pmd">
+                                <a href="#/quality-management/static-code-analysis/pmd">
                                     <strong>Static Code Analysis PMD metrics</strong>
                                     <ListGroup className="margin-bottom">
                                         {Object.keys(this.state.staticCodeAnalysisPMDMetrics).map(function(key) {
