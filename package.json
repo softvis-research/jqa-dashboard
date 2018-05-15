@@ -76,7 +76,8 @@
     "reactstrap": "5.0.0-alpha.4",
     "simple-line-icons": "2.4.1",
     "simplebar": "^2.6.0",
-    "string-to-color": "^2.0.0"
+    "string-to-color": "^2.0.0",
+    "tinygradient": "^0.4.0"
   },
   "scripts": {
     "dev": "webpack -d --progress --watch --profile --json > compilation-stats.json --env.dev",

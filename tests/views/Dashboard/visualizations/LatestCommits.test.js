@@ -26,7 +26,7 @@ describe('<LatestCommits />', () => {
         });
         var html = wrapper.html();
 
-        expect(html).to.contain('<div class="ReactTable -striped -highlight"><div class="rt-table"><div class="rt-thead -header" style="min-width:300px">');
+        expect(html).to.contain('<div class="ReactTable -striped -highlight"><div class="rt-table" role="grid"><div class="rt-thead -header" style="min-width:300px">');
         //expect(html).to.contain('<svg>');
     });
 });

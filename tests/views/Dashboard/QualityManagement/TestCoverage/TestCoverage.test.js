@@ -14,10 +14,21 @@ describe('<TestCoverage />', () => {
 
     it('should render without throwing an error', () => {
         var wrapper = shallow( <TestCoverage/> );
-        /*
+
         wrapper.setState({
+            testCoverageData:
+                {
+                    "name": "nivo",
+                    "test": "testval",
+                    "children": [
+                        {
+                            "name": "dummy",
+                            "coverage": 100
+                        }
+                    ]
+                }
         });
-        */
+
         var html = wrapper.html();
 
         expect(html).to.contain('<div class="card-header">Test Coverage');

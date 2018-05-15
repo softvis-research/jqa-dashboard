@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../AbstractDashboardComponent';
 import {Row, Col, Card, CardHeader, CardBody} from 'reactstrap';
-import SimpleBar from 'SimpleBar';
+import tinygradient from 'tinygradient';
 
 var AppDispatcher = require('../../../../AppDispatcher');
 
@@ -10,6 +10,7 @@ import {ResponsiveTreeMap} from '@nivo/treemap';
 import * as d3 from "d3";
 
 var IDENTIFIER_PROJECT_NAME = "projectName";
+var gradient = tinygradient('red', 'green');
 
 class QualityManagementTestCoverage extends DashboardAbstract {
 
@@ -62,7 +63,8 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                     "name": record.get("signature"),
                     "fqn": name,
                     "coverage": record.get("coverage").low,
-                    "level": name.split(".").length + 1
+                    "level": name.split(".").length + 1,
+                    "role": "leaf"
                 };
                 flatData.push(recordConverted);
 
@@ -160,7 +162,7 @@ class QualityManagementTestCoverage extends DashboardAbstract {
             neo4jSession.close();
         }).then( function(context) {
             thisBackup.setState({testCoverageData: hierarchicalData});
-//            console.log(hierarchicalData);
+            //console.log(hierarchicalData);
         })
         .catch(function (error) {
             console.log(error);
@@ -168,6 +170,7 @@ class QualityManagementTestCoverage extends DashboardAbstract {
     }
 
     render() {
+
         var redirect = super.render();
         if (redirect.length > 0) {
             return(redirect);
@@ -202,12 +205,33 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                                                     "bottom": 10,
                                                     "left": 10
                                                 }}
-                                                label="coverage"
-                                                labelFormat=".0s"
-                                                labelSkipSize={12}
-                                                labelTextColor="inherit:darker(1.2)"
+                                                enableLabel={false}
                                                 colors="nivo"
-                                                colorBy="depth"
+                                                colorBy={ function (e) {
+
+                                                    var data = e.data;
+
+                                                    var role = "undefined";
+                                                    if (data && data.role) {
+                                                        role = data.role;
+                                                    }
+
+                                                    if (data && role === "leaf") {
+                                                        var coverage = data.coverage / 100;
+                                                        var rgbObject = tinygradient('red', 'green').rgbAt(coverage);
+                                                        var r = Math.round(rgbObject._r);
+                                                        var g = Math.round(rgbObject._g);
+                                                        var b = Math.round(rgbObject._b);
+                                                        return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+                                                    } else if (data) {
+                                                        var level = data.level;
+                                                        var r = 228 - (11 * level * 2);
+                                                        var g = 242 - (6 * level * 2);
+                                                        var b = 243 - (6 * level * 2);
+                                                        return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+                                                    }
+
+                                                } }
                                                 borderColor="inherit:darker(0.3)"
                                                 animate={true}
                                                 motionStiffness={90}
