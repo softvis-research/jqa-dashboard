@@ -6,11 +6,12 @@ import tinygradient from 'tinygradient';
 
 var AppDispatcher = require('../../../../AppDispatcher');
 
-import {ResponsiveTreeMap} from '@nivo/treemap';
+import {ResponsiveTreeMapHtml} from '@nivo/treemap';
 import * as d3 from "d3";
 
 var IDENTIFIER_PROJECT_NAME = "projectName";
 var gradient = tinygradient('red', 'green');
+var $ = require("jquery");
 
 class QualityManagementTestCoverage extends DashboardAbstract {
 
@@ -33,6 +34,65 @@ class QualityManagementTestCoverage extends DashboardAbstract {
         if (databaseCredentialsProvided) {
             this.readTestCoverage();
         }
+
+        var thisBackup = this;
+
+        // add LOC to tooltip
+        $(document).on('mouseover', '.test-coverage > div > div > div > div > div',  function () {
+            var hoveredNode = $(this).prop('id');
+            //set timeout because tooltip is dynamically added to the DOM by nivo
+            setTimeout(function () {
+                thisBackup.setState({ hoveredNode: hoveredNode });
+
+                var tooltipElement = $(".test-coverage strong").parent();
+                var locLabelElement = $(".test-coverage-loc-label");
+
+                if (locLabelElement.length === 0) {
+                    // use append because innerHTML sadly removes all listeners
+                    tooltipElement.append("<span class='test-coverage-loc-label'> LOC</span>");
+                }
+
+                // clean commits label
+                if ($('.test-coverage-coverage-label').length !== 0) {
+                    $('#test-coverage-coverage-label').remove();
+                }
+
+                var coverage = thisBackup.findCoverageById(hoveredNode);
+                if (typeof(coverage) !== 'undefined') {
+                    locLabelElement.append("<span id='test-coverage-coverage-label' class='test-coverage-coverage-label'>, " + coverage + "% Test coverage</span>");
+                }
+
+            }, 20);
+        });
+    }
+
+    findCoverageById(hoveredNodeId) {
+        //normalize recursively all childs (move information from .data to the element's root where nivo expects it)
+        var findIdInHierarchicalData = function(hierarchicalData, idToFind) {
+            for (var i = 0; i < hierarchicalData.children.length; i++) {
+                if (hierarchicalData.children[i].data.id == idToFind) {
+                    return hierarchicalData.children[i];
+                }
+                if (hierarchicalData.children[i].children) {
+                    var found = findIdInHierarchicalData(hierarchicalData.children[i], idToFind);
+                    if (found) {
+                        return found;
+                    }
+                }
+            }
+        };
+
+        var foundElement = findIdInHierarchicalData(this.state.testCoverageData, hoveredNodeId);
+
+        if (!foundElement) {
+            if (this.state.testCoverageData.id == hoveredNodeId) {
+                foundElement = this.state.testCoverageData;
+            }
+        }
+
+        if (typeof(foundElement) === 'object' && typeof(foundElement.coverage) !== 'undefined') {
+            return foundElement.coverage;
+        }
     }
 
     componentWillUnmount() {
@@ -48,9 +108,16 @@ class QualityManagementTestCoverage extends DashboardAbstract {
         var collectedNames = [];
 
         neo4jSession.run(
+            /*
             "MATCH (c:Jacoco:Class)-[:HAS_METHODS]->(m:Method:Jacoco)-[:HAS_COUNTERS]->(t:Counter) " +
             "WHERE t.type='INSTRUCTION' " +
             "RETURN c.fqn as fqn, m.signature as signature,(t.covered*100)/(t.covered+t.missed) as coverage")
+            */
+            "MATCH (c:Jacoco:Class)-[:HAS_METHODS]->(m:Method:Jacoco)-[:HAS_COUNTERS]->(cnt:Counter) " +
+            "WHERE cnt.type='INSTRUCTION' " +
+            "RETURN  c.fqn as fqn, m.signature as signature,(cnt.covered*100)/(cnt.covered+cnt.missed) as coverage, cnt.covered+cnt.missed as loc " +
+            "ORDER BY fqn, signature ASCENDING"
+        )
         .then(function (result) {
             var idCounter = 1;
             // collect results
@@ -63,6 +130,7 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                     "name": record.get("signature"),
                     "fqn": name,
                     "coverage": record.get("coverage").low,
+                    "loc": record.get("loc").low,
                     "level": name.split(".").length + 1,
                     "role": "leaf"
                 };
@@ -76,6 +144,7 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                         "id": idCounter,
                         "name": name,
                         "coverage": 0,
+                        "loc": 0,
                         "level": name.split(".").length
                     });
                 }
@@ -92,6 +161,7 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                             "id": idCounter,
                             "name": name,
                             "coverage": 0,
+                            "loc": 0,
                             "level": level
                         });
                     }
@@ -127,6 +197,7 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                     "id": 0,
                     "name": projectName,
                     "coverage": 0,
+                    "loc": 0,
                     "level": 0
                 };
                 flatData.push(root);
@@ -139,6 +210,7 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                 for (var i = 0; i < hierarchicalData.children.length; i++) {
                     hierarchicalData.children[i].key = hierarchicalData.children[i].data.id;
                     hierarchicalData.children[i].coverage = hierarchicalData.children[i].data.coverage;
+                    hierarchicalData.children[i].loc = hierarchicalData.children[i].data.loc;
 
                     if (!hierarchicalData.children[i].data.fqn) {
                         var lastDot = hierarchicalData.children[i].data.name.lastIndexOf(".");
@@ -158,6 +230,7 @@ class QualityManagementTestCoverage extends DashboardAbstract {
             hierarchicalData.key = hierarchicalData.data.id;
             hierarchicalData.name = hierarchicalData.data.name;
             hierarchicalData.coverage = hierarchicalData.data.coverage;
+            hierarchicalData.loc = hierarchicalData.data.loc;
 
             neo4jSession.close();
         }).then( function(context) {
@@ -192,13 +265,13 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                             <CardBody>
                                 <Row>
                                     <Col xs="12" sm="12" md="12">
-                                        <div className={'test-coverage'} style={{height: "500px"}}>
-                                            <ResponsiveTreeMap
+                                        <div className={'test-coverage'} style={{height: "800px"}}>
+                                            <ResponsiveTreeMapHtml
                                                 root={this.state.testCoverageData}
                                                 identity="name"
-                                                value="coverage"
-                                                innerPadding={10}
-                                                outerPadding={10}
+                                                value="loc"
+                                                innerPadding={2}
+                                                outerPadding={2}
                                                 margin={{
                                                     "top": 10,
                                                     "right": 10,
