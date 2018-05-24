@@ -7,7 +7,7 @@ import SimpleBar from 'SimpleBar';
 
 var AppDispatcher = require('../../../../AppDispatcher');
 
-import {ResponsiveBubbleHtml} from 'nivo';
+import {ResponsiveBubbleHtml} from '@nivo/circle-packing';
 import * as d3 from "d3";
 
 var $ = require("jquery");
@@ -432,7 +432,7 @@ class ArchitectureStructure extends DashboardAbstract {
                                                             }
 
                                                         } }
-                                                        padding={6}
+                                                        padding={2}
                                                         enableLabel={false}
                                                         borderWidth={2}
                                                         defs={[

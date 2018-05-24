@@ -4,10 +4,11 @@ import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '..
 import {Row, Col, Card, CardHeader, CardBody, Button, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
 import DynamicBreadcrumb from '../../../../components/Breadcrumb/DynamicBreadcrumb';
 import SimpleBar from 'SimpleBar';
+import tinygradient from 'tinygradient';
 
 var AppDispatcher = require('../../../../AppDispatcher');
 
-import {ResponsiveBubbleHtml} from 'nivo';
+import {ResponsiveBubbleHtml} from '@nivo/circle-packing';
 import * as d3 from "d3";
 
 var $ = require("jquery");
@@ -152,13 +153,14 @@ class RiskManagementHotspots extends DashboardAbstract {
                     return; //continue in forEach
                 }
                 collectedNames[name] = 1;
+                var leafLevel = name.split(".").length;
 
                 var recordConverted = {
                     "name": name,
                     "complexity": record.get("complexity").low,
                     "loc": record.get("loc").low,
                     "commits": currentCommmits,
-                    "level": 0,
+                    "level": leafLevel,
                     "role": "leaf"
                 };
 
@@ -483,8 +485,21 @@ class RiskManagementHotspots extends DashboardAbstract {
                                                             }
 
                                                             if (data && data.commits && data.commits > 0 && role === "leaf") {
+
+                                                                var level = data.level;
+                                                                var r = 228 - (11 * level * 2);
+                                                                var g = 242 - (6 * level * 2);
+                                                                var b = 243 - (6 * level * 2);
+
                                                                 var saturation = data.commits / maxCommits;
-                                                                return 'rgba(139, 0, 0, ' + saturation + ')';
+
+                                                                var rgbObject = tinygradient('rgb(' + r + ', ' + g + ', ' + b + ')', 'red').rgbAt(saturation);
+                                                                //var rgbObject = tinygradient('rgb(5, 5, 5)', 'red').rgbAt(saturation);
+
+                                                                r = Math.round(rgbObject._r);
+                                                                g = Math.round(rgbObject._g);
+                                                                b = Math.round(rgbObject._b);
+                                                                return 'rgb(' + r + ', ' + g + ', ' + b + ')';
                                                             } else if (data) {
                                                                 var level = data.level;
                                                                 var r = 228 - (11 * level * 2);
@@ -493,7 +508,7 @@ class RiskManagementHotspots extends DashboardAbstract {
                                                                 return 'rgb(' + r + ', ' + g + ', ' + b + ')';
                                                             }
                                                         } }
-                                                        padding={6}
+                                                        padding={2}
                                                         enableLabel={false}
                                                         borderWidth={2}
                                                         defs={[

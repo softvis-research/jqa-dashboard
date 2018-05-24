@@ -2,7 +2,44 @@ import React, { Component } from 'react';
 
 import DashboardAbstract, {databaseCredentialsProvided, neo4jSession} from './AbstractDashboardComponent';
 
-import {Badge, Row, Col, Card, CardHeader, CardFooter, CardBody, Label, Input, ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText} from 'reactstrap';
+import {Badge, Row, Col, Card, CardHeader, CardFooter, CardBody, Label, Input, ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText, Button, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
+
+class PopoverItem extends Component {
+    constructor(props) {
+        super(props);
+
+        this.toggle = this.toggle.bind(this);
+        this.state = {
+            popoverOpen: false,
+            infoText: {
+                "Architecture": "Dummy text.",
+                "Resource Management": "Dummy text.",
+                "Risk Management": "Dummy text.",
+                "Quality Management": "Dummy text."
+            }
+        };
+    }
+
+    toggle() {
+        this.setState({
+            popoverOpen: !this.state.popoverOpen
+        });
+    }
+
+    render() {
+        return (
+            <span>
+                <a href="javascript: void(0)" className="mr-1" color="secondary" id={'Popover-' + this.props.id} onClick={this.toggle}>
+                    <i className="text-muted fa fa-question-circle"></i>
+                </a>
+                <Popover placement={'bottom'} isOpen={this.state.popoverOpen} target={'Popover-' + this.props.id} toggle={this.toggle}>
+                    <PopoverHeader>{this.props.type}</PopoverHeader>
+                    <PopoverBody>{this.state.infoText[this.props.type]}</PopoverBody>
+                </Popover>
+      </span>
+        );
+    }
+}
 
 class Dashboard extends DashboardAbstract {
 
@@ -39,6 +76,8 @@ class Dashboard extends DashboardAbstract {
                 "overallTestCoverage": "loading"
             }
         };
+
+        this.toggleInfo = this.toggleInfo.bind(this);
     }
 
     componentDidMount() {
@@ -224,6 +263,12 @@ class Dashboard extends DashboardAbstract {
         });
     }
 
+    toggleInfo() {
+        this.setState({
+            popoverOpen: !this.state.popoverOpen
+        });
+    }
+
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
@@ -237,6 +282,9 @@ class Dashboard extends DashboardAbstract {
                         <Card>
                             <CardHeader>
                                 Architecture
+                                <div className="card-actions">
+                                    <PopoverItem key={"Architecture"} type={"Architecture"} id={"Architecture"} />
+                                </div>
                             </CardHeader>
                             <CardBody>
                                 <a href="#/architecture/structure">
@@ -279,6 +327,9 @@ class Dashboard extends DashboardAbstract {
                         <Card>
                             <CardHeader>
                                 Resource Management
+                                <div className="card-actions">
+                                    <PopoverItem key={"ResourceManagement"} type={"Resource Management"} id={"ResourceManagement"} />
+                                </div>
                             </CardHeader>
                             <CardBody>
                                 <a href="#/resource-management/activity">
@@ -304,6 +355,9 @@ class Dashboard extends DashboardAbstract {
                         <Card>
                             <CardHeader>
                                 Risk Management
+                                <div className="card-actions">
+                                    <PopoverItem key={"RiskManagement"} type={"Risk Management"} id={"RiskManagement"} />
+                                </div>
                             </CardHeader>
                             <CardBody>
                                 Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut
@@ -316,10 +370,13 @@ class Dashboard extends DashboardAbstract {
                         <Card>
                             <CardHeader>
                                 Quality Management
+                                <div className="card-actions">
+                                    <PopoverItem key={"QualityManagement"} type={"Quality Management"} id={"QualityManagement"} />
+                                </div>
                             </CardHeader>
                             <CardBody>
                                 <a href="#/quality-management/static-code-analysis/pmd">
-                                    <strong>Static Code Analysis PMD metrics</strong>
+                                    <strong>Static Code Analysis (PMD)</strong>
                                     <ListGroup className="margin-bottom">
                                         {Object.keys(this.state.staticCodeAnalysisPMDMetrics).map(function(key) {
 
@@ -336,7 +393,7 @@ class Dashboard extends DashboardAbstract {
                                 </a>
 
                                 <a href="#/quality-management/test-coverage">
-                                    <strong>Test Coverage metrics</strong>
+                                    <strong>Test Coverage</strong>
                                     <ListGroup>
                                         {Object.keys(this.state.testCoverageMetrics).map(function(key) {
 

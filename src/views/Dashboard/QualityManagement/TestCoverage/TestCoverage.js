@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../AbstractDashboardComponent';
-import {Row, Col, Card, CardHeader, CardBody} from 'reactstrap';
+import {Row, Col, Card, CardHeader, CardBody, Button, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
 import tinygradient from 'tinygradient';
 
 var AppDispatcher = require('../../../../AppDispatcher');
@@ -19,9 +19,17 @@ class QualityManagementTestCoverage extends DashboardAbstract {
         super(props);
 
         this.state = {
-            testCoverageData: {}
+            testCoverageData: {},
+            popoverOpen: false,
+            popovers: [
+                {
+                    placement: 'bottom',
+                    text: 'Bottom'
+                }
+            ]
         };
 
+        this.toggleInfo = this.toggleInfo.bind(this);
     }
 
     componentWillMount() {
@@ -242,6 +250,12 @@ class QualityManagementTestCoverage extends DashboardAbstract {
         });
     }
 
+    toggleInfo() {
+        this.setState({
+            popoverOpen: !this.state.popoverOpen
+        });
+    }
+
     render() {
 
         var redirect = super.render();
@@ -261,6 +275,20 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                         <Card>
                             <CardHeader>
                                 Test Coverage
+                                <div className="card-actions">
+                                    <a href="javascript: void(0)" onClick={this.toggleInfo} id="Popover1">
+                                        <i className="text-muted fa fa-question-circle"></i>
+                                    </a>
+                                    <Popover placement="bottom" isOpen={this.state.popoverOpen} target="Popover1" toggle={this.toggleInfo}>
+                                        <PopoverHeader>Test Coverage</PopoverHeader>
+                                        <PopoverBody>
+                                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
+                                            et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                                            aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                                            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+                                            culpa qui officia deserunt mollit anim id est laborum.                                        </PopoverBody>
+                                    </Popover>
+                                </div>
                             </CardHeader>
                             <CardBody>
                                 <Row>

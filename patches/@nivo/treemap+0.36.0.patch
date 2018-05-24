@@ -1,8 +1,8 @@
 patch-package
---- a/node_modules/@nivo/treemap/es/TreeMapHtmlNode.js
-+++ b/node_modules/@nivo/treemap/es/TreeMapHtmlNode.js
-@@ -23,6 +23,12 @@ var TreeMapHtmlNode = function TreeMapHtmlNode(_ref) {
-     return React.createElement(
+--- a/node_modules/@nivo/treemap/cjs/nivo-treemap.js
++++ b/node_modules/@nivo/treemap/cjs/nivo-treemap.js
+@@ -140,6 +140,12 @@ var TreeMapHtmlNode = function TreeMapHtmlNode(_ref) {
+     return React__default.createElement(
          'div',
          _extends({
 +            id: (node.data && node.data.data && node.data.data.id) ?
