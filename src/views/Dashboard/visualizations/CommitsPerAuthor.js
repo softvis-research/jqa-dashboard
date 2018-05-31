@@ -11,6 +11,8 @@ class CommitsPerAuthor extends DashboardAbstract {
         super(props);
 
         this.state = {
+            startDate: '1970-01-01',
+            endDate: '3000-12-31',
             commitsPerAuthor: []
         };
     }
@@ -36,10 +38,14 @@ class CommitsPerAuthor extends DashboardAbstract {
       var recordCount = 0;
 
       neo4jSession.run(
-        'MATCH (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(file:File) ' + 
-        'WHERE NOT c:Merge ' + 
+        'MATCH (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(file:File) ' +
+        'WHERE NOT c:Merge AND c.date >= {startDate} AND c.date <= {endDate} ' +
         'RETURN a.name as author, count(distinct c) as commits ' +
-        'ORDER BY commits DESC'
+        'ORDER BY commits DESC',
+          {
+              startDate: this.state.startDate,
+              endDate: this.state.endDate
+          }
       ).then(function (result) {
         result.records.forEach(function (record) {
           var recordConverted = {
@@ -59,6 +65,19 @@ class CommitsPerAuthor extends DashboardAbstract {
       });
     }
 
+    handleAction(event) {
+        var action = event.action;
+        switch (action.actionType) {
+            case 'DATERANGEPICKER_MODIFIED':
+                this.setState({
+                    startDate: action.data.displayFrom,
+                    endDate: action.data.displayTo,
+                });
+                this.readCommitsPerAuthor();
+            break;
+        }
+    }
+
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
@@ -73,8 +92,7 @@ class CommitsPerAuthor extends DashboardAbstract {
           <div>
             <div style={{height: "600px"}}>
               <ResponsiveBar
-                onClick={ function(event) { 
-                  //console.log(event);
+                onClick={ function(event) {
                   AppDispatcher.handleAction({
                     actionType: 'SELECT_COMMITSPERAUTHOR',
                     data: event

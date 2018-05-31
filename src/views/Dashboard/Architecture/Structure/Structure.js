@@ -10,8 +10,6 @@ var AppDispatcher = require('../../../../AppDispatcher');
 import {ResponsiveBubbleHtml} from '@nivo/circle-packing';
 import * as d3 from "d3";
 
-var $ = require("jquery");
-
 var IDENTIFIER_PROJECT_NAME = "projectName";
 
 import {Treebeard} from 'react-treebeard';
@@ -56,17 +54,6 @@ class ArchitectureStructure extends DashboardAbstract {
         if (databaseCredentialsProvided) {
             this.readStructure();
         }
-
-        // add LOC to tooltip
-        $(document).on('mouseover', '.structure-component > div > div > div > div > div',  function () {
-            //set timeout because tooltip is dynamically added to the DOM by nivo
-            setTimeout(function () {
-                var tooltipElement = $(".structure-component strong").parent();
-                if ($(".structure-loc-label").length === 0) {
-                    tooltipElement.append("<span class='structure-loc-label'> LOC</span>");
-                }
-            }, 20);
-        });
     }
 
     componentWillUnmount() {
@@ -457,6 +444,16 @@ class ArchitectureStructure extends DashboardAbstract {
                                                         animate={false}
                                                         motionStiffness={90}
                                                         motionDamping={12}
+                                                        tooltip={({ id, value, color }) => (
+                                                            <div style={{whiteSpace: 'pre', display: 'flex', alignItems: 'center'}}>
+                                                                <span style={{display: 'block', height: '12px', width: '12px', marginRight: '7px', backgroundColor: color}}></span>
+                                                                <span>
+                                                                    <strong>
+                                                                        {id}, LOC: {value}
+                                                                    </strong>
+                                                                </span>
+                                                            </div>
+                                                        )}
                                                     />
                                                 </div>
                                             </CardBody>

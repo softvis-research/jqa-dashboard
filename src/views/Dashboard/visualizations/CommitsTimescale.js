@@ -8,6 +8,8 @@ import 'bootstrap/dist/css/bootstrap.css';
 // you will also need the css that comes with bootstrap-daterangepicker
 import 'bootstrap-daterangepicker/daterangepicker.css';
 var moment = require('moment');
+var dateFormat = require('dateformat');
+import $ from "jquery";
 
 import {ResponsiveCalendar} from '@nivo/calendar';
 import {LegendSvgItem} from '@nivo/legends';
@@ -24,6 +26,9 @@ class CommitsTimescale extends DashboardAbstract {
         this.state = {
             commitsFrom: '2017-01-01',
             commitsTo: '2019-01-01',
+            displayFrom: '2017-01-01',
+            displayTo: '2019-01-01',
+            calendarPaginationYear: '2018',
             commitsTimescale: []
         };
     }
@@ -76,14 +81,29 @@ class CommitsTimescale extends DashboardAbstract {
             aggregatedData.push(recordConverted);
         });
         }).then( function(context) {
+
+            var strFrom = minDate.getFullYear() + "-" + ("0" + (minDate.getMonth() + 1)).slice(-2) + "-" + ("0" + (minDate.getDate().toString())).slice(-2);
+            var strTo = maxDate.getFullYear() + "-" + ("0" + (maxDate.getMonth() + 1)).slice(-2) + "-" + ("0" + (maxDate.getDate().toString())).slice(-2);
+
             thisBackup.setState({
                 commitsTimescale: aggregatedData,
-                commitsFrom: minDate.getFullYear() + "-" + minDate.getMonth() + "-" + minDate.getDate(),
-                commitsTo: maxDate.getFullYear() + "-" + maxDate.getMonth() + "-" + maxDate.getDate(),
+                commitsFrom: strFrom,
+                commitsTo: strTo,
+                displayFrom: strFrom,
+                displayTo: strTo
             });
+        }).then( function (context) {
+            // clean daterangepicker in header
+            $('.daterangepicker-placeholder').html('');
+            // put daterangepicker into header
+            $('.react-bootstrap-daterangepicker-container').detach().appendTo('.daterangepicker-placeholder');
         }).catch(function (error) {
             console.log(error);
         });
+    }
+
+    setYear(year) {
+        this.setState({calendarPaginationYear: year});
     }
 
     render() {
@@ -96,18 +116,8 @@ class CommitsTimescale extends DashboardAbstract {
             return '';
         }
 
-        const maxDateDiff = 2;
-
         var fromDateAr = this.state.commitsFrom.split("-");
         var toDateAr = this.state.commitsTo.split("-");
-
-        var yearDiff = toDateAr[0] - fromDateAr[0];
-
-        var fromDate = this.state.commitsFrom;
-        if (yearDiff > maxDateDiff) { //calendar crashes if too many years are displayed because blocksize gets negative
-            var newDate = new Date(toDateAr[0] - maxDateDiff, toDateAr[1], toDateAr[2]);
-            fromDate = newDate.getFullYear() + "-" + newDate.getMonth() + "-" + newDate.getDate();
-        }
 
         var colors = [
             "#c6e48b",
@@ -120,18 +130,64 @@ class CommitsTimescale extends DashboardAbstract {
         var xPosition = 0;
         for (var i = 0; i < colors.length; i++) {
             xPosition += 20;
-            var legendSvgItem = <LegendSvgItem key={i} x={xPosition} y={0} width={20} height={35} label={''} fill={colors[i]} />;
+            var legendSvgItem = <LegendSvgItem key={i} x={xPosition} y={0} width={20} height={35} label={''} fill={colors[i]} textColor={'#151b1e'} />;
             legendItems.push(legendSvgItem);
         }
+
+        var dFromAr = this.state.displayFrom.split('-');
+        var dToAr = this.state.displayTo.split('-');
+
+        var currentYear = this.state.calendarPaginationYear;
+        if (currentYear > dToAr[0]) {
+            currentYear = dToAr[0];
+        }
+
+        if (currentYear < dFromAr[0]) {
+            currentYear = dFromAr[0];
+        }
+
+        var calendarFrom = currentYear + "-1-1";
+        var calendarTo = currentYear + "-12-31";
+        if (currentYear == dFromAr[0]) {
+            calendarFrom = this.state.displayFrom;
+        }
+        if (currentYear == dToAr[0]) {
+            calendarTo = this.state.displayTo;
+        }
+
+        var years = [];
+        for (var j = dFromAr[0]; j <= dToAr[0]; j++) {
+            years.push(j);
+        }
+
+        var dataToShow = [];
+        var fullCommitsArray = [];
+        var dateFrom = new Date(calendarFrom);
+        var dateTo = new Date(calendarTo);
+
+        this.state.commitsTimescale.forEach(function (data) {
+            var date = new Date(data.day);
+            if (date >= dateFrom && date <= dateTo) {
+                dataToShow.push(data);
+            }
+            fullCommitsArray.push(data.day);
+        });
+
+        var thisBackup = this;
 
         return (
             <div className="calendar-wrapper">
                 <DateRangePicker
-                    startDate="1/1/2014"
-                    endDate="3/1/2019"
+                    isInvalidDate={function(date) {
+                        if (fullCommitsArray.indexOf(date.format("YYYY-MM-DD")) === -1) {
+                            return true;
+                        }
+                    }}
+                    startDate={this.state.displayFrom}
+                    endDate={this.state.displayTo}
                     alwaysShowCalendars
-                    minDate="04/30/2018"
-                    maxDate="05/06/2018"
+                    minDate={ /*"04/30/2018"*/ this.state.commitsFrom }
+                    maxDate={ /*"05/06/2018"*/ this.state.commitsTo }
                     opens="left"
                     ranges={{
                         'Today': [moment(), moment()],
@@ -142,7 +198,7 @@ class CommitsTimescale extends DashboardAbstract {
                         'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
                     }}
                     locale={{
-                        "format": "MM/DD/YYYY",
+                        "format": "YYYY-MM-DD",
                         "separator": " - ",
                         "applyLabel": "Apply",
                         "cancelLabel": "Cancel",
@@ -176,38 +232,39 @@ class CommitsTimescale extends DashboardAbstract {
                         "firstDay": 1
                     }}
                     onApply={function(event, picker) {
-                        var startDate = picker.minDate["_i"].split('/');
-                        var endDate   = picker.maxDate["_i"].split('/');
+                        var startDate = picker.startDate["_d"];
+                        var endDate   = picker.endDate["_d"];
 
+                        var startDateString = startDate.getFullYear() + "-" + ("0" + (startDate.getMonth() + 1)).slice(-2) + "-" + ("0" + (startDate.getDate().toString())).slice(-2);
+                        var endDateString = endDate.getFullYear() + "-" + ("0" + (endDate.getMonth() + 1)).slice(-2) + "-" + ("0" + (endDate.getDate().toString())).slice(-2);
                         AppDispatcher.handleAction({
                             actionType: 'SET_STATE',
                             data: {
-                                commitsFrom: startDate[2] + "-" + startDate[0] + "-" + startDate[1],
-                                commitsTo: endDate[2] + "-" + endDate[0] + "-" + endDate[1]
+                                displayFrom: startDateString,
+                                displayTo: endDateString
                             }
                         });
-//                        console.log(picker);
+
+                        var options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+                        AppDispatcher.handleAction({
+                            actionType: 'DATERANGEPICKER_MODIFIED',
+                            data: {
+                                displayFrom: startDate.toLocaleDateString('sv-SE', options), //sweden uses iso-format =)
+                                displayTo: endDate.toLocaleDateString('sv-SE', options)
+                            }
+                        });
                     }}
                 >
                     <div id="daterange" className="selectbox pull-right float-right">
                         <i className="fa fa-calendar"></i>
-                        <span>April 7, 2018 - May 6, 2018</span> <b className="caret"></b>
+                        <span>{dateFormat(this.state.displayFrom, "dS mmmm yyyy")} - {dateFormat(this.state.displayTo, "dS mmmm yyyy")}</span> <b className="caret"></b>
                     </div>
                 </DateRangePicker>
                 <div style={{height: "404px", paddingTop: "60px"}}>
                     <ResponsiveCalendar
-                        from={fromDate}
-                        to={this.state.commitsTo}
-                        onClick={ function(event) {
-                        console.log(event);
-                        /*
-                        AppDispatcher.handleAction({
-                          actionType: 'SELECT_COMMITSPERAUTHOR',
-                          data: event
-                        });
-                        */
-                        }}
-                        data={this.state.commitsTimescale}
+                        from={calendarFrom}
+                        to={calendarTo}
+                        data={dataToShow}
                         emptyColor="#eeeeee"
                         colors={colors}
                         margin={{
@@ -228,6 +285,22 @@ class CommitsTimescale extends DashboardAbstract {
                     <div className="less float-left">less</div>
                     <svg id={"dummyLegend"} style={{float: "left", overflow:"visible", width: ((colors.length + 1) * 20) + 16}}>{legendItems}</svg>
                     <div className="more float-left">more</div>
+                </div>
+                <div className={'year-switcher'} style={{position: 'relative', bottom: '200px'}}>
+                    {years.map(year => (
+                        <span
+                            key={year}
+                            style={{
+                                display: "inline-block",
+                                padding: "3px 9px",
+                                cursor: "pointer",
+                                fontWeight: year == currentYear ? "800" : "400"
+                            }}
+                            onClick={() => this.setYear(year)}
+                        >
+                        {year}
+                      </span>
+                    ))}
                 </div>
             </div>
         )

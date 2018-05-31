@@ -9,6 +9,7 @@ import {
   Badge
 } from 'reactstrap';
 import HeaderDropdown from './HeaderDropdown';
+import {databaseCredentialsProvided} from "../../views/Dashboard/AbstractDashboardComponent";
 
 class Header extends Component {
 
@@ -47,6 +48,7 @@ class Header extends Component {
         </NavbarToggler>
 
         <Nav className="ml-auto" navbar>
+            <NavItem className="d-md-down-none daterangepicker-placeholder"></NavItem>
             <NavItem className="d-md-down-none">
                 <NavLink href="/#/settings" className="float-right">
                     <i className="icon-settings"></i>

@@ -5,8 +5,8 @@ var AppDispatcher = require('../../../../AppDispatcher');
 
 import CommitsPerAuthor from '../../visualizations/CommitsPerAuthor';
 import FilesPerAuthor from '../../visualizations/FilesPerAuthor';
-import LatestCommits from '../../visualizations/LatestCommits';
 import CommitsTimescale from '../../visualizations/CommitsTimescale';
+import LatestCommits from '../../visualizations/LatestCommits';
 
 import {Badge, Row, Col, Card, CardHeader, CardFooter, CardBody, Label, Input, Button, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
 

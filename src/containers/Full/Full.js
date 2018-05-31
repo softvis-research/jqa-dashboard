@@ -34,9 +34,18 @@ import QualityManagementTestCoverage from '../../views/Dashboard/QualityManageme
 import QualityManagementCloneDetection from '../../views/Dashboard/QualityManagement/CloneDetection/CloneDetection';
 import QualityManagementStaticCodeAnalysisPMD from '../../views/Dashboard/QualityManagement/StaticCodeAnalysis/PMD/PMD';
 
+import $ from "jquery";
+
 var gotoSettings = false;
 
 class Full extends Component {
+
+    componentDidUpdate(prevProps) {
+        if (this.props.location.pathname !== '/resource-management/activity') {
+            // clean daterangepicker in header
+            $('.daterangepicker-placeholder').html('');
+        }
+    }
 
     render() {
         return (

@@ -9,6 +9,8 @@ class LatestCommits extends DashboardAbstract {
         super(props);
 
         this.state = {
+            startDate: '1970-01-01',
+            endDate: '3000-12-31',
             latestCommits: []
         };
     }
@@ -33,10 +35,15 @@ class LatestCommits extends DashboardAbstract {
         var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
 
         neo4jSession.run(
-            'MATCH (a:Author)-[:COMMITTED]->(c:Commit) ' +
-            'RETURN a.name, c.date, c.message ' +
+            'MATCH (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(file:File) ' +
+            'WHERE NOT c:Merge AND c.date >= {startDate} AND c.date <= {endDate} ' +
+            'RETURN DISTINCT a.name, c.date, c.message ' +
             'ORDER BY c.date desc ' +
-            'LIMIT 20'
+            'LIMIT 20',
+            {
+                startDate: this.state.startDate,
+                endDate: this.state.endDate
+            }
         ).then(function (result) {
             result.records.forEach(function (record) {
                 var recordConverted = {
@@ -48,11 +55,23 @@ class LatestCommits extends DashboardAbstract {
                 aggregatedData.push(recordConverted);
             });
         }).then( function(context) {
-            //console.log(aggregatedData);
             thisBackup.setState({latestCommits: aggregatedData}); //reverse reverses the order of the array (because the chart is flipped this is neccesary)
         }).catch(function (error) {
             console.log(error);
         });
+    }
+
+    handleAction(event) {
+        var action = event.action;
+        switch (action.actionType) {
+            case 'DATERANGEPICKER_MODIFIED':
+                this.setState({
+                    startDate: action.data.displayFrom,
+                    endDate: action.data.displayTo,
+                });
+                this.readLatestCommits();
+                break;
+        }
     }
 
     render() {

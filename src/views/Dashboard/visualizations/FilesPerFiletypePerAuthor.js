@@ -135,7 +135,7 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
                 continue; //filter out obviously broken elements
             }
             yPosition += 20;
-            var legendSvgItem = <LegendSvgItem key={i} x={0} y={yPosition} width={20} height={35} label={label} fill={stringToColour(label)} />;
+            var legendSvgItem = <LegendSvgItem key={i} x={0} y={yPosition} width={20} height={35} label={label} fill={stringToColour(label)} textColor={'#151b1e'} />;
             legendItems.push(legendSvgItem);
         }
 

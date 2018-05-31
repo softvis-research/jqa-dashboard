@@ -11,6 +11,8 @@ class FilesPerAuthor extends DashboardAbstract {
         super(props);
 
         this.state = {
+            startDate: '1970-01-01',
+            endDate: '3000-12-31',
             filesPerAuthor: []
         };
     }
@@ -36,10 +38,14 @@ class FilesPerAuthor extends DashboardAbstract {
       var recordCount = 0;
 
       neo4jSession.run(
-        'MATCH (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(file:File) ' + 
-        'WHERE NOT c:Merge ' + 
+        'MATCH (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(file:File) ' +
+        'WHERE NOT c:Merge AND c.date >= {startDate} AND c.date <= {endDate} ' +
         'RETURN a.name as author, count(file) as files ' +
-        'ORDER BY files DESC'
+        'ORDER BY files DESC',
+          {
+              startDate: this.state.startDate,
+              endDate: this.state.endDate
+          }
       ).then(function (result) {
         result.records.forEach(function (record) {
           var recordConverted = {
@@ -59,6 +65,21 @@ class FilesPerAuthor extends DashboardAbstract {
       });
     }
 
+    handleAction(event) {
+        console.log(event);
+        var action = event.action;
+        switch (action.actionType) {
+            case 'DATERANGEPICKER_MODIFIED':
+                this.setState({
+                    startDate: action.data.displayFrom,
+                    endDate: action.data.displayTo,
+                });
+                this.readFilesPerAuthor();
+                break;
+        }
+    }
+
+
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
@@ -73,8 +94,7 @@ class FilesPerAuthor extends DashboardAbstract {
           <div>
             <div style={{height: "600px"}}>
               <ResponsiveBar
-                onClick={ function(event) { 
-                  //console.log(event);
+                onClick={ function(event) {
                   AppDispatcher.handleAction({
                     actionType: 'SELECT_FILESPERAUTHOR',
                     data: event

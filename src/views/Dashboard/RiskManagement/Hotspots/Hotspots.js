@@ -11,8 +11,6 @@ var AppDispatcher = require('../../../../AppDispatcher');
 import {ResponsiveBubbleHtml} from '@nivo/circle-packing';
 import * as d3 from "d3";
 
-var $ = require("jquery");
-
 import {Treebeard} from 'react-treebeard';
 var treebeardCustomTheme = require('./TreebeardCustomTheme');
 // from here: https://github.com/alexcurtis/react-treebeard
@@ -60,6 +58,7 @@ class RiskManagementHotspots extends DashboardAbstract {
         }
 
         // add LOC to tooltip
+        /*
         $(document).on('mouseover', '.hotspot-component > div > div > div > div > div',  function () {
             var hoveredNode = $(this).prop('id');
             //set timeout because tooltip is dynamically added to the DOM by nivo
@@ -85,10 +84,11 @@ class RiskManagementHotspots extends DashboardAbstract {
                 }
 
             }, 20);
-        });
+        });*/
     }
 
     getCommits(name) {
+        //console.log('huhu');
         var result = _.find(this.state.commitsData, function(data) {
             return data.name === name;
         });
@@ -404,6 +404,8 @@ class RiskManagementHotspots extends DashboardAbstract {
             return '';
         }
 
+        var thisBackup = this;
+
         return (
             <div>
                 <Row>
@@ -533,6 +535,16 @@ class RiskManagementHotspots extends DashboardAbstract {
                                                         animate={false}
                                                         motionStiffness={90}
                                                         motionDamping={12}
+                                                        tooltip={({ id, value, color, node }) => (
+                                                            <div style={{whiteSpace: 'pre', display: 'flex', alignItems: 'center'}}>
+                                                                <span style={{display: 'block', height: '12px', width: '12px', marginRight: '7px', backgroundColor: color}}></span>
+                                                                <span>
+                                                                    <strong>
+                                                                        {id}, LOC: {value}{thisBackup.getCommits((node.data.data.name).replace(/[^\w]/gi, '-')) ? ', Commits: ' + thisBackup.getCommits((node.data.data.name).replace(/[^\w]/gi, '-')) : ''}
+                                                                    </strong>
+                                                                </span>
+                                                            </div>
+                                                        )}
                                                     />
                                                 </div>
                                             </CardBody>
