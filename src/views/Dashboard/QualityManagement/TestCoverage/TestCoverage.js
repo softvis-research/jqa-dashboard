@@ -11,7 +11,6 @@ import * as d3 from "d3";
 
 var IDENTIFIER_PROJECT_NAME = "projectName";
 var gradient = tinygradient('red', 'green');
-var $ = require("jquery");
 
 class QualityManagementTestCoverage extends DashboardAbstract {
 
@@ -42,39 +41,11 @@ class QualityManagementTestCoverage extends DashboardAbstract {
         if (databaseCredentialsProvided) {
             this.readTestCoverage();
         }
-
-        var thisBackup = this;
-
-        // add LOC to tooltip
-        $(document).on('mouseover', '.test-coverage > div > div > div > div > div',  function () {
-            var hoveredNode = $(this).prop('id');
-            //set timeout because tooltip is dynamically added to the DOM by nivo
-            setTimeout(function () {
-                thisBackup.setState({ hoveredNode: hoveredNode });
-
-                var tooltipElement = $(".test-coverage strong").parent();
-                var locLabelElement = $(".test-coverage-loc-label");
-
-                if (locLabelElement.length === 0) {
-                    // use append because innerHTML sadly removes all listeners
-                    tooltipElement.append("<span class='test-coverage-loc-label'> LOC</span>");
-                }
-
-                // clean commits label
-                if ($('.test-coverage-coverage-label').length !== 0) {
-                    $('#test-coverage-coverage-label').remove();
-                }
-
-                var coverage = thisBackup.findCoverageById(hoveredNode);
-                if (typeof(coverage) !== 'undefined') {
-                    locLabelElement.append("<span id='test-coverage-coverage-label' class='test-coverage-coverage-label'>, " + coverage + "% Test coverage</span>");
-                }
-
-            }, 20);
-        });
     }
 
-    findCoverageById(hoveredNodeId) {
+    findCoverageByNode(hoveredNode) {
+        var hoveredNodeId = hoveredNode.data.data.id;
+
         //normalize recursively all childs (move information from .data to the element's root where nivo expects it)
         var findIdInHierarchicalData = function(hierarchicalData, idToFind) {
             for (var i = 0; i < hierarchicalData.children.length; i++) {
@@ -101,6 +72,26 @@ class QualityManagementTestCoverage extends DashboardAbstract {
         if (typeof(foundElement) === 'object' && typeof(foundElement.coverage) !== 'undefined') {
             return foundElement.coverage;
         }
+    }
+
+    reversePathForDisplay(node) {
+        var path = node.path;
+        path = path.substr( node.id.length );
+
+        if (path.length > 0) {
+            path = path.substr(1)  //+1 to cut first "." away
+        }
+        var pathParts = path.split('.');
+        var correctPath = "";
+        for (var i = pathParts.length - 1; i > -1; i--) {
+            correctPath += '.' + pathParts[i];
+        }
+
+        if (correctPath.length > 0) {
+            correctPath = correctPath.substr(1); //remove first "." added in loop
+        }
+
+        return correctPath;
     }
 
     componentWillUnmount() {
@@ -151,7 +142,7 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                     flatData.push({
                         "id": idCounter,
                         "name": name,
-                        "coverage": 0,
+                        "coverage": -1,
                         "loc": 0,
                         "level": name.split(".").length
                     });
@@ -168,7 +159,7 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                         flatData.push({
                             "id": idCounter,
                             "name": name,
-                            "coverage": 0,
+                            "coverage": -1,
                             "loc": 0,
                             "level": level
                         });
@@ -204,7 +195,7 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                 var root = {
                     "id": 0,
                     "name": projectName,
-                    "coverage": 0,
+                    "coverage": -1,
                     "loc": 0,
                     "level": 0
                 };
@@ -267,6 +258,8 @@ class QualityManagementTestCoverage extends DashboardAbstract {
             return '';
         }
 //        console.log(this.state.testCoverageData);
+
+        var thisBackup = this;
 
         return (
             <div>
@@ -337,6 +330,26 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                                                 animate={true}
                                                 motionStiffness={90}
                                                 motionDamping={11}
+                                                tooltip={({ id, value, color, node }) => (
+                                                    <div style={{whiteSpace: 'pre', display: 'flex', alignItems: 'center'}}>
+                                                        <span style={{display: 'block', height: '12px', width: '12px', marginRight: '7px', backgroundColor: color}}></span>
+                                                        <span>
+                                                            <strong>
+                                                                {id}
+                                                                <span className={'additional'}>
+                                                                    Fqn: {thisBackup.reversePathForDisplay(node)}
+                                                                </span>
+                                                                <span className={'additional'}>
+                                                                    LOC: {value}{
+                                                                        thisBackup.findCoverageByNode(node) > -1 ?
+                                                                            ', Test coverage: ' + thisBackup.findCoverageByNode(node) + '%':
+                                                                            ''
+                                                                    }
+                                                                </span>
+                                                            </strong>
+                                                        </span>
+                                                    </div>
+                                                )}
                                             />
                                         </div>
                                     </Col>
