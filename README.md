@@ -1,10 +1,10 @@
-# Dashboard Software Visualization #
+# Software Visualization Dashboard #
 
-Prototypical implementation of a web-based dashboard for software visualization
+A web-based dashboard for software analysis and visualization. This [screencast](https://www.dropbox.com/s/l5cy1h0saj6khp5/Screencast-Software-Visualization-Dashboard-18-06-04.mp4?dl=0) shows its main features.
 
 ## Installation ##
 
-* clone the repository to your computer using git clone
+* clone the repository
 * in the root directory of your cloned repository, execute the following commands in the command line:
 
 ```
