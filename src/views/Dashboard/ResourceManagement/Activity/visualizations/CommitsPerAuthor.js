@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-var AppDispatcher = require('../../../AppDispatcher');
+var AppDispatcher = require('../../../../../AppDispatcher');
 
 import {ResponsiveBar} from '@nivo/bar';
 
-import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../AbstractDashboardComponent';
+import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
 
-class FilesPerAuthor extends DashboardAbstract {
+class CommitsPerAuthor extends DashboardAbstract {
 
     constructor(props) {
         super(props);
@@ -13,7 +13,7 @@ class FilesPerAuthor extends DashboardAbstract {
         this.state = {
             startDate: '1970-01-01',
             endDate: '3000-12-31',
-            filesPerAuthor: []
+            commitsPerAuthor: []
         };
     }
 
@@ -24,7 +24,7 @@ class FilesPerAuthor extends DashboardAbstract {
     componentDidMount() {
       super.componentDidMount();
       if (databaseCredentialsProvided) {
-        this.readFilesPerAuthor();
+        this.readCommitsPerAuthor();
       }
     }
 
@@ -32,7 +32,7 @@ class FilesPerAuthor extends DashboardAbstract {
       super.componentWillUnmount();
     }
 
-    readFilesPerAuthor() {
+    readCommitsPerAuthor() {
       var aggregatedData = [];
       var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
       var recordCount = 0;
@@ -40,8 +40,8 @@ class FilesPerAuthor extends DashboardAbstract {
       neo4jSession.run(
         'MATCH (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(file:File) ' +
         'WHERE NOT c:Merge AND c.date >= {startDate} AND c.date <= {endDate} ' +
-        'RETURN a.name as author, count(file) as files ' +
-        'ORDER BY files DESC',
+        'RETURN a.name as author, count(distinct c) as commits ' +
+        'ORDER BY commits DESC',
           {
               startDate: this.state.startDate,
               endDate: this.state.endDate
@@ -50,7 +50,7 @@ class FilesPerAuthor extends DashboardAbstract {
         result.records.forEach(function (record) {
           var recordConverted = {
             "author": record.get(0),
-            "files": record.get(1).low
+            "commits": record.get(1).low
           };
 
           if (recordCount < 20) { //above 20 records makes the chart unreadable
@@ -59,14 +59,13 @@ class FilesPerAuthor extends DashboardAbstract {
           recordCount++;
         });
       }).then( function(context) {
-        thisBackup.setState({filesPerAuthor: aggregatedData.reverse()}); //reverse reverses the order of the array (because the chart is flipped this is neccesary)
+        thisBackup.setState({commitsPerAuthor: aggregatedData.reverse()}); //reverse reverses the order of the array (because the chart is flipped this is neccesary)
       }).catch(function (error) {
           console.log(error);
       });
     }
 
     handleAction(event) {
-        console.log(event);
         var action = event.action;
         switch (action.actionType) {
             case 'DATERANGEPICKER_MODIFIED':
@@ -74,11 +73,10 @@ class FilesPerAuthor extends DashboardAbstract {
                     startDate: action.data.displayFrom,
                     endDate: action.data.displayTo,
                 });
-                this.readFilesPerAuthor();
-                break;
+                this.readCommitsPerAuthor();
+            break;
         }
     }
-
 
     render() {
         var redirect = super.render();
@@ -86,7 +84,7 @@ class FilesPerAuthor extends DashboardAbstract {
           return(redirect);
         }
 
-        if (this.state.filesPerAuthor.length === 0) {
+        if (this.state.commitsPerAuthor.length === 0) {
             return '';
         }
 
@@ -96,11 +94,11 @@ class FilesPerAuthor extends DashboardAbstract {
               <ResponsiveBar
                 onClick={ function(event) {
                   AppDispatcher.handleAction({
-                    actionType: 'SELECT_FILESPERAUTHOR',
+                    actionType: 'SELECT_COMMITSPERAUTHOR',
                     data: event
                   });
                 } }
-                data={this.state.filesPerAuthor}
+                data={this.state.commitsPerAuthor}
                 keys={[
                   "commits",
                   "files"
@@ -143,7 +141,7 @@ class FilesPerAuthor extends DashboardAbstract {
                   "tickSize": 5,
                   "tickPadding": 15,
                   "tickRotation": 0,
-                  "legend": "# Files",
+                  "legend": "# Commits",
                   "legendPosition": "center",
                   "legendOffset": 46
                 }}
@@ -169,4 +167,4 @@ class FilesPerAuthor extends DashboardAbstract {
     }
 }
 
-export default FilesPerAuthor;
+export default CommitsPerAuthor;

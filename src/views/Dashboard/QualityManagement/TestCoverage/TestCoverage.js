@@ -335,9 +335,11 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                                                         <span style={{display: 'block', height: '12px', width: '12px', marginRight: '7px', backgroundColor: color}}></span>
                                                         <span>
                                                             <strong>
-                                                                {id}
                                                                 <span className={'additional'}>
-                                                                    Fqn: {thisBackup.reversePathForDisplay(node)}
+                                                                    {thisBackup.reversePathForDisplay(node)}
+                                                                </span>
+                                                                <span className={'additional'}>
+                                                                    {id}
                                                                 </span>
                                                                 <span className={'additional'}>
                                                                     LOC: {value}{

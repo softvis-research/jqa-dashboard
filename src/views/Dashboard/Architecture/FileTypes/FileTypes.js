@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import DashboardAbstract, { neo4jSession } from '../../AbstractDashboardComponent';
-import FileType from '../../visualizations/FileType';
+import FileType from './visualizations/FileType';
 
 import {Badge, Row, Col, Card, CardHeader, CardFooter, CardBody, Label, Input, Button, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
 

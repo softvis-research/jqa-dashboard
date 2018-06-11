@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-var AppDispatcher = require('../../../AppDispatcher');
+var AppDispatcher = require('../../../../../AppDispatcher');
 
 import DateRangePicker from 'react-bootstrap-daterangepicker';
 // you will need the css that comes with bootstrap@3. if you are using
@@ -14,7 +14,7 @@ import $ from "jquery";
 import {ResponsiveCalendar} from '@nivo/calendar';
 import {LegendSvgItem} from '@nivo/legends';
 
-import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../AbstractDashboardComponent';
+import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
 
 class CommitsTimescale extends DashboardAbstract {
 
@@ -260,7 +260,7 @@ class CommitsTimescale extends DashboardAbstract {
                         <span>{dateFormat(this.state.displayFrom, "dS mmmm yyyy")} - {dateFormat(this.state.displayTo, "dS mmmm yyyy")}</span> <b className="caret"></b>
                     </div>
                 </DateRangePicker>
-                <div style={{height: "404px", paddingTop: "60px"}}>
+                <div style={{height: "360px", paddingTop: "60px"}}>
                     <ResponsiveCalendar
                         from={calendarFrom}
                         to={calendarTo}

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-var AppDispatcher = require('../../../AppDispatcher');
+var AppDispatcher = require('../../../../../AppDispatcher');
 
-import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../AbstractDashboardComponent';
+import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
 
 import {ResponsiveBar} from '@nivo/bar';
 import {LegendSvgItem} from '@nivo/legends';

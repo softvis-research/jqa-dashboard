@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../AbstractDashboardComponent';
+import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
 
 import ReactTable from 'react-table';
 
@@ -86,7 +86,7 @@ class LatestCommits extends DashboardAbstract {
 
         return (
             <div>
-                <div>
+                <div style={{height: '409px'}}>
                     <ReactTable
                         data = {this.state.latestCommits}
                         columns = {[
