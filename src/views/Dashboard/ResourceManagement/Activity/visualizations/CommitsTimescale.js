@@ -116,9 +116,6 @@ class CommitsTimescale extends DashboardAbstract {
             return '';
         }
 
-        var fromDateAr = this.state.commitsFrom.split("-");
-        var toDateAr = this.state.commitsTo.split("-");
-
         var colors = [
             "#c6e48b",
             "#7bc96f",
@@ -126,6 +123,7 @@ class CommitsTimescale extends DashboardAbstract {
             '#192127'
         ];
 
+        //add Legend-Items (the green rectangles)
         var legendItems = [];
         var xPosition = 0;
         for (var i = 0; i < colors.length; i++) {
@@ -134,9 +132,11 @@ class CommitsTimescale extends DashboardAbstract {
             legendItems.push(legendSvgItem);
         }
 
+        //split date to make it easy processable
         var dFromAr = this.state.displayFrom.split('-');
         var dToAr = this.state.displayTo.split('-');
 
+        //get current pagination year and limit it
         var currentYear = this.state.calendarPaginationYear;
         if (currentYear > dToAr[0]) {
             currentYear = dToAr[0];
@@ -146,6 +146,7 @@ class CommitsTimescale extends DashboardAbstract {
             currentYear = dFromAr[0];
         }
 
+        //prepare limit for calendar
         var calendarFrom = currentYear + "-1-1";
         var calendarTo = currentYear + "-12-31";
         if (currentYear == dFromAr[0]) {
@@ -155,25 +156,30 @@ class CommitsTimescale extends DashboardAbstract {
             calendarTo = this.state.displayTo;
         }
 
-        var years = [];
-        for (var j = dFromAr[0]; j <= dToAr[0]; j++) {
-            years.push(j);
-        }
-
-        var dataToShow = [];
+        //fill dates to allow in daterangepicker (subset of all commits that is defined by range)
+        var datesToShow = [];
         var fullCommitsArray = [];
+
         var dateFrom = new Date(calendarFrom);
         var dateTo = new Date(calendarTo);
+
+        //years contains the actual years that are pickable as pagination ('from' to 'to' minus gaps)
+        var years = [];
 
         this.state.commitsTimescale.forEach(function (data) {
             var date = new Date(data.day);
             if (date >= dateFrom && date <= dateTo) {
-                dataToShow.push(data);
+                datesToShow.push(data);
             }
             fullCommitsArray.push(data.day);
+
+            var commitYear = data.day.split('-')[0];
+            if (years.indexOf(commitYear) === -1) {
+                years.push(commitYear);
+            }
         });
 
-        var thisBackup = this;
+        console.log(moment());
 
         return (
             <div className="calendar-wrapper">
@@ -186,17 +192,18 @@ class CommitsTimescale extends DashboardAbstract {
                     startDate={this.state.displayFrom}
                     endDate={this.state.displayTo}
                     alwaysShowCalendars
-                    minDate={ /*"04/30/2018"*/ this.state.commitsFrom }
-                    maxDate={ /*"05/06/2018"*/ this.state.commitsTo }
+                    minDate={ this.state.commitsFrom }
+                    maxDate={ this.state.commitsTo }
                     opens="left"
+                    /*
                     ranges={{
-                        'Today': [moment(), moment()],
-                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                        'This Month': [moment().startOf('month'), moment().endOf('month')],
-                        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-                    }}
+                        'Today': [moment().format("YYYY-MM-DD"), moment().format("YYYY-MM-DD")],
+                        'Yesterday': [moment().subtract(1, 'days').format("YYYY-MM-DD"), moment().subtract(1, 'days').format("YYYY-MM-DD")],
+                        'Last 7 Days': [moment().subtract(6, 'days').format("YYYY-MM-DD"), moment().format("YYYY-MM-DD")],
+                        'Last 30 Days': [moment().subtract(29, 'days').format("YYYY-MM-DD"), moment().format("YYYY-MM-DD")],
+                        'This Month': [moment().startOf('month').format("YYYY-MM-DD"), moment().endOf('month').format("YYYY-MM-DD")],
+                        'Last Month': [moment().subtract(1, 'month').startOf('month').format("YYYY-MM-DD"), moment().subtract(1, 'month').endOf('month').format("YYYY-MM-DD")]
+                    }} */
                     locale={{
                         "format": "YYYY-MM-DD",
                         "separator": " - ",
@@ -264,7 +271,7 @@ class CommitsTimescale extends DashboardAbstract {
                     <ResponsiveCalendar
                         from={calendarFrom}
                         to={calendarTo}
-                        data={dataToShow}
+                        data={datesToShow}
                         emptyColor="#eeeeee"
                         colors={colors}
                         margin={{

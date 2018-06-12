@@ -46,8 +46,6 @@ class CustomQuery extends DashboardAbstract {
 
     clear(event) {
 
-        //TODO: this function does in fact clear the query but the codeMirror does not show it. the reason is currently unknown
-        //document.getElementById("cypheredit").value = '';
         var element = document.querySelector('.ReactCodeMirror textarea');
         if ("createEvent" in document) {
             var evt = document.createEvent("HTMLEvents");
