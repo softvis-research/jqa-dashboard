@@ -4,31 +4,26 @@ A web-based dashboard for software analysis and visualization. This [screencast]
 
 ## Installation ##
 
-* clone the repository
-* in the root directory of your cloned repository, execute the following commands in the command line:
+* Clone the repository and execute the following commands.
 
 ```
-1. npm install
-2. npm install graph-app-kit --registry https://neo.jfrog.io/neo/api/npm/npm
-3. npm install -g patch-package
-4. patch-package
+$ npm install
+$ npm install graph-app-kit --registry https://neo.jfrog.io/neo/api/npm/npm
 ```
 
 ## Developers ##
 
-* to prevent "FATAL ERROR: CALL_AND_RETRY_LAST Allocation failed - JavaScript heap out of memory" when recompiling often you have to increase max_old_space_size
-* you can use these commands to do this automatically
+* To prevent "FATAL ERROR: CALL_AND_RETRY_LAST Allocation failed - JavaScript heap out of memory" when recompiling often you have to increase max_old_space_size.
 
 ```
-1. npm install -g increase-memory-limit
-2. increase-memory-limit
+$ npm install -g increase-memory-limit
+$ increase-memory-limit
 ```
 
 ## External Credits ##
 
-* CoreUI
-* React
-* Nivo
-* React Table
-* Graph App Kit
-* Patch-Package
+* [CoreUI](https://github.com/coreui/coreui-free-react-admin-template)
+* [Nivo](https://github.com/plouc/nivo)
+* [React](https://github.com/facebook/react)
+* [React Table](https://github.com/react-tools/react-table)
+* [Graph App Kit](https://github.com/neo4j-apps/graph-app-kit)
