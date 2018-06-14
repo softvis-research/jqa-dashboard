@@ -4,14 +4,13 @@ import DashboardAbstract, {databaseCredentialsProvided, neo4jSession} from '../.
 
 import {Alert, Badge, Row, Col, Card, CardHeader, CardFooter, CardBody, Label, Input, ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText, Button, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
 
-import {ResponsiveRadar} from '@nivo/radar';
-
-import SimpleBar from 'SimpleBar';
+import PmdRadar from './visualization/PmdRadar';
 
 var groupArray = require('group-array');
 var arraySort = require('array-sort');
 
 class PopoverItem extends Component {
+
     constructor(props) {
         super(props);
 
@@ -136,6 +135,7 @@ class QualityManagementStaticCodeAnalysisPMD extends DashboardAbstract {
             return '';
         }
 
+        //special case: instead of fetching data inside of pmdRadar we need to inject it here because they are also needed below
         return (
             <div className="animated fadeIn">
                 <Row>
@@ -148,76 +148,12 @@ class QualityManagementStaticCodeAnalysisPMD extends DashboardAbstract {
                                 </div>
                             </CardHeader>
                             <CardBody style={{height: "400px", overflow: "hidden"}}>
-                                <ResponsiveRadar
-                                    data={[
-                                        {
-                                            "ruleSet": "Best Practices",
-                                            "violations": this.state.pmdData["Best Practices"] ? this.state.pmdData["Best Practices"].length : 0
-                                        },
-                                        {
-                                            "ruleSet": "Code Style",
-                                            "violations": this.state.pmdData["Code Style"] ? this.state.pmdData["Code Style"].length : 0
-                                        },
-                                        {
-                                            "ruleSet": "Design",
-                                            "violations": this.state.pmdData["Design"] ? this.state.pmdData["Design"].length : 0
-                                        },
-                                        {
-                                            "ruleSet": "Documentation",
-                                            "violations": this.state.pmdData["Documentation"] ? this.state.pmdData["Documentation"].length : 0
-                                        },
-                                        {
-                                            "ruleSet": "Error Prone",
-                                            "violations": this.state.pmdData["Error Prone"] ? this.state.pmdData["Error Prone"].length : 0
-                                        },
-                                        {
-                                            "ruleSet": "Multithreading",
-                                            "violations": this.state.pmdData["Multithreading"] ? this.state.pmdData["Multithreading"].length : 0
-                                        },
-                                        {
-                                            "ruleSet": "Performance",
-                                            "violations": this.state.pmdData["Performance"] ? this.state.pmdData["Performance"].length : 0
-                                        }
-                                    ]}
-                                    keys={[
-                                        "violations"
-                                    ]}
-                                    indexBy="ruleSet"
-                                    margin={{
-                                        "top": 70,
-                                        "right": 80,
-                                        "bottom": 40,
-                                        "left": 80
-                                    }}
-                                    curve="catmullRomClosed"
-                                    borderWidth={2}
-                                    borderColor="inherit"
-                                    gridLevels={5}
-                                    gridShape="circular"
-                                    gridLabelOffset={36}
-                                    enableDots={true}
-                                    dotSize={8}
-                                    dotColor="inherit"
-                                    dotBorderWidth={0}
-                                    dotBorderColor="#ffffff"
-                                    enableDotLabel={true}
-                                    dotLabel="value"
-                                    dotLabelYOffset={-12}
-                                    colors="nivo"
-                                    colorBy="key"
-                                    fillOpacity={0.1}
-                                    animate={true}
-                                    motionStiffness={90}
-                                    motionDamping={15}
-                                    isInteractive={true}
-                                />
+                                <PmdRadar data={this.state.pmdData}/>
                             </CardBody>
                         </Card>
                     </Col>
-                    {Object.keys(this.state.pmdData).map(function(key, i) {
-                        //console.log(key);
-                        //console.log(this.state.pmdData[key]);
 
+                    {Object.keys(this.state.pmdData).map(function(key, i) {
                         return (
                             <Col xs="12" sm="6" md="6" key={key + i}>
                                 <Card className={'pmd-card'}>

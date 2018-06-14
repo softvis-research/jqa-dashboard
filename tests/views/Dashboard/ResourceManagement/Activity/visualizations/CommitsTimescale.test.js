@@ -9,7 +9,7 @@ Enzyme.configure({ adapter: new Adapter() });
 //import renderer from 'react-test-renderer';
 
 //component to test
-import CommitsTimescale from '../../../../src/views/Dashboard/visualizations/CommitsTimescale';
+import CommitsTimescale from '../../../../../../src/views/Dashboard/ResourceManagement/Activity/visualizations/CommitsTimescale';
 
 describe('<CommitsTimescale />', () => {
 

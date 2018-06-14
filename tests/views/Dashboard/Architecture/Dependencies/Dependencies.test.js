@@ -42,7 +42,7 @@ describe('<ArchitectureDependencies />', () => {
 
         var html = wrapper.html();
 
-        expect(html).to.contain('<div class="card-header">Dependencies</div>');
+        expect(html).to.contain('<div class="card-header">Dependencies');
         //expect(html).to.contain('<svg>');
     });
 

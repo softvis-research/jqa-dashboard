@@ -9,27 +9,23 @@ Enzyme.configure({ adapter: new Adapter() });
 //import renderer from 'react-test-renderer';
 
 //component to test
-import FilesPerFiletypePerAuthor from '../../../../src/views/Dashboard/visualizations/FilesPerFiletypePerAuthor';
+import FilesPerAuthor from '../../../../../../src/views/Dashboard/ResourceManagement/Activity/visualizations/FilesPerAuthor';
 
-describe('<FilesPerFiletypePerAuthor />', () => {
+describe('<FilesPerAuthor />', () => {
 
     it('should render without throwing an error', () => {
-        var wrapper = shallow(<FilesPerFiletypePerAuthor/>);
+        var wrapper = shallow(<FilesPerAuthor/>);
         wrapper.setState({
-            data: [
+            filesPerAuthor: [
                 {
                     "author": "Dummy",
-                    "filetype": "dum",
-                    "files": 1,
+                    "files": 1
                 }
-            ],
-            dataKeys: [
-                "Dummy"
             ]
         });
         var html = wrapper.html();
 
-        expect(html).to.contain('<div><div style="height:4000px;width:85%;float:left"><div style="width:100%;height:100%">');
+        expect(html).to.contain('<div><div style="height:600px">');
         //expect(html).to.contain('<svg>');
     });
 });

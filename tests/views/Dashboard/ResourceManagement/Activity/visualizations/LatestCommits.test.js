@@ -9,24 +9,24 @@ Enzyme.configure({ adapter: new Adapter() });
 //import renderer from 'react-test-renderer';
 
 //component to test
-import FileType from '../../../../src/views/Dashboard/visualizations/FileType';
+import LatestCommits from '../../../../../../src/views/Dashboard/ResourceManagement/Activity/visualizations/LatestCommits';
 
-describe('<FileTypes />', () => {
+describe('<LatestCommits />', () => {
 
     it('should render without throwing an error', () => {
-        var wrapper = shallow(<FileType/>);
+        var wrapper = shallow(<LatestCommits/>);
         wrapper.setState({
-            filetypeData: [
+            latestCommits: [
                 {
-                    "id": "dummy",
-                    "label": "dummy",
-                    "value": 1
+                    "author": "Dummy",
+                    "date": '2018-01-01',
+                    "message": 'Dummy'
                 }
             ]
         });
         var html = wrapper.html();
 
-        expect(html).to.contain('<div><div style="height:600px">');
+        expect(html).to.contain('<div class="ReactTable -striped -highlight"><div class="rt-table" role="grid"><div class="rt-thead -header" style="min-width:300px">');
         //expect(html).to.contain('<svg>');
     });
 });

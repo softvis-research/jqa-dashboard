@@ -9,17 +9,18 @@ Enzyme.configure({ adapter: new Adapter() });
 //import renderer from 'react-test-renderer';
 
 //component to test
-import CommitsPerAuthor from '../../../../src/views/Dashboard/visualizations/CommitsPerAuthor';
+import FileType from '../../../../../../src/views/Dashboard/Architecture/FileTypes/visualizations/FileType';
 
-describe('<CommitsPerAuthor />', () => {
+describe('<FileType />', () => {
 
     it('should render without throwing an error', () => {
-        var wrapper = shallow(<CommitsPerAuthor/>);
+        var wrapper = shallow(<FileType/>);
         wrapper.setState({
-            commitsPerAuthor: [
+            filetypeData: [
                 {
-                    "author": "Dummy",
-                    "commits": 1
+                    "id": "dummy",
+                    "label": "dummy",
+                    "value": 1
                 }
             ]
         });

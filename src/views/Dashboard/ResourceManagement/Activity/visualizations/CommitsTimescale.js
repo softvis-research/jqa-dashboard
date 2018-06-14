@@ -194,6 +194,7 @@ class CommitsTimescale extends DashboardAbstract {
                     alwaysShowCalendars
                     minDate={ this.state.commitsFrom }
                     maxDate={ this.state.commitsTo }
+                    showDropdowns={true}
                     opens="left"
                     /*
                     ranges={{

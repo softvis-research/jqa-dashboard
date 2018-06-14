@@ -9,24 +9,27 @@ Enzyme.configure({ adapter: new Adapter() });
 //import renderer from 'react-test-renderer';
 
 //component to test
-import LatestCommits from '../../../../src/views/Dashboard/visualizations/LatestCommits';
+import FilesPerFiletypePerAuthor from '../../../../../../src/views/Dashboard/ResourceManagement/KnowledgeDistribution/visualizations/FilesPerFiletypePerAuthor';
 
-describe('<LatestCommits />', () => {
+describe('<FilesPerFiletypePerAuthor />', () => {
 
     it('should render without throwing an error', () => {
-        var wrapper = shallow(<LatestCommits/>);
+        var wrapper = shallow(<FilesPerFiletypePerAuthor/>);
         wrapper.setState({
-            latestCommits: [
+            data: [
                 {
                     "author": "Dummy",
-                    "date": '2018-01-01',
-                    "message": 'Dummy'
+                    "filetype": "dum",
+                    "files": 1,
                 }
+            ],
+            dataKeys: [
+                "Dummy"
             ]
         });
         var html = wrapper.html();
 
-        expect(html).to.contain('<div class="ReactTable -striped -highlight"><div class="rt-table" role="grid"><div class="rt-thead -header" style="min-width:300px">');
+        expect(html).to.contain('<div><div style="height:4000px;width:85%;float:left"><div style="width:100%;height:100%">');
         //expect(html).to.contain('<svg>');
     });
 });

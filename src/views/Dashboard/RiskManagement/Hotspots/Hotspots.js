@@ -1,15 +1,13 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../AbstractDashboardComponent';
+import React from 'react';
+import DashboardAbstract, {databaseCredentialsProvided} from '../../AbstractDashboardComponent';
 import {Row, Col, Card, CardHeader, CardBody, Button, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
 import DynamicBreadcrumb from '../../../../components/Breadcrumb/DynamicBreadcrumb';
 import SimpleBar from 'SimpleBar';
-import tinygradient from 'tinygradient';
 
 var AppDispatcher = require('../../../../AppDispatcher');
 
-import {ResponsiveBubbleHtml} from '@nivo/circle-packing';
 import HotspotModel from '../../../../api/models/Hotspots';
+import HotspotBubble from './visualizations/HotspotBubble';
 
 import {Treebeard} from 'react-treebeard';
 var treebeardCustomTheme = require('./TreebeardCustomTheme');
@@ -19,8 +17,6 @@ var treebeardCustomTheme = require('./TreebeardCustomTheme');
 
 var IDENTIFIER_PROJECT_NAME = "projectName";
 var dynamicBreadcrumbSeparator = " > ";
-var stringToColour = require('string-to-color');
-var maxCommits = 0;
 
 class RiskManagementHotspots extends DashboardAbstract {
 
@@ -28,6 +24,7 @@ class RiskManagementHotspots extends DashboardAbstract {
         super(props);
 
         this.state = {
+            maxCommits: 0,
             hotSpotData: {},
             treeViewData: {},
             breadCrumbData: [''],
@@ -65,13 +62,11 @@ class RiskManagementHotspots extends DashboardAbstract {
         this.setState({
             hotSpotData: data.hierarchicalData,
             commitsData: data.commitsData,
+            maxCommits: data.maxCommits
         });
-
-        maxCommits = data.maxCommits;
     }
 
     getCommits(name) {
-        //console.log('huhu');
         var result = _.find(this.state.commitsData, function(data) {
             return data.name === name;
         });
@@ -116,8 +111,6 @@ class RiskManagementHotspots extends DashboardAbstract {
     }
 
     handleAction(event) {
-        var PROJECTNAME = 'PROJECTNAME';
-
         var action = event.action;
         switch (action.actionType) {
             // Respond to CART_ADD action
@@ -202,6 +195,7 @@ class RiskManagementHotspots extends DashboardAbstract {
                 var node = findNodeByName(this.state.hotSpotData);
                 //setTimeout to prevent "Cannot dispatch in the middle of a dispatch"
                 // when the !!time is out!! the dispatch is completed and the next click can be handled
+                //TODO: a nice way of handling this would be awesome
                 setTimeout(function() { this.triggerClickOnNode(node) }.bind(this), 50);
                 break;
             default:
@@ -290,93 +284,10 @@ class RiskManagementHotspots extends DashboardAbstract {
                                         <Card id="hotspot-component">
                                             <CardBody>
                                                 <div className={'hotspot-component'} style={{height: "600px"}}>
-                                                    <ResponsiveBubbleHtml
-                                                        onClick={ function(event) {
-                                                            AppDispatcher.handleAction({
-                                                                actionType: 'SELECT_HOTSPOT_PACKAGE',
-                                                                data: event
-                                                            });
-                                                        } }
-                                                        root={this.state.hotSpotData}
-                                                        margin={{
-                                                            "top": 20,
-                                                            "right": 20,
-                                                            "bottom": 20,
-                                                            "left": 20
-                                                        }}
-                                                        identity="name"
-                                                        value="loc"
-                                                        colors="nivo"
-                                                        colorBy={ function (e) {
-
-                                                            //TODO: clean up this code :)
-
-                                                            var data = e.data;
-
-                                                            var role = "undefined";
-                                                            if (data && data.role) {
-                                                                role = data.role;
-                                                            }
-
-                                                            if (data && data.commits && data.commits > 0 && role === "leaf") {
-
-                                                                var level = data.level;
-                                                                var r = 228 - (11 * level * 2);
-                                                                var g = 242 - (6 * level * 2);
-                                                                var b = 243 - (6 * level * 2);
-
-                                                                var saturation = data.commits / maxCommits;
-
-                                                                var rgbObject = tinygradient('rgb(' + r + ', ' + g + ', ' + b + ')', 'red').rgbAt(saturation);
-                                                                //var rgbObject = tinygradient('rgb(5, 5, 5)', 'red').rgbAt(saturation);
-
-                                                                r = Math.round(rgbObject._r);
-                                                                g = Math.round(rgbObject._g);
-                                                                b = Math.round(rgbObject._b);
-                                                                return 'rgb(' + r + ', ' + g + ', ' + b + ')';
-                                                            } else if (data) {
-                                                                var level = data.level;
-                                                                var r = 228 - (11 * level * 2);
-                                                                var g = 242 - (6 * level * 2);
-                                                                var b = 243 - (6 * level * 2);
-                                                                return 'rgb(' + r + ', ' + g + ', ' + b + ')';
-                                                            }
-                                                        } }
-                                                        padding={2}
-                                                        enableLabel={false}
-                                                        borderWidth={2}
-                                                        defs={[
-                                                            {
-                                                                "id": "lines",
-                                                                "type": "patternLines",
-                                                                "background": "none",
-                                                                "color": "inherit",
-                                                                "rotation": -45,
-                                                                "lineWidth": 5,
-                                                                "spacing": 8
-                                                            }
-                                                        ]}
-                                                        fill={[
-                                                            {
-                                                                "match": {
-                                                                    "depth": 1
-                                                                },
-                                                                "id": "lines"
-                                                            }
-                                                        ]}
-                                                        animate={false}
-                                                        motionStiffness={90}
-                                                        motionDamping={12}
-                                                        tooltip={({ id, value, color, node }) => (
-                                                            <div style={{whiteSpace: 'pre', display: 'flex', alignItems: 'center'}}>
-                                                                <span style={{display: 'block', height: '12px', width: '12px', marginRight: '7px', backgroundColor: color}}></span>
-                                                                <span>
-                                                                    <strong>
-                                                                        {id}, LOC: {value}{thisBackup.getCommits((node.data.data.name).replace(/[^\w]/gi, '-')) ? ', Commits: ' + thisBackup.getCommits((node.data.data.name).replace(/[^\w]/gi, '-')) : ''}
-                                                                    </strong>
-                                                                </span>
-                                                            </div>
-                                                        )}
+                                                    <HotspotBubble
+                                                        data={this.state.hotSpotData}
+                                                        thisBackup={thisBackup}
+                                                        maxCommits={this.state.maxCommits}
                                                     />
                                                 </div>
                                             </CardBody>

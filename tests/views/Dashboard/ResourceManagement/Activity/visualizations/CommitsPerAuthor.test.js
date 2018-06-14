@@ -9,23 +9,23 @@ Enzyme.configure({ adapter: new Adapter() });
 //import renderer from 'react-test-renderer';
 
 //component to test
-import FilesPerAuthor from '../../../../src/views/Dashboard/visualizations/FilesPerAuthor';
+import CommitsPerAuthor from '../../../../../../src/views/Dashboard/ResourceManagement/Activity/visualizations/CommitsPerAuthor';
 
-describe('<FilesPerAuthor />', () => {
+describe('<CommitsPerAuthor />', () => {
 
     it('should render without throwing an error', () => {
-        var wrapper = shallow(<FilesPerAuthor/>);
+        var wrapper = shallow(<CommitsPerAuthor/>);
         wrapper.setState({
-            filesPerAuthor: [
+            commitsPerAuthor: [
                 {
                     "author": "Dummy",
-                    "files": 1
+                    "commits": 1
                 }
             ]
         });
         var html = wrapper.html();
 
-        expect(html).to.contain('<div><div style="height:600px">');
+        expect(html).to.contain('<div style="height:600px">');
         //expect(html).to.contain('<svg>');
     });
 });
