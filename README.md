@@ -4,11 +4,16 @@ A web-based dashboard for software analysis and visualization. This [screencast]
 
 ## Installation ##
 
-* Clone the repository and execute the following commands.
+* Clone the repository and execute the following command:
 
 ```
-$ npm install
-$ npm install graph-app-kit --registry https://neo.jfrog.io/neo/api/npm/npm
+$ npm run install-dashboard
+```
+
+* When installed you can run the dashboard by executing this command:
+
+```
+$ npm run dashboard
 ```
 
 ## Developers ##
