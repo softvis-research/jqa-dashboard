@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-var AppDispatcher = require('../../../../../AppDispatcher');
-
 import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
-
 import {ResponsiveBar} from '@nivo/bar';
 import {LegendSvgItem} from '@nivo/legends';
-var stringToColour = require('string-to-color');
+import FilesPerFiletypePerAuthorModel from '../../../../../api/models/FilesPerFiletypePerAuthor';
 
+var AppDispatcher = require('../../../../../AppDispatcher');
+var stringToColour = require('string-to-color');
 var authorToFilterBy;
 
 class FilesPerFiletypePerAuthor extends DashboardAbstract {
@@ -27,7 +26,8 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
     componentDidMount() {
       super.componentDidMount();
       if (databaseCredentialsProvided) {
-        this.readData();
+          var filesPerFiletypePerAuthorModel = new FilesPerFiletypePerAuthorModel();
+          filesPerFiletypePerAuthorModel.readData(this, authorToFilterBy);
       }
     }
 
@@ -39,82 +39,14 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
     handleAction(event) {
       var action = event.action;
       switch (action.actionType) {
-        // Respond to CART_ADD action
         case 'SELECT_COMMITSPERAUTHOR':
-          authorToFilterBy = action.data.indexValue;
-          this.readData();
-          break;
+            authorToFilterBy = action.data.indexValue;
+            var filesPerFiletypePerAuthorModel = new FilesPerFiletypePerAuthorModel();
+            filesPerFiletypePerAuthorModel.readData(this, authorToFilterBy);
+            break;
         default:
-          return true;
+            return true;
       }
-    }
-
-    readData() {
-      var aggregatedData = [];
-      var aggregatedKeys = [];
-      var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
-      var recordCount = 0;
-
-      var whereClause = ' NOT c:Merge ';
-      //console.log(authorToFilterBy);
-      if (authorToFilterBy && authorToFilterBy.length > 0) {
-        whereClause = ' c.author contains \'' + authorToFilterBy + '\''; //TODO: contains is a workaround
-        //TODO: this could result in a sql injection, proper enconding is needed!
-      }
-
-      var query =         'MATCH ' + 
-      '  (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(file:File) ' +
-      'WHERE ' + 
-        whereClause + 
-      'RETURN ' + 
-      '  file.type as filetype, a.name as author, count(file) as files ' +
-      'ORDER BY ' + 
-      '  files DESC, filetype ';
-      neo4jSession.run(
-        query
-      ).then(function (result) {
-        result.records.forEach(function (record) {
-          var author = record.get(1);
-          var filetype = record.get(0);
-          var files = record.get(2).low;
-          
-          var found = false;
-          aggregatedData.forEach(function (dataSet) {
-            if (dataSet.author === author) { //found: only append author
-              dataSet[filetype] = files;
-              found = true;
-            }
-          });
-
-          if (!found) { //create dataset
-            aggregatedData.push({
-              "author": author,
-            });
-            aggregatedData[aggregatedData.length - 1][filetype] = files;
-          }
-
-          if (aggregatedKeys.indexOf(filetype) === -1) {
-            aggregatedKeys.push(filetype);
-          }
-        });
-      })./* then( function(context) { //try to set all keys in every dataset to satisfy legend
-        aggregatedData.forEach(function (record) {
-            aggregatedKeys.forEach(function(key) {
-                if (!record[key]) {
-                    record[key] = 0;
-                }
-            })
-        })
-      }). */then( function(context) {
-        thisBackup.setState(
-          {
-            data: aggregatedData.reverse(),
-            dataKeys: aggregatedKeys
-          }
-        );
-      }).catch(function (error) {
-          console.log(error);
-      });
     }
 
     render() {

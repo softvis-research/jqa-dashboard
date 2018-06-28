@@ -1,10 +1,9 @@
 import React from 'react';
 import DashboardAbstract from '../../../AbstractDashboardComponent';
 import tinygradient from 'tinygradient';
+import {ResponsiveBubbleHtml} from '@nivo/circle-packing';
 
 var AppDispatcher = require('../../../../../AppDispatcher');
-
-import {ResponsiveBubbleHtml} from '@nivo/circle-packing';
 
 class HotspotBubble extends DashboardAbstract {
 

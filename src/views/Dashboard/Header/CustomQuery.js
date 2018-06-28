@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import DashboardAbstract, { neo4jSession } from '../AbstractDashboardComponent';
-var AppDispatcher = require('../../../AppDispatcher');
 
-import "semantic-ui-css/semantic.min.css";
 import { Cypher } from "graph-app-kit/components/Cypher";
 import { DriverProvider } from "graph-app-kit/components/DriverProvider";
 import { Render } from "graph-app-kit/components/Render";
@@ -12,6 +10,8 @@ import { CypherEditor } from "graph-app-kit/components/Editor";
 import {Button, Badge, Row, Col, Card, CardHeader, CardFooter, CardBody, Label, Input} from 'reactstrap';
 
 import ReactTable from 'react-table';
+
+var AppDispatcher = require('../../../AppDispatcher');
 
 class CustomQuery extends DashboardAbstract {
 
@@ -91,7 +91,7 @@ class CustomQuery extends DashboardAbstract {
                         isObject = true;
                     } else {
                         if (value.low) { //.low if datatype is numeric
-                            value = vlue.low;
+                            value = value.low;
                         }
                     }
 

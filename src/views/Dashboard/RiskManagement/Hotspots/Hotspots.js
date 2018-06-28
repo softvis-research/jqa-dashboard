@@ -1,19 +1,15 @@
 import React from 'react';
 import DashboardAbstract, {databaseCredentialsProvided} from '../../AbstractDashboardComponent';
 import {Row, Col, Card, CardHeader, CardBody, Button, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
-import DynamicBreadcrumb from '../../../../components/Breadcrumb/DynamicBreadcrumb';
-import SimpleBar from 'SimpleBar';
-
-var AppDispatcher = require('../../../../AppDispatcher');
-
+import DynamicBreadcrumb from '../../DynamicBreadcrumb/DynamicBreadcrumb';
+import SimpleBar from 'simplebar';
 import HotspotModel from '../../../../api/models/Hotspots';
 import HotspotBubble from './visualizations/HotspotBubble';
-
 import {Treebeard} from 'react-treebeard';
+import find from 'lodash/find';
+
+var AppDispatcher = require('../../../../AppDispatcher');
 var treebeardCustomTheme = require('./TreebeardCustomTheme');
-// from here: https://github.com/alexcurtis/react-treebeard
-// TODO: add search input from example: https://github.com/alexcurtis/react-treebeard/tree/master/example
-// demo: http://alexcurtis.github.io/react-treebeard/
 
 var IDENTIFIER_PROJECT_NAME = "projectName";
 var dynamicBreadcrumbSeparator = " > ";
@@ -67,7 +63,7 @@ class RiskManagementHotspots extends DashboardAbstract {
     }
 
     getCommits(name) {
-        var result = _.find(this.state.commitsData, function(data) {
+        var result = find(this.state.commitsData, function(data) {
             return data.name === name;
         });
 

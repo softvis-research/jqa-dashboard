@@ -1,13 +1,8 @@
 import React, { Component } from 'react';
-
 import DashboardAbstract, {databaseCredentialsProvided, neo4jSession} from '../../../AbstractDashboardComponent';
-
 import {Alert, Badge, Row, Col, Card, CardHeader, CardFooter, CardBody, Label, Input, ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText, Button, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
-
+import PMDModel from '../../../../../api/models/PMD';
 import PmdRadar from './visualization/PmdRadar';
-
-var groupArray = require('group-array');
-var arraySort = require('array-sort');
 
 class PopoverItem extends Component {
 
@@ -75,46 +70,9 @@ class QualityManagementStaticCodeAnalysisPMD extends DashboardAbstract {
     componentDidMount() {
         super.componentDidMount();
         if (databaseCredentialsProvided) {
-            this.readPmdData();
+            var pmdModel = new PMDModel();
+            pmdModel.readPmdData(this);
         }
-    }
-
-    readPmdData() {
-        var pmdData = [];
-        var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
-
-        neo4jSession.run(
-            'MATCH (:Report)-[:HAS_FILES]->(file:File:Pmd)-[:HAS_VIOLATIONS]->(violation:Violation) RETURN file.fqn, violation.package, violation.className, violation.method, violation.beginLine, violation.endLine, violation.beginColumn, violation.endColumn, violation.message, violation.ruleSet, violation.priority, violation.externalInfoUrl'
-        ).then(function (result) {
-            result.records.forEach(function (record) {
-
-                pmdData.push({
-                    "fqn": record.get(0),
-                    "package": record.get(1),
-                    "className": record.get(2),
-                    "method": record.get(3),
-                    "beginLine": record.get(4).low,
-                    "endLine": record.get(5).low,
-                    "beginColumn": record.get(6).low,
-                    "endColumn": record.get(7).low,
-                    "message": record.get(8),
-                    "ruleSet": record.get(9),
-                    "priority": record.get(10).low,
-                    "externalInfoUrl": record.get(11)
-                });
-
-            });
-        }).then( function(context) {
-
-            // output preparation: sort all violations by priority
-            pmdData = arraySort(pmdData, "priority");
-            // output preparation: group all violations by rule set
-            pmdData = groupArray(pmdData, "ruleSet");
-
-            thisBackup.setState({pmdData: pmdData});
-        }).catch(function (error) {
-            console.log(error);
-        });
     }
 
     toggleInfo() {

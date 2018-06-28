@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../AbstractDashboardComponent';
 import {Row, Col, Card, CardHeader, CardBody, Button, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
-import DynamicBreadcrumb from '../../../../components/Breadcrumb/DynamicBreadcrumb';
+import DynamicBreadcrumb from '../../DynamicBreadcrumb/DynamicBreadcrumb';
 import StructureBubble from './visualization/StructureBubble';
-
-var AppDispatcher = require('../../../../AppDispatcher');
+import {Treebeard} from 'react-treebeard';
 
 import {ResponsiveBubbleHtml} from '@nivo/circle-packing';
 import * as d3 from "d3";
 
+var AppDispatcher = require('../../../../AppDispatcher');
+
 var IDENTIFIER_PROJECT_NAME = "projectName";
 
-import {Treebeard} from 'react-treebeard';
 var treebeardCustomTheme = require('./TreebeardCustomTheme');
 // from here: https://github.com/alexcurtis/react-treebeard
 // TODO: add search input from example: https://github.com/alexcurtis/react-treebeard/tree/master/example

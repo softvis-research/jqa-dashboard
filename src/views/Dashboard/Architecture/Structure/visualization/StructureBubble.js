@@ -1,9 +1,9 @@
 import React from 'react';
 import DashboardAbstract from '../../../AbstractDashboardComponent';
 
-var AppDispatcher = require('../../../../../AppDispatcher');
-
 import {ResponsiveBubbleHtml} from '@nivo/circle-packing';
+
+var AppDispatcher = require('../../../../../AppDispatcher');
 
 class StructureBubble extends DashboardAbstract {
 

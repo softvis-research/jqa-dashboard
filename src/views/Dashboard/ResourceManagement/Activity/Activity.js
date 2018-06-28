@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../AbstractDashboardComponent';
 
-var AppDispatcher = require('../../../../AppDispatcher');
-
 import CommitsPerAuthor from './visualizations/CommitsPerAuthor';
 import FilesPerAuthor from './visualizations/FilesPerAuthor';
 import CommitsTimescale from './visualizations/CommitsTimescale';
 import LatestCommits from './visualizations/LatestCommits';
 
 import {Badge, Row, Col, Card, CardHeader, CardFooter, CardBody, Label, Input, Button, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
+
+var AppDispatcher = require('../../../../AppDispatcher');
 
 class PopoverItem extends Component {
     constructor(props) {

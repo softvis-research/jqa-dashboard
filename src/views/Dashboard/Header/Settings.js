@@ -33,9 +33,9 @@ var IDENTIFIER_NEO4J_PASSWORD = "password";
 function handleDatabaseError(error) {
     console.log(error);
     localStorage.setItem('connectionString', ''); //reset connection string to prevent further access
-    document.getElementById('settings-alert').innerHTML = 'Connection failiure: please check the provided data and if the server is running.';
-    document.getElementById('settings-alert').className = 'float-right settings-alert alert alert-danger fade show';
-    document.getElementById('settings-alert').style.display = 'block';
+    document.getElementById('database-settings-alert').innerHTML = 'Connection failure: please check the provided data and if the server is running.';
+    document.getElementById('database-settings-alert').className = 'float-right settings-alert alert alert-danger fade show';
+    document.getElementById('database-settings-alert').style.display = 'block';
 }
 
 class Settings extends DashboardAbstract {

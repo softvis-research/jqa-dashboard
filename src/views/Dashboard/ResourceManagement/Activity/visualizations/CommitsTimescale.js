@@ -1,20 +1,16 @@
 import React, { Component } from 'react';
-var AppDispatcher = require('../../../../../AppDispatcher');
-
 import DateRangePicker from 'react-bootstrap-daterangepicker';
-// you will need the css that comes with bootstrap@3. if you are using
-// a tool like webpack, you can do the following:
-import 'bootstrap/dist/css/bootstrap.css';
-// you will also need the css that comes with bootstrap-daterangepicker
 import 'bootstrap-daterangepicker/daterangepicker.css';
-var moment = require('moment');
-var dateFormat = require('dateformat');
+import CommitsTimescaleModel from '../../../../../api/models/CommitsTimescale';
 import $ from "jquery";
 
 import {ResponsiveCalendar} from '@nivo/calendar';
 import {LegendSvgItem} from '@nivo/legends';
 
 import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
+
+var AppDispatcher = require('../../../../../AppDispatcher');
+var dateFormat = require('dateformat');
 
 class CommitsTimescale extends DashboardAbstract {
 
@@ -40,66 +36,14 @@ class CommitsTimescale extends DashboardAbstract {
     componentDidMount() {
       super.componentDidMount();
       if (databaseCredentialsProvided) {
-        this.readCommitsTimescale();
+          var commitsTimescaleModel = new CommitsTimescaleModel();
+          commitsTimescaleModel.readCommitsTimescale(this);
       }
     }
 
     componentWillUnmount() {
+      $('.daterangepicker-placeholder').html('');
       super.componentWillUnmount();
-    }
-
-    readCommitsTimescale() {
-        var aggregatedData = [];
-        var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
-
-        var minDate = new Date();
-        var maxDate = new Date('1970-01-01');
-
-        neo4jSession.run(
-            'MATCH (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->()-[:MODIFIES]->(f:File), ' +
-            '  (c)-[:OF_DAY]->(d)-[:OF_MONTH]->(m)-[:OF_YEAR]->(y) ' +
-            'WHERE NOT c:Merge ' +
-            'RETURN y.year as year, m.month as month, d.day as day, count(distinct c) as commits, count(f) as files ' +
-            'ORDER BY year, month, day  '
-        ).then(function (result) {
-        result.records.forEach(function (record) {
-            var dayString = record.get(0) + "-" + record.get(1) + "-" + record.get(2);
-
-            var current = new Date(dayString);
-            if (current.getTime() < minDate.getTime()) {
-                minDate = current;
-            }
-            if (current.getTime() > maxDate.getTime()) {
-                maxDate = current;
-            }
-
-            var recordConverted = {
-                "day": dayString,
-                "value": record.get(3).low
-            };
-
-            aggregatedData.push(recordConverted);
-        });
-        }).then( function(context) {
-
-            var strFrom = minDate.getFullYear() + "-" + ("0" + (minDate.getMonth() + 1)).slice(-2) + "-" + ("0" + (minDate.getDate().toString())).slice(-2);
-            var strTo = maxDate.getFullYear() + "-" + ("0" + (maxDate.getMonth() + 1)).slice(-2) + "-" + ("0" + (maxDate.getDate().toString())).slice(-2);
-
-            thisBackup.setState({
-                commitsTimescale: aggregatedData,
-                commitsFrom: strFrom,
-                commitsTo: strTo,
-                displayFrom: strFrom,
-                displayTo: strTo
-            });
-        }).then( function (context) {
-            // clean daterangepicker in header
-            $('.daterangepicker-placeholder').html('');
-            // put daterangepicker into header
-            $('.react-bootstrap-daterangepicker-container').detach().appendTo('.daterangepicker-placeholder');
-        }).catch(function (error) {
-            console.log(error);
-        });
     }
 
     setYear(year) {
@@ -178,8 +122,6 @@ class CommitsTimescale extends DashboardAbstract {
                 years.push(commitYear);
             }
         });
-
-        console.log(moment());
 
         return (
             <div className="calendar-wrapper">

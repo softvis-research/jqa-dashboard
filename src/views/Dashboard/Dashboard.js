@@ -338,7 +338,7 @@ class Dashboard extends DashboardAbstract {
                                         {Object.keys(this.state.activityMetrics).map(function(key) {
 
                                             var label = key
-                                                // insert a space before all caps
+                                            // insert a space before all caps
                                                 .replace(/([A-Z])/g, ' $1')
                                                 .toLowerCase()
                                                 // uppercase the first character

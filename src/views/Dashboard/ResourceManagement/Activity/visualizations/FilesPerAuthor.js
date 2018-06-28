@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-var AppDispatcher = require('../../../../../AppDispatcher');
-
 import {ResponsiveBar} from '@nivo/bar';
-
 import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
+import FilesPerAuthorModel from '../../../../../api/models/FilesPerAuthor';
+var AppDispatcher = require('../../../../../AppDispatcher');
 
 class FilesPerAuthor extends DashboardAbstract {
 
@@ -24,45 +23,13 @@ class FilesPerAuthor extends DashboardAbstract {
     componentDidMount() {
       super.componentDidMount();
       if (databaseCredentialsProvided) {
-        this.readFilesPerAuthor();
+          var filesPerAuthorModel = new FilesPerAuthorModel();
+          filesPerAuthorModel.readFilesPerAuthor(this, this.state.startDate, this.state.endDate);
       }
     }
 
     componentWillUnmount() {
       super.componentWillUnmount();
-    }
-
-    readFilesPerAuthor() {
-      var aggregatedData = [];
-      var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
-      var recordCount = 0;
-
-      neo4jSession.run(
-        'MATCH (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(file:File) ' +
-        'WHERE NOT c:Merge AND c.date >= {startDate} AND c.date <= {endDate} ' +
-        'RETURN a.name as author, count(file) as files ' +
-        'ORDER BY files DESC',
-          {
-              startDate: this.state.startDate,
-              endDate: this.state.endDate
-          }
-      ).then(function (result) {
-        result.records.forEach(function (record) {
-          var recordConverted = {
-            "author": record.get(0),
-            "files": record.get(1).low
-          };
-
-          if (recordCount < 20) { //above 20 records makes the chart unreadable
-            aggregatedData.push(recordConverted);
-          }
-          recordCount++;
-        });
-      }).then( function(context) {
-        thisBackup.setState({filesPerAuthor: aggregatedData.reverse()}); //reverse reverses the order of the array (because the chart is flipped this is neccesary)
-      }).catch(function (error) {
-          console.log(error);
-      });
     }
 
     handleAction(event) {
@@ -74,11 +41,11 @@ class FilesPerAuthor extends DashboardAbstract {
                     startDate: action.data.displayFrom,
                     endDate: action.data.displayTo,
                 });
-                this.readFilesPerAuthor();
+                var filesPerAuthorModel = new FilesPerAuthorModel();
+                filesPerAuthorModel.readFilesPerAuthor(this, this.state.startDate, this.state.endDate);
                 break;
         }
     }
-
 
     render() {
         var redirect = super.render();

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
-
+import LatestCommitsModel from '../../../../../api/models/LatestCommits';
 import ReactTable from 'react-table';
 
 class LatestCommits extends DashboardAbstract {
@@ -22,43 +22,13 @@ class LatestCommits extends DashboardAbstract {
     componentDidMount() {
         super.componentDidMount();
         if (databaseCredentialsProvided) {
-            this.readLatestCommits();
+            var latestCommitsModel = new LatestCommitsModel();
+            latestCommitsModel.readLatestCommits(this, this.state.startDate, this.state.endDate);
         }
     }
 
     componentWillUnmount() {
         super.componentWillUnmount();
-    }
-
-    readLatestCommits() {
-        var aggregatedData = [];
-        var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
-
-        neo4jSession.run(
-            'MATCH (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(file:File) ' +
-            'WHERE NOT c:Merge AND c.date >= {startDate} AND c.date <= {endDate} ' +
-            'RETURN DISTINCT a.name, c.date, c.message ' +
-            'ORDER BY c.date desc ' +
-            'LIMIT 20',
-            {
-                startDate: this.state.startDate,
-                endDate: this.state.endDate
-            }
-        ).then(function (result) {
-            result.records.forEach(function (record) {
-                var recordConverted = {
-                    "author": record.get(0),
-                    "date": record.get(1),
-                    "message": record.get(2)
-                };
-
-                aggregatedData.push(recordConverted);
-            });
-        }).then( function(context) {
-            thisBackup.setState({latestCommits: aggregatedData}); //reverse reverses the order of the array (because the chart is flipped this is neccesary)
-        }).catch(function (error) {
-            console.log(error);
-        });
     }
 
     handleAction(event) {
@@ -69,7 +39,8 @@ class LatestCommits extends DashboardAbstract {
                     startDate: action.data.displayFrom,
                     endDate: action.data.displayTo,
                 });
-                this.readLatestCommits();
+                var latestCommitsModel = new LatestCommitsModel();
+                latestCommitsModel.readLatestCommits(this, this.state.startDate, this.state.endDate);
                 break;
         }
     }
