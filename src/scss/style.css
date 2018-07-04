@@ -10014,8 +10014,8 @@ a:hover {
 #treebeard-component .simplebar-content {
   min-height: 650px !important; }
 
-.hotspot-component div div div div div:hover,
-.structure-component div div div div div:hover {
+.hotspot-component div div div div div div:hover,
+.structure-component div div div div div div:hover {
   border: 2px solid #a3b1b2 !important; }
 
 .hotspot-component strong,
