@@ -9,7 +9,7 @@ class PMDModel {
         var pmdData = [];
 
         neo4jSession.run(
-            'MATCH (:Report)-[:HAS_FILES]->(file:File:Pmd)-[:HAS_VIOLATIONS]->(violation:Violation) RETURN file.fqn, violation.package, violation.className, violation.method, violation.beginLine, violation.endLine, violation.beginColumn, violation.endColumn, violation.message, violation.ruleSet, violation.priority, violation.externalInfoUrl'
+            'MATCH (:Report)-[:HAS_FILE]->(file:File:Pmd)-[:HAS_VIOLATION]->(violation:Violation) RETURN file.fqn, violation.package, violation.className, violation.method, violation.beginLine, violation.endLine, violation.beginColumn, violation.endColumn, violation.message, violation.ruleSet, violation.priority, violation.externalInfoUrl'
         ).then(function (result) {
             result.records.forEach(function (record) {
 
