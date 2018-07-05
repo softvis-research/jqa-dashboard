@@ -10172,8 +10172,14 @@ a.breadcrumb-item {
     background-color: #f0f0f0;
     border-color: #c8ced3; }
 
+.card-actions a:hover {
+  cursor: pointer; }
+
 .bs-popover-bottom, .bs-popover-auto[x-placement^="bottom"] {
-  left: -15px !important; }
+  left: -8px !important; }
+
+.popover.bs-popover-bottom .arrow, .popover.bs-popover-auto[x-placement^="bottom"] .arrow {
+  top: -7px; }
 
 .popover.bs-popover-bottom .arrow::before, .popover.bs-popover-auto[x-placement^="bottom"] .arrow::before, .popover.bs-popover-auto[x-placement^="bottom"] .arrow::before, .popover.bs-popover-bottom .arrow::after, .popover.bs-popover-auto[x-placement^="bottom"] .arrow::after, .popover.bs-popover-auto[x-placement^="bottom"] .arrow::after {
   margin-left: 0.67rem !important; }
@@ -10192,6 +10198,9 @@ a.breadcrumb-item {
 
 .CodeMirror {
   height: auto !important; }
+
+.settings label {
+  padding-top: 0.375rem; }
 
 html body .app.flex-row.align-items-center {
   height: 100vh; }
