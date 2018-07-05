@@ -21,3 +21,14 @@ package-lock.json
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+#Core UI Samples of components
+src/views/Base/**
+src/views/Buttons/**
+src/views/Charts/**
+src/views/Icons/**
+src/views/Notifications/**
+src/views/Pages/**
+src/views/Theme/**
+src/views/Users/**
+src/views/Widgets/**
