@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
+import React from 'react';
+import DashboardAbstract, { databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
 import FileTypesModel from '../../../../../api/models/FileTypes';
 import {ResponsivePie} from '@nivo/pie';
 

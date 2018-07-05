@@ -1,16 +1,12 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-import DashboardAbstract, {databaseCredentialsProvided, neo4jSession} from '../../../../AbstractDashboardComponent';
+import DashboardAbstract from '../../../../AbstractDashboardComponent';
 
 import {ResponsiveRadar} from '@nivo/radar';
-
-var groupArray = require('group-array');
-var arraySort = require('array-sort');
 
 class PmdRadar extends DashboardAbstract {
 
     render() {
-        var thisBackup = this;
         var redirect = super.render();
 
         if (redirect.length > 0) {

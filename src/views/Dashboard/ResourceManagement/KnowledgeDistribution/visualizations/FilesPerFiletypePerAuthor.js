@@ -1,10 +1,9 @@
-import React, { Component } from 'react';
-import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
+import React from 'react';
+import DashboardAbstract, { databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
 import {ResponsiveBar} from '@nivo/bar';
 import {LegendSvgItem} from '@nivo/legends';
 import FilesPerFiletypePerAuthorModel from '../../../../../api/models/FilesPerFiletypePerAuthor';
 
-var AppDispatcher = require('../../../../../AppDispatcher');
 var stringToColour = require('string-to-color');
 var authorToFilterBy;
 

@@ -1,13 +1,10 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
+import React from 'react';
+import DashboardAbstract, { databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
 import tinygradient from 'tinygradient';
 import TestCoverageModel from '../../../../../api/models/TestCoverage';
 import {ResponsiveTreeMapHtml} from '@nivo/treemap';
-import * as d3 from "d3";
 
 var IDENTIFIER_PROJECT_NAME = "projectName";
-var gradient = tinygradient('red', 'green');
 
 class TestCoverageTreeMap extends DashboardAbstract {
 
@@ -38,7 +35,7 @@ class TestCoverageTreeMap extends DashboardAbstract {
         //normalize recursively all childs (move information from .data to the element's root where nivo expects it)
         var findIdInHierarchicalData = function(hierarchicalData, idToFind) {
             for (var i = 0; i < hierarchicalData.children.length; i++) {
-                if (hierarchicalData.children[i].data.id == idToFind) {
+                if (hierarchicalData.children[i].data.id === idToFind) {
                     return hierarchicalData.children[i];
                 }
                 if (hierarchicalData.children[i].children) {
@@ -53,7 +50,7 @@ class TestCoverageTreeMap extends DashboardAbstract {
         var foundElement = findIdInHierarchicalData(this.state.testCoverageData, hoveredNodeId);
 
         if (!foundElement) {
-            if (this.state.testCoverageData.id == hoveredNodeId) {
+            if (this.state.testCoverageData.id === hoveredNodeId) {
                 foundElement = this.state.testCoverageData;
             }
         }
@@ -124,18 +121,20 @@ class TestCoverageTreeMap extends DashboardAbstract {
                             role = data.role;
                         }
 
+                        var r, g, b;
+
                         if (data && role === "leaf") {
                             var coverage = data.coverage / 100;
                             var rgbObject = tinygradient('red', 'green').rgbAt(coverage);
-                            var r = Math.round(rgbObject._r);
-                            var g = Math.round(rgbObject._g);
-                            var b = Math.round(rgbObject._b);
+                            r = Math.round(rgbObject._r);
+                            g = Math.round(rgbObject._g);
+                            b = Math.round(rgbObject._b);
                             return 'rgb(' + r + ', ' + g + ', ' + b + ')';
                         } else if (data) {
                             var level = data.level;
-                            var r = 228 - (11 * level * 2);
-                            var g = 242 - (6 * level * 2);
-                            var b = 243 - (6 * level * 2);
+                            r = 228 - (11 * level * 2);
+                            g = 242 - (6 * level * 2);
+                            b = 243 - (6 * level * 2);
                             return 'rgb(' + r + ', ' + g + ', ' + b + ')';
                         }
                     } }

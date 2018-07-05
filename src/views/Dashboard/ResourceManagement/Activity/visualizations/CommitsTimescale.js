@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import DateRangePicker from 'react-bootstrap-daterangepicker';
 import 'bootstrap-daterangepicker/daterangepicker.css';
 import CommitsTimescaleModel from '../../../../../api/models/CommitsTimescale';
@@ -7,7 +7,7 @@ import $ from "jquery";
 import {ResponsiveCalendar} from '@nivo/calendar';
 import {LegendSvgItem} from '@nivo/legends';
 
-import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
+import DashboardAbstract, { databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
 
 var AppDispatcher = require('../../../../../AppDispatcher');
 var dateFormat = require('dateformat');
@@ -16,8 +16,6 @@ class CommitsTimescale extends DashboardAbstract {
 
     constructor(props) {
         super(props);
-
-        var now = new Date();
 
         this.state = {
             commitsFrom: '2017-01-01',
@@ -93,10 +91,10 @@ class CommitsTimescale extends DashboardAbstract {
         //prepare limit for calendar
         var calendarFrom = currentYear + "-1-1";
         var calendarTo = currentYear + "-12-31";
-        if (currentYear == dFromAr[0]) {
+        if (currentYear === dFromAr[0]) {
             calendarFrom = this.state.displayFrom;
         }
-        if (currentYear == dToAr[0]) {
+        if (currentYear === dToAr[0]) {
             calendarTo = this.state.displayTo;
         }
 
@@ -244,7 +242,7 @@ class CommitsTimescale extends DashboardAbstract {
                                 display: "inline-block",
                                 padding: "3px 9px",
                                 cursor: "pointer",
-                                fontWeight: year == currentYear ? "800" : "400"
+                                fontWeight: year === currentYear ? "800" : "400"
                             }}
                             onClick={() => this.setYear(year)}
                         >

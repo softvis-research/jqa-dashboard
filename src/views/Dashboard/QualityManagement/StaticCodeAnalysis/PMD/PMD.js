@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import DashboardAbstract, {databaseCredentialsProvided, neo4jSession} from '../../../AbstractDashboardComponent';
-import {Alert, Badge, Row, Col, Card, CardHeader, CardFooter, CardBody, Label, Input, ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText, Button, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
+import DashboardAbstract, {databaseCredentialsProvided} from '../../../AbstractDashboardComponent';
+import {Alert, Row, Col, Card, CardHeader, CardBody, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
 import PMDModel from '../../../../../api/models/PMD';
 import PmdRadar from './visualization/PmdRadar';
 
@@ -34,7 +34,7 @@ class PopoverItem extends Component {
     render() {
         return (
             <span>
-                <a href="javascript: void(0)" className="mr-1" color="secondary" id={'Popover-' + this.props.id} onClick={this.toggle}>
+                <a className="mr-1" color="secondary" id={'Popover-' + this.props.id} onClick={this.toggle}>
                     <i className="text-muted fa fa-question-circle"></i>
                 </a>
                 <Popover placement={'bottom'} isOpen={this.state.popoverOpen} target={'Popover-' + this.props.id} toggle={this.toggle}>
@@ -82,7 +82,6 @@ class QualityManagementStaticCodeAnalysisPMD extends DashboardAbstract {
     }
 
     render() {
-        var thisBackup = this;
         var redirect = super.render();
 
         if (redirect.length > 0) {

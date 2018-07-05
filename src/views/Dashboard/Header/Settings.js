@@ -1,21 +1,16 @@
-import React, { Component } from 'react';
-import DashboardAbstract, { neo4jSession, databaseCredentialsProvided, genericException } from '../AbstractDashboardComponent';
+import React from 'react';
+import DashboardAbstract, { databaseCredentialsProvided, GenericException } from '../AbstractDashboardComponent';
 
 import {
     Alert,
     Row,
     Col,
     Button,
-    Card,
-    CardHeader,
-    CardFooter,
-    CardBody,
     Form,
     FormGroup,
     FormText,
     Label,
     Input,
-    InputGroupText,
     TabContent,
     TabPane,
     Nav,
@@ -48,11 +43,8 @@ class Settings extends DashboardAbstract {
             activeTab: '1'
         };
 
-        this.updateDatabaseSettings = this.updateDatabaseSettings.bind(this);
-        this.resetDatabaseSettings = this.resetDatabaseSettings.bind(this);
-
-        this.updateProjectSettings = this.updateProjectSettings.bind(this);
-        this.resetProjectSettings = this.resetProjectSettings.bind(this);
+        this.updateSettings = this.updateSettings.bind(this);
+        this.resetSettings = this.resetSettings.bind(this);
     }
 
     componentDidMount() {
@@ -67,11 +59,9 @@ class Settings extends DashboardAbstract {
         super.refreshConnectionSettings();
     }
 
-    updateDatabaseSettings(event) {
+    updateSettings(event) {
+        var settings = document.querySelectorAll('.setting');
 
-        var settings = document.querySelectorAll('.database-setting');
-
-        var settingsArray = [];
         // save settings to localStorage
         [].forEach.call(settings, function(setting) {
             var identifier = setting.id.replace('-input', '');
@@ -79,62 +69,28 @@ class Settings extends DashboardAbstract {
         });
 
         try {
-            super.checkForDatabaseConnection();
+            DashboardAbstract.checkForDatabaseConnection();
 
             if (!databaseCredentialsProvided) {
-                throw new genericException("Database connection parameter missing.", "DatabaseConncetionException");
+                throw new GenericException("Database connection parameter missing.", "DatabaseConncetionException");
             }
 
             super.testDatabaseCredentials()
-            .then(function(){
+            .then(function() {
                 // show success message
                 document.getElementById('database-settings-alert').innerHTML = 'Successfully saved settings.';
                 document.getElementById('database-settings-alert').className = 'float-right settings-alert alert alert-success fade show';
                 document.getElementById('database-settings-alert').style.display = 'block';
             })
             .catch( handleDatabaseError ); //check database connection
-            
         } catch(e) { //handle missing credentials
             handleDatabaseError(e);
         }
     }
 
-    resetDatabaseSettings(event) {
+    resetSettings(event) {
+        var settings = document.querySelectorAll('.setting');
 
-        var settings = document.querySelectorAll('.database-setting');
-
-        var settingsArray = [];
-        // clear inputs
-        [].forEach.call(settings, function(setting) {
-            setting.value = '';
-            var identifier = setting.id.replace('-input', '');
-            localStorage.removeItem(identifier);
-        });
-
-    }
-
-    updateProjectSettings(event) {
-
-        var settings = document.querySelectorAll('.project-setting');
-
-        var settingsArray = [];
-        // save settings to localStorage
-        [].forEach.call(settings, function(setting) {
-            var identifier = setting.id.replace('-input', '');
-            localStorage.setItem(identifier, setting.value);
-        });
-
-        // show success message
-        document.getElementById('project-settings-alert').innerHTML = 'Successfully saved settings.';
-        document.getElementById('project-settings-alert').className = 'float-right settings-alert alert alert-success fade show';
-        document.getElementById('project-settings-alert').style.display = 'block';
-    }
-
-    resetProjectSettings(event) {
-
-        var settings = document.querySelectorAll('.project-setting');
-
-        var settingsArray = [];
         // clear inputs
         [].forEach.call(settings, function(setting) {
             setting.value = '';
@@ -166,14 +122,6 @@ class Settings extends DashboardAbstract {
                                     Database
                                 </NavLink>
                             </NavItem>
-                            <NavItem>
-                                <NavLink
-                                    className={classnames({ active: this.state.activeTab === '2' })}
-                                    onClick={() => { this.toggle('2'); }}
-                                >
-                                    Project
-                                </NavLink>
-                            </NavItem>
                         </Nav>
                         <TabContent activeTab={this.state.activeTab}>
                             <TabPane tabId="1">
@@ -187,7 +135,7 @@ class Settings extends DashboardAbstract {
                                                 type="text"
                                                 id={IDENTIFIER_CONNECTION_STRING + "-input"}
                                                 name={IDENTIFIER_CONNECTION_STRING + "-input"}
-                                                className={'database-setting'}
+                                                className={'setting'}
                                                 placeholder="Please provide Neo4j connection string..."
                                                 defaultValue={ localStorage.getItem(IDENTIFIER_CONNECTION_STRING) }
                                                 required
@@ -204,7 +152,7 @@ class Settings extends DashboardAbstract {
                                                 type="text"
                                                 id={IDENTIFIER_NEO4J_USERNAME + "-input"}
                                                 name={IDENTIFIER_NEO4J_USERNAME + "-input"}
-                                                className={'database-setting'}
+                                                className={'setting'}
                                                 placeholder="Please provide Neo4j username..."
                                                 defaultValue={ localStorage.getItem(IDENTIFIER_NEO4J_USERNAME) }
                                                 required
@@ -221,7 +169,7 @@ class Settings extends DashboardAbstract {
                                                 type="password"
                                                 id={IDENTIFIER_NEO4J_PASSWORD + "-input"}
                                                 name={IDENTIFIER_NEO4J_PASSWORD + "-input"}
-                                                className={'database-setting'}
+                                                className={'setting'}
                                                 placeholder="Please provide Neo4j password..."
                                                 defaultValue={ localStorage.getItem(IDENTIFIER_NEO4J_PASSWORD) }
                                                 required
@@ -229,19 +177,6 @@ class Settings extends DashboardAbstract {
                                             <FormText className="help-block">Default: "neo4j"</FormText>
                                         </Col>
                                     </FormGroup>
-                                    <FormGroup row className="button-row">
-                                        <Col xs="12" md="12">
-                                            <Button className="float-right" color="success" onClick={ this.updateDatabaseSettings }>Save</Button>
-                                            <Button className="float-right margin-right" color="danger" onClick={ this.resetDatabaseSettings }>Reset</Button>
-                                            <Alert id="database-settings-alert" className="float-right settings-alert" color="success">
-                                                Successfully saved settings.
-                                            </Alert>
-                                        </Col>
-                                    </FormGroup>
-                                </Form>
-                            </TabPane>
-                            <TabPane tabId="2">
-                                <Form action="" method="post" encType="multipart/form-data" className="form-horizontal">
                                     <FormGroup row>
                                         <Col md="2">
                                             <Label htmlFor={IDENTIFIER_PROJECT_NAME + "-input"}>Name</Label>
@@ -251,7 +186,7 @@ class Settings extends DashboardAbstract {
                                                 type="text"
                                                 id={IDENTIFIER_PROJECT_NAME + "-input"}
                                                 name={IDENTIFIER_PROJECT_NAME + "-input"}
-                                                className={'project-setting'}
+                                                className={'setting'}
                                                 placeholder="Please provide project name..."
                                                 defaultValue={ localStorage.getItem(IDENTIFIER_PROJECT_NAME) }
                                                 required
@@ -261,9 +196,9 @@ class Settings extends DashboardAbstract {
                                     </FormGroup>
                                     <FormGroup row className="button-row">
                                         <Col xs="12" md="12">
-                                            <Button className="float-right" color="success" onClick={ this.updateProjectSettings }>Save</Button>
-                                            <Button className="float-right margin-right" color="danger" onClick={ this.resetProjectSettings }>Reset</Button>
-                                            <Alert id="project-settings-alert" className="float-right settings-alert" color="success">
+                                            <Button className="float-right" color="success" onClick={ this.updateSettings }>Save</Button>
+                                            <Button className="float-right margin-right" color="danger" onClick={ this.resetSettings }>Reset</Button>
+                                            <Alert id="database-settings-alert" className="float-right settings-alert" color="success">
                                                 Successfully saved settings.
                                             </Alert>
                                         </Col>

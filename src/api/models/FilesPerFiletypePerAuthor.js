@@ -5,7 +5,6 @@ class FilesPerFiletypePerAuthorModel {
     readData(thisBackup, authorToFilterBy) {
         var aggregatedData = [];
         var aggregatedKeys = [];
-        var recordCount = 0;
 
         var whereClause = ' NOT c:Merge ';
         //console.log(authorToFilterBy);
@@ -49,15 +48,7 @@ class FilesPerFiletypePerAuthorModel {
                     aggregatedKeys.push(filetype);
                 }
             });
-        })./* then( function(context) { //try to set all keys in every dataset to satisfy legend
-        aggregatedData.forEach(function (record) {
-            aggregatedKeys.forEach(function(key) {
-                if (!record[key]) {
-                    record[key] = 0;
-                }
-            })
-        })
-      }). */then( function(context) {
+        }).then( function(context) {
             thisBackup.setState(
                 {
                     data: aggregatedData.reverse(),

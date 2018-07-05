@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
+import React from 'react';
+import DashboardAbstract, { databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
 import LatestCommitsModel from '../../../../../api/models/LatestCommits';
 import ReactTable from 'react-table';
 
@@ -41,6 +41,8 @@ class LatestCommits extends DashboardAbstract {
                 });
                 var latestCommitsModel = new LatestCommitsModel();
                 latestCommitsModel.readLatestCommits(this, this.state.startDate, this.state.endDate);
+                break;
+            default:
                 break;
         }
     }

@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {ResponsiveBar} from '@nivo/bar';
-import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
+import DashboardAbstract, { databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
 import FilesPerAuthorModel from '../../../../../api/models/FilesPerAuthor';
 var AppDispatcher = require('../../../../../AppDispatcher');
 
@@ -43,6 +43,8 @@ class FilesPerAuthor extends DashboardAbstract {
                 });
                 var filesPerAuthorModel = new FilesPerAuthorModel();
                 filesPerAuthorModel.readFilesPerAuthor(this, this.state.startDate, this.state.endDate);
+                break;
+            default:
                 break;
         }
     }

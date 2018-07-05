@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {ResponsiveBar} from '@nivo/bar';
-import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
+import DashboardAbstract, { databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
 import CommitsPerAuthorModel from '../../../../../api/models/CommitsPerAuthor';
 var AppDispatcher = require('../../../../../AppDispatcher');
 
@@ -42,7 +42,9 @@ class CommitsPerAuthor extends DashboardAbstract {
                 });
                 var commitsPerAuthorModel = new CommitsPerAuthorModel();
                 commitsPerAuthorModel.readCommitsPerAuthor(this, this.state.startDate, this.state.endDate);
-            break;
+                break;
+            default:
+                break;
         }
     }
 

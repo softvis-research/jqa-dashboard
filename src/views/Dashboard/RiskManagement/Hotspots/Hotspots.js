@@ -1,6 +1,6 @@
 import React from 'react';
 import DashboardAbstract, {databaseCredentialsProvided} from '../../AbstractDashboardComponent';
-import {Row, Col, Card, CardHeader, CardBody, Button, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
+import {Row, Col, Card, CardHeader, CardBody, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
 import DynamicBreadcrumb from '../../DynamicBreadcrumb/DynamicBreadcrumb';
 import SimpleBar from 'simplebar';
 import HotspotModel from '../../../../api/models/Hotspots';
@@ -80,7 +80,7 @@ class RiskManagementHotspots extends DashboardAbstract {
         var nodeId = node.id.replace(/[^\w]/gi, '-');
         if (node.id) {
             var bubbleBelongingToNode = document.querySelectorAll('div#' + nodeId);
-            if (bubbleBelongingToNode && bubbleBelongingToNode.length == 1) {
+            if (bubbleBelongingToNode && bubbleBelongingToNode.length === 1) {
                 bubbleBelongingToNode[0].click();
             } else if (bubbleBelongingToNode.length > 1) {
                 console.log("Found more than one candidate to click on, to prevent a mess nothing has been clicked. ");
@@ -236,7 +236,7 @@ class RiskManagementHotspots extends DashboardAbstract {
                             <CardHeader>
                                 Hotspots
                                 <div className="card-actions">
-                                    <a href="javascript: void(0)" onClick={this.toggleInfo} id="Popover1">
+                                    <a onClick={this.toggleInfo} id="Popover1">
                                         <i className="text-muted fa fa-question-circle"></i>
                                     </a>
                                     <Popover placement="bottom" isOpen={this.state.popoverOpen} target="Popover1" toggle={this.toggleInfo}>

@@ -1,17 +1,15 @@
-import React, { Component } from 'react';
+import React from 'react';
 import DashboardAbstract, { neo4jSession } from '../AbstractDashboardComponent';
 
-import { Cypher } from "graph-app-kit/components/Cypher";
-import { DriverProvider } from "graph-app-kit/components/DriverProvider";
-import { Render } from "graph-app-kit/components/Render";
-import { Chart } from "graph-app-kit/components/Chart";
+//import { Cypher } from "graph-app-kit/components/Cypher";
+//import { DriverProvider } from "graph-app-kit/components/DriverProvider";
+//import { Render } from "graph-app-kit/components/Render";
+//import { Chart } from "graph-app-kit/components/Chart";
 import { CypherEditor } from "graph-app-kit/components/Editor";
 
-import {Button, Badge, Row, Col, Card, CardHeader, CardFooter, CardBody, Label, Input} from 'reactstrap';
+import {Button, Row, Col, Card, CardHeader, CardBody} from 'reactstrap';
 
 import ReactTable from 'react-table';
-
-var AppDispatcher = require('../../../AppDispatcher');
 
 class CustomQuery extends DashboardAbstract {
 

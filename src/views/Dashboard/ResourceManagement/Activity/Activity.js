@@ -1,14 +1,12 @@
 import React, { Component } from 'react';
-import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../AbstractDashboardComponent';
+import DashboardAbstract from '../../AbstractDashboardComponent';
 
 import CommitsPerAuthor from './visualizations/CommitsPerAuthor';
 import FilesPerAuthor from './visualizations/FilesPerAuthor';
 import CommitsTimescale from './visualizations/CommitsTimescale';
 import LatestCommits from './visualizations/LatestCommits';
 
-import {Badge, Row, Col, Card, CardHeader, CardFooter, CardBody, Label, Input, Button, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
-
-var AppDispatcher = require('../../../../AppDispatcher');
+import {Row, Col, Card, CardHeader, CardBody, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
 
 class PopoverItem extends Component {
     constructor(props) {
@@ -35,7 +33,7 @@ class PopoverItem extends Component {
     render() {
         return (
             <span>
-                <a href="javascript: void(0)" className="mr-1" color="secondary" id={'Popover-' + this.props.id} onClick={this.toggle}>
+                <a className="mr-1" color="secondary" id={'Popover-' + this.props.id} onClick={this.toggle}>
                     <i className="text-muted fa fa-question-circle"></i>
                 </a>
                 <Popover placement={'bottom'} isOpen={this.state.popoverOpen} target={'Popover-' + this.props.id} toggle={this.toggle}>

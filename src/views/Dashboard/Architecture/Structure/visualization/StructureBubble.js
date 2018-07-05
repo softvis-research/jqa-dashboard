@@ -38,7 +38,6 @@ class StructureBubble extends DashboardAbstract {
                     }}
                     identity="name"
                     value="loc"
-                    colors="nivo"
                     colorBy={ function (e) {
 
                         var data = e.data;

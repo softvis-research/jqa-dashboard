@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import DashboardAbstract, {databaseCredentialsProvided, neo4jSession} from "../../../AbstractDashboardComponent";
+import React from 'react';
+import DashboardAbstract, {databaseCredentialsProvided} from "../../../AbstractDashboardComponent";
 import { ResponsiveChord } from '@nivo/chord';
 import DependenciesModel from '../../../../../api/models/Dependencies';
 

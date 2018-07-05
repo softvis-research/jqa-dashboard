@@ -39,7 +39,6 @@ class HotspotBubble extends DashboardAbstract {
                     }}
                     identity="name"
                     value="loc"
-                    colors="nivo"
                     colorBy={ function (e) {
                         //TODO: clean up this code :)
                         var data = e.data;
@@ -49,12 +48,14 @@ class HotspotBubble extends DashboardAbstract {
                             role = data.role;
                         }
 
+                        var r, g, b, level;
+
                         if (data && data.commits && data.commits > 0 && role === "leaf" && maxCommits > 0) {
 
-                            var level = data.level;
-                            var r = 228 - (11 * level * 2);
-                            var g = 242 - (6 * level * 2);
-                            var b = 243 - (6 * level * 2);
+                            level = data.level;
+                            r = 228 - (11 * level * 2);
+                            g = 242 - (6 * level * 2);
+                            b = 243 - (6 * level * 2);
 
                             var saturation = data.commits / maxCommits;
 
@@ -66,10 +67,10 @@ class HotspotBubble extends DashboardAbstract {
                             b = Math.round(rgbObject._b);
                             return 'rgb(' + r + ', ' + g + ', ' + b + ')';
                         } else if (data) {
-                            var level = data.level;
-                            var r = 228 - (11 * level * 2);
-                            var g = 242 - (6 * level * 2);
-                            var b = 243 - (6 * level * 2);
+                            level = data.level;
+                            r = 228 - (11 * level * 2);
+                            g = 242 - (6 * level * 2);
+                            b = 243 - (6 * level * 2);
                             return 'rgb(' + r + ', ' + g + ', ' + b + ')';
                         }
                     }}

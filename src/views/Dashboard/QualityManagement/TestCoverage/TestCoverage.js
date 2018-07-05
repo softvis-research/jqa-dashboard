@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import DashboardAbstract from '../../AbstractDashboardComponent';
-import {Row, Col, Card, CardHeader, CardBody, Button, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
+import {Row, Col, Card, CardHeader, CardBody, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
 
 import TestCoverageTreeMap from './visualizations/TestCoverageTreeMap';
 
@@ -42,7 +42,7 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                             <CardHeader>
                                 Test Coverage
                                 <div className="card-actions">
-                                    <a href="javascript: void(0)" onClick={this.toggleInfo} id="Popover1">
+                                    <a onClick={this.toggleInfo} id="Popover1">
                                         <i className="text-muted fa fa-question-circle"></i>
                                     </a>
                                     <Popover placement="bottom" isOpen={this.state.popoverOpen} target="Popover1" toggle={this.toggleInfo}>

@@ -1,6 +1,6 @@
 import React from 'react';
 import DashboardAbstract from '../../AbstractDashboardComponent';
-import {Badge, Row, Col, Card, CardHeader, CardFooter, CardBody, Label, Input, Button, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
+import {Row, Col, Card, CardHeader, CardBody, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
 import DependencyChord from './visualizations/DependencyChord';
 
 class ArchitectureDependencies extends DashboardAbstract {
@@ -45,7 +45,7 @@ class ArchitectureDependencies extends DashboardAbstract {
                             <CardHeader>
                                 Dependencies
                                 <div className="card-actions">
-                                    <a href="javascript: void(0)" onClick={this.toggleInfo} id="Popover1">
+                                    <a onClick={this.toggleInfo} id="Popover1">
                                         <i className="text-muted fa fa-question-circle"></i>
                                     </a>
                                     <Popover placement="bottom" isOpen={this.state.popoverOpen} target="Popover1" toggle={this.toggleInfo}>

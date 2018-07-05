@@ -1,12 +1,11 @@
-import React, { Component } from 'react';
-import DashboardAbstract, { neo4jSession, databaseCredentialsProvided } from '../../AbstractDashboardComponent';
-import {Row, Col, Card, CardHeader, CardBody, Button, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
+import React from 'react';
+import DashboardAbstract, { databaseCredentialsProvided } from '../../AbstractDashboardComponent';
+import {Row, Col, Card, CardHeader, CardBody, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
 import DynamicBreadcrumb from '../../DynamicBreadcrumb/DynamicBreadcrumb';
 import StructureBubble from './visualization/StructureBubble';
 import {Treebeard} from 'react-treebeard';
 
-import {ResponsiveBubbleHtml} from '@nivo/circle-packing';
-import * as d3 from "d3";
+import HotspotModel from '../../../../api/models/Hotspots';
 
 var AppDispatcher = require('../../../../AppDispatcher');
 
@@ -18,8 +17,6 @@ var treebeardCustomTheme = require('./TreebeardCustomTheme');
 // demo: http://alexcurtis.github.io/react-treebeard/
 
 var dynamicBreadcrumbSeparator = " > ";
-
-var maxComplexity = 0;
 
 class ArchitectureStructure extends DashboardAbstract {
 
@@ -50,8 +47,14 @@ class ArchitectureStructure extends DashboardAbstract {
     componentDidMount() {
         super.componentDidMount();
 
+        var thisBackup = this;
+
         if (databaseCredentialsProvided) {
-            this.readStructure();
+            var hotspotModel = new HotspotModel();
+            hotspotModel.readHotspots(IDENTIFIER_PROJECT_NAME).then(function(data) {
+                thisBackup.setState({hotSpotData: data.hierarchicalData});
+            });
+            //this.readStructure();
         }
     }
 
@@ -59,138 +62,11 @@ class ArchitectureStructure extends DashboardAbstract {
         super.componentWillUnmount();
     }
 
-    readStructure() {
-
-        var flatData = [];
-        var hierarchicalData = [];
-        var projectName = localStorage.getItem(IDENTIFIER_PROJECT_NAME); // "PROJECTNAME"; // acts as root as there are multiple root packages in some cases
-        var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
-        neo4jSession.run(
-            "MATCH\n" +
-            " (t:Type)-[:HAS_SOURCE]->(f),\n" +
-            " (t)-[:DECLARES]->(m:Method)\n" +
-            "WHERE\n" +
-            " f.relativePath STARTS WITH 'src'\n" +
-            "RETURN\n " +
-            " t.fqn as fqn, sum(m.cyclomaticComplexity) as complexity, sum(m.effectiveLineCount) as loc ORDER BY fqn ASCENDING")
-            .then(function (result) {
-                var collectedNames = [];
-
-                maxComplexity = 0; //reset value
-                // collect results
-                result.records.forEach(function (record) {
-                    var name = record.get("fqn");
-                    var currentComplexity = record.get("complexity").low;
-
-                    if (currentComplexity > maxComplexity) {
-                        maxComplexity = currentComplexity;
-                    }
-
-                    if (collectedNames[name]) { //if name already present add complexity and loc
-                        for (var i = 0; i < flatData.length; i++) {
-                            if (flatData[i].name === name) {
-                                console.log("----");
-                                console.log(flatData[i]);
-                                flatData[i].complexity += currentComplexity;
-                                flatData[i].loc += record.get("loc").low;
-                                console.log(flatData[i]);
-                            }
-                        }
-
-                        return; //continue in forEach
-                    }
-                    collectedNames[name] = 1;
-
-                    var recordConverted = {
-                        "name": name,
-                        "complexity": currentComplexity,
-                        "loc": record.get("loc").low,
-                        "level": name.split(".").length
-                    };
-                    flatData.push(recordConverted);
-
-                    //fill packages to allow stratify()
-                    var level = 0;
-                    while (name.lastIndexOf(".") !== -1) {
-                        level = name.split(".").length - 1;
-                        name = name.substring(0, name.lastIndexOf("."));
-                        if (!collectedNames[name]) {
-                            collectedNames[name] = 1;
-                            flatData.push({
-                                "name": name,
-                                "complexity": 0,
-                                "loc": 0,
-                                "level": level
-                            });
-                        }
-                    }
-                });
-
-                var stratify = d3.stratify()
-                    .id(function (d) {
-                        return d.name;
-                    })
-                    .parentId(function (d) {
-                        if (d.name.lastIndexOf(".") != -1) { // classes and subpackes
-                            return d.name.substring(0, d.name.lastIndexOf("."));
-                        } else if (d.name != projectName) { // a root package
-                            return projectName;
-                        } else { // project name as root
-                            return "";
-                        }
-                    });
-
-                // add projectname as root
-                try {
-                    hierarchicalData = stratify(flatData);
-                } catch (e) {
-                    var root = {
-                        "name": projectName,
-                        "complexity": 0,
-                        "loc": 1, // at least 1 to make it visible
-                        "level": 0
-                    };
-                    flatData.push(root);
-                    hierarchicalData = stratify(flatData);
-                }
-
-                // turn flat json into hierarchical json
-
-
-                //normalize recursively all childs (move information from .data to the element's root where nivo expects it)
-                var normalize = function(hierarchicalData) {
-                    for (var i = 0; i < hierarchicalData.children.length; i++) {
-                        var lastDot = hierarchicalData.children[i].data.name.lastIndexOf(".");
-                        hierarchicalData.children[i].name = hierarchicalData.children[i].data.name.substring(lastDot + 1);
-                        hierarchicalData.children[i].loc = hierarchicalData.children[i].data.loc;
-                        hierarchicalData.children[i].complexity = hierarchicalData.children[i].data.complexity;
-                        if (hierarchicalData.children[i].children) {
-                            normalize(hierarchicalData.children[i]);
-                        }
-                    }
-                }
-
-                normalize(hierarchicalData);
-
-                neo4jSession.close();
-
-                //normalize the root element
-                hierarchicalData.name = hierarchicalData.id;
-                hierarchicalData.loc = hierarchicalData.data.loc;
-                hierarchicalData.complexity = hierarchicalData.data.complexity;
-            }).then( function(context) {
-            thisBackup.setState({hotSpotData: hierarchicalData});
-        })
-            .catch(function (error) {
-                console.log(error);
-            });
-    }
-
     triggerClickOnNode(node) {
         var nodeId = node.id.replace(/[^\w]/gi, '-');
         if (node.id) {
             var bubbleBelongingToNode = document.querySelectorAll('div#' + nodeId);
-            if (bubbleBelongingToNode && bubbleBelongingToNode.length == 1) {
+            if (bubbleBelongingToNode && bubbleBelongingToNode.length === 1) {
                 bubbleBelongingToNode[0].click();
             } else if (bubbleBelongingToNode.length > 1) {
                 console.log("Found more than one candidate to click on, to prevent a mess nothing has been clicked. ");
@@ -214,8 +90,6 @@ class ArchitectureStructure extends DashboardAbstract {
     }
 
     handleAction(event) {
-        var PROJECTNAME = 'PROJECTNAME';
-
         var action = event.action;
         switch (action.actionType) {
             case 'SELECT_HOTSPOT_PACKAGE':
@@ -343,7 +217,7 @@ class ArchitectureStructure extends DashboardAbstract {
                             <CardHeader>
                                 Structure
                                 <div className="card-actions">
-                                    <a href="javascript: void(0)" onClick={this.toggleInfo} id="Popover2">
+                                    <a onClick={this.toggleInfo} id="Popover2">
                                         <i className="text-muted fa fa-question-circle"></i>
                                     </a>
                                     <Popover placement="bottom" isOpen={this.state.popoverOpen} target="Popover2" toggle={this.toggleInfo}>

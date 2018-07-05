@@ -13,22 +13,22 @@ var neo4jSession = null;
 var databaseCredentialsProvided = false;
 var databaseCredentialsCorrect = true;
 
-function genericException(message, name) {
+function GenericException(message, name) {
   this.message = message;
   this.name = name;
 }
 
 class DashboardAbstract extends Component {
 
-    checkForDatabaseConnection() {
+    static checkForDatabaseConnection() {
       var connectionString = localStorage.getItem('connectionString');
       var neo4jPassword = localStorage.getItem('password');
       var neo4jUsername = localStorage.getItem('username');
-      
-      databaseCredentialsProvided = 
-        connectionString !== null && connectionString != "" &&
-        neo4jPassword !== null && neo4jPassword != "" &&
-        neo4jUsername !== null && neo4jUsername != "";
+
+      databaseCredentialsProvided =
+        connectionString !== null && connectionString !== "" &&
+        neo4jPassword !== null && neo4jPassword !== "" &&
+        neo4jUsername !== null && neo4jUsername !== "";
     }
 
     componentWillMount() {
@@ -38,7 +38,7 @@ class DashboardAbstract extends Component {
       });
 
       return new Promise(
-        this.checkForDatabaseConnection
+        DashboardAbstract.checkForDatabaseConnection
       ).then(
         this.testDatabaseCredentials()
       )
@@ -66,8 +66,6 @@ class DashboardAbstract extends Component {
         neo4jDriver = neo4j.v1.driver(connectionString, neo4j.v1.auth.basic(username, password));
         neo4jSession = neo4jDriver.session();
 
-        var thisBackup = this;
-
         return neo4jSession
         .run("match (n) return n limit 1") //this should be as generic as possible =)
         .then( function() {
@@ -76,7 +74,7 @@ class DashboardAbstract extends Component {
         .catch( function(error) {
             databaseCredentialsCorrect = false;
             neo4jConnectionString = "";
-            throw new genericException("Invalid database connection data", "InvalidDatabaseConnectionException");
+            throw new GenericException("Invalid database connection data", "InvalidDatabaseConnectionException");
         }); //handle wrong credentials
       } //end if
     }
@@ -108,6 +106,9 @@ class DashboardAbstract extends Component {
             case 'SET_STATE':
                 var stateData = event.action.data;
                 this.setState(stateData);
+                break;
+            default:
+                break;
         }
     }
 
@@ -117,7 +118,7 @@ class DashboardAbstract extends Component {
           console.log("No database credentials, redirecting to settings...");
           var baseUrl = window.location.protocol + '//' + window.location.host + '/#';
           var path = window.location.href.replace(baseUrl, '');
-          if (path != '/settings') {
+          if (path !== '/settings') {
               rdir.push(<Redirect key="dummy" to="/settings" />);
           }
       }
@@ -127,4 +128,4 @@ class DashboardAbstract extends Component {
 }
 
 export default DashboardAbstract;
-export { neo4j, neo4jSession, databaseCredentialsProvided, databaseCredentialsCorrect, genericException };
+export { neo4j, neo4jSession, databaseCredentialsProvided, databaseCredentialsCorrect, GenericException };
