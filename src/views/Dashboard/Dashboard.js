@@ -5,6 +5,8 @@ import DashboardAbstract, {databaseCredentialsProvided} from './AbstractDashboar
 import {Row, Col, Card, CardHeader, CardBody, ListGroup, ListGroupItem, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
 import DashboardModel from '../../api/models/Dashboard';
 
+import $ from 'jquery';
+
 class PopoverItem extends Component {
     constructor(props) {
         super(props);
@@ -91,6 +93,26 @@ class Dashboard extends DashboardAbstract {
             dashboardModel.readStaticCodeAnalysisPMDMetrics(this);
             dashboardModel.readTestCoverageMetrics(this);
         }
+
+        $(document).ready(function(){
+
+            // Select and loop all card-body elements
+            $('.card-body').each(function(){
+
+                // Cache the highest
+                var highestBox = 0;
+
+                // If this box is higher than the cached highest then store it
+                if($(this).height() > highestBox) {
+                    highestBox = $(this).height();
+                }
+
+                // Set the height of all those children to whichever was highest
+                $('.card-body').height(highestBox);
+
+            });
+
+        });
     }
 
     toggleInfo() {
