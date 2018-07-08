@@ -18,7 +18,7 @@ class CustomQuery extends DashboardAbstract {
 
         this.state = {
             readData: [{
-                "aplaceholder": "Please tye a query and click \"Send\"",
+                "aplaceholder": "Please type a query and click \"Send\"",
             }],
             headerData: [
                 {

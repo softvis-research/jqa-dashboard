@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import PropTypes from 'prop-types';
 
-import { AppSidebarToggler } from '@coreui/react';
+import { AppSidebarToggler, AppNavbarBrand } from '@coreui/react';
+import logo from '../../assets/img/brand/logo.svg'
 
 const propTypes = {
   children: PropTypes.node,
@@ -19,6 +20,9 @@ class DefaultHeader extends Component {
     return (
       <React.Fragment>
         <AppSidebarToggler className="d-lg-none" display="md" mobile />
+        <AppNavbarBrand
+          full={{ src: logo, alt: 'jQA-Dashboard Logo' }}
+        />
         <AppSidebarToggler className="d-md-down-none" display="lg" />
         <Nav className="ml-auto" navbar>
             <NavItem className="d-md-down-none daterangepicker-placeholder"></NavItem>
