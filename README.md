@@ -1,6 +1,6 @@
-# Software Visualization Dashboard &middot; [![GitHub license](https://img.shields.io/github/license/rmllr/jqa-dashboard.svg)](https://github.com/rmllr/jqa-dashboard/blob/master/LICENSE) #
+# jQAssistant-Dashboard &middot; [![GitHub license](https://img.shields.io/github/license/softvis-research/jqa-dashboard.svg)](https://github.com/rmllr/jqa-dashboard/blob/master/LICENSE) #
 
-A web-based dashboard for software analysis and visualization. This [screencast](https://www.dropbox.com/s/l5cy1h0saj6khp5/Screencast-Software-Visualization-Dashboard-18-06-04.mp4?dl=0) shows its main features.
+A web-based dashboard for software analysis and visualization using software artifacts' data scanned by jQAssistant. This [screencast](https://www.dropbox.com/s/l5cy1h0saj6khp5/Screencast-Software-Visualization-Dashboard-18-06-04.mp4?dl=0) shows its main features.
 
 ## Installation ##
 
