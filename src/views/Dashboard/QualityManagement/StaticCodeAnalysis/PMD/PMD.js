@@ -3,6 +3,7 @@ import DashboardAbstract, {databaseCredentialsProvided} from '../../../AbstractD
 import {Alert, Row, Col, Card, CardHeader, CardBody, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
 import PMDModel from '../../../../../api/models/PMD';
 import PmdRadar from './visualization/PmdRadar';
+import SimpleBar from 'simplebar';
 
 class PopoverItem extends Component {
 

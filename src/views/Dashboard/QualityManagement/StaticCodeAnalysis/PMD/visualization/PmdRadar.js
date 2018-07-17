@@ -19,38 +19,19 @@ class PmdRadar extends DashboardAbstract {
             return '';
         }
 
+        var radarData = [];
+        {Object.keys(pmdData).map(function(key, i) {
+            var violation = {};
+            violation.ruleSet = key;
+            violation.violations = pmdData[key] ? pmdData[key].length : 0;
+            radarData.push(violation);
+        }, this)}
+
+        console.log(radarData);
+
         return (
             <ResponsiveRadar
-                data={[
-                    {
-                        "ruleSet": "Best Practices",
-                        "violations": pmdData["Best Practices"] ? pmdData["Best Practices"].length : 0
-                    },
-                    {
-                        "ruleSet": "Code Style",
-                        "violations": pmdData["Code Style"] ? pmdData["Code Style"].length : 0
-                    },
-                    {
-                        "ruleSet": "Design",
-                        "violations": pmdData["Design"] ? pmdData["Design"].length : 0
-                    },
-                    {
-                        "ruleSet": "Documentation",
-                        "violations": pmdData["Documentation"] ? pmdData["Documentation"].length : 0
-                    },
-                    {
-                        "ruleSet": "Error Prone",
-                        "violations": pmdData["Error Prone"] ? pmdData["Error Prone"].length : 0
-                    },
-                    {
-                        "ruleSet": "Multithreading",
-                        "violations": pmdData["Multithreading"] ? pmdData["Multithreading"].length : 0
-                    },
-                    {
-                        "ruleSet": "Performance",
-                        "violations": pmdData["Performance"] ? pmdData["Performance"].length : 0
-                    }
-                ]}
+                data={radarData}
                 keys={[
                     "violations"
                 ]}
