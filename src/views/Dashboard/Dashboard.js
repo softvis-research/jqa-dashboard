@@ -15,10 +15,10 @@ class PopoverItem extends Component {
         this.state = {
             popoverOpen: false,
             infoText: {
-                "Architecture": "Dummy text.",
-                "Resource Management": "Dummy text.",
-                "Risk Management": "Dummy text.",
-                "Quality Management": "Dummy text."
+                "Architecture": "Common architecture and dependency metrics provide an overview of the project, e.g., number of classes, LOC, number of dependencies, and field reads.",
+                "Resource Management": "Resource management provides an overview of development activities, authors and their commits.",
+                "Risk Management": "Risk management helps to identify hotspots of the project.",
+                "Quality Management": "Quality management supports quality monitoring with regard to static code analysis results and test coverage."
             }
         };
     }

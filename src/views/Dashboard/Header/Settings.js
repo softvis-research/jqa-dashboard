@@ -131,11 +131,9 @@ class Settings extends DashboardAbstract {
                                     <Popover placement="bottom" isOpen={this.state.popoverOpen} target="Popover2" toggle={this.toggleInfo}>
                                         <PopoverHeader>Settings</PopoverHeader>
                                         <PopoverBody>
-                                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
-                                            et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                                            aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                                            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                                            culpa qui officia deserunt mollit anim id est laborum.                                        </PopoverBody>
+                                            Please enter the required connection details of the Neo4j database and the name of your project.
+                                            Confirm your entries by clicking on "Save".
+                                        </PopoverBody>
                                     </Popover>
                                 </div>
                             </CardHeader>

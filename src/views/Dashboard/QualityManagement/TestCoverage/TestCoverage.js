@@ -48,11 +48,9 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                                     <Popover placement="bottom" isOpen={this.state.popoverOpen} target="Popover1" toggle={this.toggleInfo}>
                                         <PopoverHeader>Test Coverage</PopoverHeader>
                                         <PopoverBody>
-                                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore
-                                            et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                                            aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                                            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                                            culpa qui officia deserunt mollit anim id est laborum.                                        </PopoverBody>
+                                            The test coverage view highlights untested code with a colored treemap.
+                                            Packages, types, and methods are mapped to nested rectangles where the LOC define the size and the coverage defines the color of a rectangle.
+                                        </PopoverBody>
                                     </Popover>
                                 </div>
                             </CardHeader>

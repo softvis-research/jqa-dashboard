@@ -7,7 +7,7 @@ import DashboardAbstract, { neo4jSession } from '../AbstractDashboardComponent';
 //import { Chart } from "graph-app-kit/components/Chart";
 import { CypherEditor } from "graph-app-kit/components/Editor";
 
-import {Button, Row, Col, Card, CardHeader, CardBody} from 'reactstrap';
+import {Button, Row, Col, Card, CardHeader, CardBody, Popover, PopoverBody, PopoverHeader} from 'reactstrap';
 
 import ReactTable from 'react-table';
 
@@ -15,6 +15,16 @@ class CustomQuery extends DashboardAbstract {
 
     constructor(props) {
         super(props);
+
+        this.state = {
+            popoverOpen: false,
+            popovers: [
+                {
+                    placement: 'bottom',
+                    text: 'Bottom'
+                }
+            ]
+        };
 
         this.state = {
             readData: [{
@@ -28,6 +38,8 @@ class CustomQuery extends DashboardAbstract {
             ],
             query: 'MATCH (a:Author)-[:COMMITTED]->(c:Commit) RETURN a.name, c.message ORDER BY c.date desc LIMIT 20'
         };
+
+        this.toggleInfo = this.toggleInfo.bind(this);
     }
 
     componentWillMount() {
@@ -129,6 +141,12 @@ class CustomQuery extends DashboardAbstract {
         this.state.query = event;
     }
 
+    toggleInfo() {
+        this.setState({
+            popoverOpen: !this.state.popoverOpen
+        });
+    }
+
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
@@ -142,6 +160,17 @@ class CustomQuery extends DashboardAbstract {
                         <Card>
                             <CardHeader>
                                 Custom Cypher query
+                                <div className="card-actions">
+                                    <a onClick={this.toggleInfo} id="Popover">
+                                        <i className="text-muted fa fa-question-circle"></i>
+                                    </a>
+                                    <Popover placement="bottom" isOpen={this.state.popoverOpen} target="Popover" toggle={this.toggleInfo}>
+                                        <PopoverHeader>Custom Cypher query</PopoverHeader>
+                                        <PopoverBody>
+                                            The Cypher editor allows custom queries to the Neo4j database and returns tabular results.
+                                        </PopoverBody>
+                                    </Popover>
+                                </div>
                             </CardHeader>
                             <CardBody>
                                 <CypherEditor

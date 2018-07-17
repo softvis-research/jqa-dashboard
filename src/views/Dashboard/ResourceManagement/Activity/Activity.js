@@ -16,10 +16,10 @@ class PopoverItem extends Component {
         this.state = {
             popoverOpen: false,
             infoText: {
-                "Commits per author": "Dummy text.",
-                "Files per author": "Dummy text.",
-                "Commits over time": "Dummy text.",
-                "Latest 20 commits": "Dummy text."
+                "Commits per author": "The bar chart shows the number of commits for each author.",
+                "Files per author": "The bar chart shows the number of files for each author.",
+                "Commits over time": "The calendar shows the number of commits per day. The darker the color is, the more commits were made.",
+                "Latest 20 commits": "The table shows the author, the date, and the commit message of the latest 20 commits."
             }
         };
     }

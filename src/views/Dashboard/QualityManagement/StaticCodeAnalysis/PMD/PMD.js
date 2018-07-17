@@ -13,7 +13,7 @@ class PopoverItem extends Component {
         this.state = {
             popoverOpen: false,
             infoText: {
-                "Static Code Analysis PMD": "Dummy text.",
+                "Static Code Analysis PMD": "The radar chart shows the number of violations in the categories best practices, code style, design, documentation, error-proneness, multithreading, and performance. The violations are detailed in the boxes below and colored according to their priority.",
                 "Best Practices": "Rules which enforce generally accepted best practices.",
                 "Code Style": "Rules which enforce a specific coding style.",
                 "Design": "Rules that help you discover design issues.",
