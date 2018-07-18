@@ -27,8 +27,6 @@ class PmdRadar extends DashboardAbstract {
             radarData.push(violation);
         }, this)}
 
-        console.log(radarData);
-
         return (
             <ResponsiveRadar
                 data={radarData}
