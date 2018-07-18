@@ -1,17 +1,28 @@
-import React from 'react';
-import DashboardAbstract, { databaseCredentialsProvided } from '../../AbstractDashboardComponent';
-import {Row, Col, Card, CardHeader, CardBody, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
-import DynamicBreadcrumb from '../../DynamicBreadcrumb/DynamicBreadcrumb';
-import StructureBubble from './visualization/StructureBubble';
-import {Treebeard} from 'react-treebeard';
+import React from "react";
+import DashboardAbstract, {
+    databaseCredentialsProvided
+} from "../../AbstractDashboardComponent";
+import {
+    Row,
+    Col,
+    Card,
+    CardHeader,
+    CardBody,
+    Popover,
+    PopoverHeader,
+    PopoverBody
+} from "reactstrap";
+import DynamicBreadcrumb from "../../DynamicBreadcrumb/DynamicBreadcrumb";
+import StructureBubble from "./visualization/StructureBubble";
+import { Treebeard } from "react-treebeard";
 
-import HotspotModel from '../../../../api/models/Hotspots';
+import HotspotModel from "../../../../api/models/Hotspots";
 
-var AppDispatcher = require('../../../../AppDispatcher');
+var AppDispatcher = require("../../../../AppDispatcher");
 
 var IDENTIFIER_PROJECT_NAME = "projectName";
 
-var treebeardCustomTheme = require('./TreebeardCustomTheme');
+var treebeardCustomTheme = require("./TreebeardCustomTheme");
 // from here: https://github.com/alexcurtis/react-treebeard
 // TODO: add search input from example: https://github.com/alexcurtis/react-treebeard/tree/master/example
 // demo: http://alexcurtis.github.io/react-treebeard/
@@ -19,19 +30,18 @@ var treebeardCustomTheme = require('./TreebeardCustomTheme');
 var dynamicBreadcrumbSeparator = " > ";
 
 class ArchitectureStructure extends DashboardAbstract {
-
     constructor(props) {
         super(props);
 
         this.state = {
             hotSpotData: {},
             treeViewData: {},
-            breadCrumbData: [''],
+            breadCrumbData: [""],
             popoverOpen: false,
             popovers: [
                 {
-                    placement: 'bottom',
-                    text: 'Bottom'
+                    placement: "bottom",
+                    text: "Bottom"
                 }
             ]
         };
@@ -51,9 +61,11 @@ class ArchitectureStructure extends DashboardAbstract {
 
         if (databaseCredentialsProvided) {
             var hotspotModel = new HotspotModel();
-            hotspotModel.readHotspots(IDENTIFIER_PROJECT_NAME).then(function(data) {
-                thisBackup.setState({hotSpotData: data.hierarchicalData});
-            });
+            hotspotModel
+                .readHotspots(IDENTIFIER_PROJECT_NAME)
+                .then(function(data) {
+                    thisBackup.setState({ hotSpotData: data.hierarchicalData });
+                });
             //this.readStructure();
         }
     }
@@ -63,13 +75,17 @@ class ArchitectureStructure extends DashboardAbstract {
     }
 
     triggerClickOnNode(node) {
-        var nodeId = node.id.replace(/[^\w]/gi, '-');
+        var nodeId = node.id.replace(/[^\w]/gi, "-");
         if (node.id) {
-            var bubbleBelongingToNode = document.querySelectorAll('div#' + nodeId);
+            var bubbleBelongingToNode = document.querySelectorAll(
+                "div#" + nodeId
+            );
             if (bubbleBelongingToNode && bubbleBelongingToNode.length === 1) {
                 bubbleBelongingToNode[0].click();
             } else if (bubbleBelongingToNode.length > 1) {
-                console.log("Found more than one candidate to click on, to prevent a mess nothing has been clicked. ");
+                console.log(
+                    "Found more than one candidate to click on, to prevent a mess nothing has been clicked. "
+                );
                 console.log(bubbleBelongingToNode);
             }
         }
@@ -92,21 +108,25 @@ class ArchitectureStructure extends DashboardAbstract {
     handleAction(event) {
         var action = event.action;
         switch (action.actionType) {
-            case 'SELECT_HOTSPOT_PACKAGE':
+            case "SELECT_HOTSPOT_PACKAGE":
                 var selectedPackage = event.action.data.data.id;
 
                 var hotspotClone = this.state.hotSpotData;
 
                 var markSelectedPackageAsActive = function(hierarchicalData) {
                     for (var i = 0; i < hierarchicalData.children.length; i++) {
-                        if (hierarchicalData.children[i].id === selectedPackage) {
+                        if (
+                            hierarchicalData.children[i].id === selectedPackage
+                        ) {
                             hierarchicalData.children[i].active = true;
                         } else {
                             hierarchicalData.children[i].active = false;
                         }
 
                         if (hierarchicalData.children[i].children) {
-                            markSelectedPackageAsActive(hierarchicalData.children[i]);
+                            markSelectedPackageAsActive(
+                                hierarchicalData.children[i]
+                            );
                         }
                     }
                 };
@@ -118,21 +138,32 @@ class ArchitectureStructure extends DashboardAbstract {
                         hierarchicalData.children[i].toggled = false;
 
                         if (hierarchicalData.children[i].children) {
-                            markAllPackagesAsUntoggled(hierarchicalData.children[i]);
+                            markAllPackagesAsUntoggled(
+                                hierarchicalData.children[i]
+                            );
                         }
                     }
                 };
 
                 markAllPackagesAsUntoggled(hotspotClone);
 
-                var markSelectedPackageAsToggled = function(hierarchicalData, targetElementName) {
+                var markSelectedPackageAsToggled = function(
+                    hierarchicalData,
+                    targetElementName
+                ) {
                     for (var i = 0; i < hierarchicalData.children.length; i++) {
-                        if (hierarchicalData.children[i].id === targetElementName) {
+                        if (
+                            hierarchicalData.children[i].id ===
+                            targetElementName
+                        ) {
                             hierarchicalData.children[i].toggled = true;
                         }
 
                         if (hierarchicalData.children[i].children) {
-                            markSelectedPackageAsToggled(hierarchicalData.children[i], targetElementName);
+                            markSelectedPackageAsToggled(
+                                hierarchicalData.children[i],
+                                targetElementName
+                            );
                         }
                     }
                 };
@@ -140,8 +171,8 @@ class ArchitectureStructure extends DashboardAbstract {
                 var elementToDoList = selectedPackage.split(".");
                 var currentName = "";
                 for (var i = 0; i < elementToDoList.length; i++) {
-                    if (i > 0 ) {
-                        currentName += '.' + elementToDoList[i];
+                    if (i > 0) {
+                        currentName += "." + elementToDoList[i];
                     } else {
                         currentName = elementToDoList[i];
                     }
@@ -155,7 +186,7 @@ class ArchitectureStructure extends DashboardAbstract {
                 });
 
                 break;
-            case 'SELECT_HOTSPOT_PACKAGE_FROM_BREADCRUMB':
+            case "SELECT_HOTSPOT_PACKAGE_FROM_BREADCRUMB":
                 var elementName = event.action.data;
                 var findNodeByName = function(hierarchicalData) {
                     for (var i = 0; i < hierarchicalData.children.length; i++) {
@@ -163,8 +194,10 @@ class ArchitectureStructure extends DashboardAbstract {
                             return hierarchicalData.children[i];
                         } else {
                             if (hierarchicalData.children[i].children) {
-                                var node = findNodeByName(hierarchicalData.children[i]);
-                                if (typeof node !== 'undefined') {
+                                var node = findNodeByName(
+                                    hierarchicalData.children[i]
+                                );
+                                if (typeof node !== "undefined") {
                                     return node;
                                 }
                             }
@@ -175,7 +208,12 @@ class ArchitectureStructure extends DashboardAbstract {
                 var node = findNodeByName(this.state.hotSpotData);
                 //setTimeout to prevent "Cannot dispatch in the middle of a dispatch"
                 // when the !!time is out!! the dispatch is completed and the next click can be handled
-                setTimeout(function() { this.triggerClickOnNode(node) }.bind(this), 50);
+                setTimeout(
+                    function() {
+                        this.triggerClickOnNode(node);
+                    }.bind(this),
+                    50
+                );
                 break;
             default:
                 return true;
@@ -184,11 +222,14 @@ class ArchitectureStructure extends DashboardAbstract {
 
     breadcrumbClicked(clickEvent) {
         var element = clickEvent.target;
-        var elementName = (element.id + "").replace(new RegExp(dynamicBreadcrumbSeparator, 'g'), '.');
+        var elementName = (element.id + "").replace(
+            new RegExp(dynamicBreadcrumbSeparator, "g"),
+            "."
+        );
 
         //var clickedPackage = element.id; //e.g. org.junit.tests.experimental...
         AppDispatcher.handleAction({
-            actionType: 'SELECT_HOTSPOT_PACKAGE_FROM_BREADCRUMB',
+            actionType: "SELECT_HOTSPOT_PACKAGE_FROM_BREADCRUMB",
             data: elementName
         });
     }
@@ -202,11 +243,11 @@ class ArchitectureStructure extends DashboardAbstract {
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
-            return(redirect);
+            return redirect;
         }
 
         if (!this.state.hotSpotData.name) {
-            return '';
+            return "";
         }
 
         return (
@@ -218,13 +259,21 @@ class ArchitectureStructure extends DashboardAbstract {
                                 Structure
                                 <div className="card-actions">
                                     <a onClick={this.toggleInfo} id="Popover2">
-                                        <i className="text-muted fa fa-question-circle"></i>
+                                        <i className="text-muted fa fa-question-circle" />
                                     </a>
-                                    <Popover placement="bottom" isOpen={this.state.popoverOpen} target="Popover2" toggle={this.toggleInfo}>
+                                    <Popover
+                                        placement="bottom"
+                                        isOpen={this.state.popoverOpen}
+                                        target="Popover2"
+                                        toggle={this.toggleInfo}
+                                    >
                                         <PopoverHeader>Structure</PopoverHeader>
                                         <PopoverBody>
-                                            The structure analysis view gives an overview of the project hierarchy.
-                                            Packages and types are mapped to nested circles with LOC as their size.
+                                            The structure analysis view gives an
+                                            overview of the project hierarchy.
+                                            Packages and types are mapped to
+                                            nested circles with LOC as their
+                                            size.
                                         </PopoverBody>
                                     </Popover>
                                 </div>
@@ -235,9 +284,16 @@ class ArchitectureStructure extends DashboardAbstract {
                                         <Card>
                                             <CardBody>
                                                 <DynamicBreadcrumb
-                                                    items={this.state.breadCrumbData}
-                                                    onClickHandler={this.breadcrumbClicked}
-                                                    separator={dynamicBreadcrumbSeparator}
+                                                    items={
+                                                        this.state
+                                                            .breadCrumbData
+                                                    }
+                                                    onClickHandler={
+                                                        this.breadcrumbClicked
+                                                    }
+                                                    separator={
+                                                        dynamicBreadcrumbSeparator
+                                                    }
                                                 />
                                             </CardBody>
                                         </Card>
@@ -245,12 +301,23 @@ class ArchitectureStructure extends DashboardAbstract {
                                 </Row>
                                 <Row>
                                     <Col xs="12" sm="6" md="4">
-                                        <Card id="treebeard-component" data-simplebar style={{height: "635px", overflow: "hidden"}}>
+                                        <Card
+                                            id="treebeard-component"
+                                            data-simplebar
+                                            style={{
+                                                height: "635px",
+                                                overflow: "hidden"
+                                            }}
+                                        >
                                             <CardBody>
                                                 <Treebeard
-                                                    data={this.state.hotSpotData}
+                                                    data={
+                                                        this.state.hotSpotData
+                                                    }
                                                     onToggle={this.onToggle}
-                                                    style={treebeardCustomTheme.default}
+                                                    style={
+                                                        treebeardCustomTheme.default
+                                                    }
                                                 />
                                             </CardBody>
                                         </Card>
@@ -258,8 +325,18 @@ class ArchitectureStructure extends DashboardAbstract {
                                     <Col xs="12" sm="6" md="8">
                                         <Card id="structure-component">
                                             <CardBody>
-                                                <div className={'structure-component'} style={{height: "600px"}}>
-                                                    <StructureBubble data={this.state.hotSpotData} />
+                                                <div
+                                                    className={
+                                                        "structure-component"
+                                                    }
+                                                    style={{ height: "600px" }}
+                                                >
+                                                    <StructureBubble
+                                                        data={
+                                                            this.state
+                                                                .hotSpotData
+                                                        }
+                                                    />
                                                 </div>
                                             </CardBody>
                                         </Card>
@@ -270,7 +347,7 @@ class ArchitectureStructure extends DashboardAbstract {
                     </Col>
                 </Row>
             </div>
-        )
+        );
     }
 }
 

@@ -1,16 +1,17 @@
-import React from 'react';
-import DashboardAbstract, { databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
-import LatestCommitsModel from '../../../../../api/models/LatestCommits';
-import ReactTable from 'react-table';
+import React from "react";
+import DashboardAbstract, {
+    databaseCredentialsProvided
+} from "../../../AbstractDashboardComponent";
+import LatestCommitsModel from "../../../../../api/models/LatestCommits";
+import ReactTable from "react-table";
 
 class LatestCommits extends DashboardAbstract {
-
     constructor(props) {
         super(props);
 
         this.state = {
-            startDate: '1970-01-01',
-            endDate: '3000-12-31',
+            startDate: "1970-01-01",
+            endDate: "3000-12-31",
             latestCommits: []
         };
     }
@@ -23,7 +24,11 @@ class LatestCommits extends DashboardAbstract {
         super.componentDidMount();
         if (databaseCredentialsProvided) {
             var latestCommitsModel = new LatestCommitsModel();
-            latestCommitsModel.readLatestCommits(this, this.state.startDate, this.state.endDate);
+            latestCommitsModel.readLatestCommits(
+                this,
+                this.state.startDate,
+                this.state.endDate
+            );
         }
     }
 
@@ -34,13 +39,17 @@ class LatestCommits extends DashboardAbstract {
     handleAction(event) {
         var action = event.action;
         switch (action.actionType) {
-            case 'DATERANGEPICKER_MODIFIED':
+            case "DATERANGEPICKER_MODIFIED":
                 this.setState({
                     startDate: action.data.displayFrom,
-                    endDate: action.data.displayTo,
+                    endDate: action.data.displayTo
                 });
                 var latestCommitsModel = new LatestCommitsModel();
-                latestCommitsModel.readLatestCommits(this, this.state.startDate, this.state.endDate);
+                latestCommitsModel.readLatestCommits(
+                    this,
+                    this.state.startDate,
+                    this.state.endDate
+                );
                 break;
             default:
                 break;
@@ -50,19 +59,19 @@ class LatestCommits extends DashboardAbstract {
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
-          return(redirect);
+            return redirect;
         }
 
         if (this.state.latestCommits.length === 0) {
-            return '';
+            return "";
         }
 
         return (
             <div>
-                <div style={{height: '409px'}}>
+                <div style={{ height: "409px" }}>
                     <ReactTable
-                        data = {this.state.latestCommits}
-                        columns = {[
+                        data={this.state.latestCommits}
+                        columns={[
                             {
                                 Header: "Author",
                                 accessor: "author"
@@ -76,12 +85,12 @@ class LatestCommits extends DashboardAbstract {
                                 accessor: "message"
                             }
                         ]}
-                        defaultPageSize = {10}
-                        className = "-striped -highlight"
+                        defaultPageSize={10}
+                        className="-striped -highlight"
                     />
                 </div>
             </div>
-        )
+        );
     }
 }
 

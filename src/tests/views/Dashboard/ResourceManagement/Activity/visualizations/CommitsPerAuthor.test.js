@@ -1,25 +1,24 @@
-import React from 'react';
+import React from "react";
 
 //testing stuff
-import { shallow, mount, render } from 'enzyme';
-import { expect } from 'chai';
-import Enzyme from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { shallow, mount, render } from "enzyme";
+import { expect } from "chai";
+import Enzyme from "enzyme";
+import Adapter from "enzyme-adapter-react-16";
 Enzyme.configure({ adapter: new Adapter() });
 //import renderer from 'react-test-renderer';
 
 //component to test
-import CommitsPerAuthor from '../../../../../../views/Dashboard/ResourceManagement/Activity/visualizations/CommitsPerAuthor';
+import CommitsPerAuthor from "../../../../../../views/Dashboard/ResourceManagement/Activity/visualizations/CommitsPerAuthor";
 
-describe('<CommitsPerAuthor />', () => {
-
-    it('should render without throwing an error', () => {
-        var wrapper = shallow(<CommitsPerAuthor/>);
+describe("<CommitsPerAuthor />", () => {
+    it("should render without throwing an error", () => {
+        var wrapper = shallow(<CommitsPerAuthor />);
         wrapper.setState({
             commitsPerAuthor: [
                 {
-                    "author": "Dummy",
-                    "commits": 1
+                    author: "Dummy",
+                    commits: 1
                 }
             ]
         });

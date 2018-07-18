@@ -1,5 +1,5 @@
-import React from 'react';
-import DashboardAbstract, { neo4jSession } from '../AbstractDashboardComponent';
+import React from "react";
+import DashboardAbstract, { neo4jSession } from "../AbstractDashboardComponent";
 
 //import { Cypher } from "graph-app-kit/components/Cypher";
 //import { DriverProvider } from "graph-app-kit/components/DriverProvider";
@@ -7,12 +7,21 @@ import DashboardAbstract, { neo4jSession } from '../AbstractDashboardComponent';
 //import { Chart } from "graph-app-kit/components/Chart";
 import { CypherEditor } from "graph-app-kit/components/Editor";
 
-import {Button, Row, Col, Card, CardHeader, CardBody, Popover, PopoverBody, PopoverHeader} from 'reactstrap';
+import {
+    Button,
+    Row,
+    Col,
+    Card,
+    CardHeader,
+    CardBody,
+    Popover,
+    PopoverBody,
+    PopoverHeader
+} from "reactstrap";
 
-import ReactTable from 'react-table';
+import ReactTable from "react-table";
 
 class CustomQuery extends DashboardAbstract {
-
     constructor(props) {
         super(props);
 
@@ -20,23 +29,26 @@ class CustomQuery extends DashboardAbstract {
             popoverOpen: false,
             popovers: [
                 {
-                    placement: 'bottom',
-                    text: 'Bottom'
+                    placement: "bottom",
+                    text: "Bottom"
                 }
             ]
         };
 
         this.state = {
-            readData: [{
-                "aplaceholder": "Please type a query and click \"Send\"",
-            }],
+            readData: [
+                {
+                    aplaceholder: 'Please type a query and click "Send"'
+                }
+            ],
             headerData: [
                 {
                     Header: "Result",
                     accessor: "aplaceholder"
                 }
             ],
-            query: 'MATCH (a:Author)-[:COMMITTED]->(c:Commit) RETURN a.name, c.message ORDER BY c.date desc LIMIT 20'
+            query:
+                "MATCH (a:Author)-[:COMMITTED]->(c:Commit) RETURN a.name, c.message ORDER BY c.date desc LIMIT 20"
         };
 
         this.toggleInfo = this.toggleInfo.bind(this);
@@ -55,8 +67,7 @@ class CustomQuery extends DashboardAbstract {
     }
 
     clear(event) {
-
-        var element = document.querySelector('.ReactCodeMirror textarea');
+        var element = document.querySelector(".ReactCodeMirror textarea");
         if ("createEvent" in document) {
             var evt = document.createEvent("HTMLEvents");
             evt.initEvent("change", false, true);
@@ -66,16 +77,18 @@ class CustomQuery extends DashboardAbstract {
         }
 
         this.setState({
-            query: '',
-            readData: [{
-                "aplaceholder": "Please type a query and click \"Send\"",
-            }],
+            query: "",
+            readData: [
+                {
+                    aplaceholder: 'Please type a query and click "Send"'
+                }
+            ],
             headerData: [
                 {
                     Header: "Result",
                     accessor: "aplaceholder"
                 }
-            ],
+            ]
         });
     }
 
@@ -85,56 +98,64 @@ class CustomQuery extends DashboardAbstract {
 
         var isFirst = true;
 
-        neo4jSession.run(
-            thisBackup.state.query
-        ).then(function (result) {
-            result.records.forEach(function (record) {
-                var tmpHeader = [];
-                var recordConverted = {};
-                record.keys.forEach(function (key) {
-                    var index = record._fieldLookup[key];
-                    var value = record.get(index);
-                    var isObject = false;
+        neo4jSession
+            .run(thisBackup.state.query)
+            .then(function(result) {
+                result.records.forEach(function(record) {
+                    var tmpHeader = [];
+                    var recordConverted = {};
+                    record.keys.forEach(function(key) {
+                        var index = record._fieldLookup[key];
+                        var value = record.get(index);
+                        var isObject = false;
 
-                    if (typeof value === 'object') {
-                        value = JSON.stringify(value, null, 2);
-                        isObject = true;
-                    } else {
-                        if (value.low) { //.low if datatype is numeric
-                            value = value.low;
-                        }
-                    }
-
-                    //set keys
-                    if (isFirst && typeof key !== 'undefined' && typeof key !== 'object') {
-                        var dataToSet = {
-                            Header: key,
-                            accessor: key.replace('.', '')
-                        };
-                        if (isObject) {
-                            dataToSet['style'] = {
-                                whiteSpace: 'pre'
+                        if (typeof value === "object") {
+                            value = JSON.stringify(value, null, 2);
+                            isObject = true;
+                        } else {
+                            if (value.low) {
+                                //.low if datatype is numeric
+                                value = value.low;
                             }
                         }
-                        tmpHeader.push(dataToSet);
+
+                        //set keys
+                        if (
+                            isFirst &&
+                            typeof key !== "undefined" &&
+                            typeof key !== "object"
+                        ) {
+                            var dataToSet = {
+                                Header: key,
+                                accessor: key.replace(".", "")
+                            };
+                            if (isObject) {
+                                dataToSet["style"] = {
+                                    whiteSpace: "pre"
+                                };
+                            }
+                            tmpHeader.push(dataToSet);
+                        }
+
+                        recordConverted[key.replace(".", "")] = value;
+                    });
+
+                    if (isFirst) {
+                        //make fieldlist accessable
+                        thisBackup.state.headerData = tmpHeader;
                     }
+                    isFirst = false;
 
-                    recordConverted[key.replace('.', '')] = value;
+                    aggregatedData.push(recordConverted);
                 });
-
-                if (isFirst) { //make fieldlist accessable
-                    thisBackup.state.headerData = tmpHeader;
-                }    
-                isFirst = false;
-
-                aggregatedData.push(recordConverted);
+            })
+            .then(function(context) {
+                //console.log(aggregatedData);
+                thisBackup.setState({ readData: aggregatedData }); //reverse reverses the order of the array (because the chart is flipped this is neccesary)
+            })
+            .catch(function(error) {
+                console.log(error);
             });
-        }).then( function(context) {
-            //console.log(aggregatedData);
-            thisBackup.setState({readData: aggregatedData}); //reverse reverses the order of the array (because the chart is flipped this is neccesary)
-        }).catch(function (error) {
-            console.log(error);
-        });
     }
 
     updateStateQuery(event) {
@@ -150,7 +171,7 @@ class CustomQuery extends DashboardAbstract {
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
-          return(redirect);
+            return redirect;
         }
 
         return (
@@ -162,12 +183,21 @@ class CustomQuery extends DashboardAbstract {
                                 Custom Cypher query
                                 <div className="card-actions">
                                     <a onClick={this.toggleInfo} id="Popover">
-                                        <i className="text-muted fa fa-question-circle"></i>
+                                        <i className="text-muted fa fa-question-circle" />
                                     </a>
-                                    <Popover placement="bottom" isOpen={this.state.popoverOpen} target="Popover" toggle={this.toggleInfo}>
-                                        <PopoverHeader>Custom Cypher query</PopoverHeader>
+                                    <Popover
+                                        placement="bottom"
+                                        isOpen={this.state.popoverOpen}
+                                        target="Popover"
+                                        toggle={this.toggleInfo}
+                                    >
+                                        <PopoverHeader>
+                                            Custom Cypher query
+                                        </PopoverHeader>
                                         <PopoverBody>
-                                            The Cypher editor allows custom queries to the Neo4j database and returns tabular results.
+                                            The Cypher editor allows custom
+                                            queries to the Neo4j database and
+                                            returns tabular results.
                                         </PopoverBody>
                                     </Popover>
                                 </div>
@@ -181,24 +211,38 @@ class CustomQuery extends DashboardAbstract {
                                         theme: "cypher",
                                         lineNumberFormatter: line => line
                                     }}
-                                    onValueChange={this.updateStateQuery.bind(this)}
+                                    onValueChange={this.updateStateQuery.bind(
+                                        this
+                                    )}
                                 />
-                                <Button onClick={this.sendQuery.bind(this)} className="btn btn-success send-query float-right" color="success">Send</Button>
-                                <Button onClick={this.clear.bind(this)} className="btn btn-success send-query float-right margin-right" color="danger">Reset</Button>
+                                <Button
+                                    onClick={this.sendQuery.bind(this)}
+                                    className="btn btn-success send-query float-right"
+                                    color="success"
+                                >
+                                    Send
+                                </Button>
+                                <Button
+                                    onClick={this.clear.bind(this)}
+                                    className="btn btn-success send-query float-right margin-right"
+                                    color="danger"
+                                >
+                                    Reset
+                                </Button>
 
                                 <ReactTable
-                                    data = {this.state.readData}
-                                    columns = {this.state.headerData}
-                                    defaultPageSize = {20}
-                                    className = "-striped -highlight clear"
-                                    minRows = {1}
+                                    data={this.state.readData}
+                                    columns={this.state.headerData}
+                                    defaultPageSize={20}
+                                    className="-striped -highlight clear"
+                                    minRows={1}
                                 />
                             </CardBody>
                         </Card>
                     </Col>
                 </Row>
             </div>
-        )
+        );
     }
 }
 

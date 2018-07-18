@@ -1,44 +1,43 @@
-import React from 'react';
+import React from "react";
 
-import DashboardAbstract from '../../../../AbstractDashboardComponent';
+import DashboardAbstract from "../../../../AbstractDashboardComponent";
 
-import {ResponsiveRadar} from '@nivo/radar';
+import { ResponsiveRadar } from "@nivo/radar";
 
 class PmdRadar extends DashboardAbstract {
-
     render() {
         var redirect = super.render();
 
         if (redirect.length > 0) {
-            return(redirect);
+            return redirect;
         }
 
         var pmdData = this.props.data;
 
         if (pmdData.loading) {
-            return '';
+            return "";
         }
 
         var radarData = [];
-        {Object.keys(pmdData).map(function(key, i) {
-            var violation = {};
-            violation.ruleSet = key;
-            violation.violations = pmdData[key] ? pmdData[key].length : 0;
-            radarData.push(violation);
-        }, this)}
+        {
+            Object.keys(pmdData).map(function(key, i) {
+                var violation = {};
+                violation.ruleSet = key;
+                violation.violations = pmdData[key] ? pmdData[key].length : 0;
+                radarData.push(violation);
+            }, this);
+        }
 
         return (
             <ResponsiveRadar
                 data={radarData}
-                keys={[
-                    "violations"
-                ]}
+                keys={["violations"]}
                 indexBy="ruleSet"
                 margin={{
-                    "top": 70,
-                    "right": 80,
-                    "bottom": 40,
-                    "left": 80
+                    top: 70,
+                    right: 80,
+                    bottom: 40,
+                    left: 80
                 }}
                 curve="catmullRomClosed"
                 borderWidth={2}
@@ -62,7 +61,7 @@ class PmdRadar extends DashboardAbstract {
                 motionDamping={15}
                 isInteractive={true}
             />
-        )
+        );
     }
 }
 

@@ -1,11 +1,19 @@
-import React from 'react';
-import DashboardAbstract from '../../AbstractDashboardComponent';
-import {Row, Col, Card, CardHeader, CardBody, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
+import React from "react";
+import DashboardAbstract from "../../AbstractDashboardComponent";
+import {
+    Row,
+    Col,
+    Card,
+    CardHeader,
+    CardBody,
+    Popover,
+    PopoverHeader,
+    PopoverBody
+} from "reactstrap";
 
-import TestCoverageTreeMap from './visualizations/TestCoverageTreeMap';
+import TestCoverageTreeMap from "./visualizations/TestCoverageTreeMap";
 
 class QualityManagementTestCoverage extends DashboardAbstract {
-
     constructor(props) {
         super(props);
 
@@ -13,8 +21,8 @@ class QualityManagementTestCoverage extends DashboardAbstract {
             popoverOpen: false,
             popovers: [
                 {
-                    placement: 'bottom',
-                    text: 'Bottom'
+                    placement: "bottom",
+                    text: "Bottom"
                 }
             ]
         };
@@ -31,7 +39,7 @@ class QualityManagementTestCoverage extends DashboardAbstract {
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
-            return(redirect);
+            return redirect;
         }
 
         return (
@@ -43,13 +51,25 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                                 Test Coverage
                                 <div className="card-actions">
                                     <a onClick={this.toggleInfo} id="Popover1">
-                                        <i className="text-muted fa fa-question-circle"></i>
+                                        <i className="text-muted fa fa-question-circle" />
                                     </a>
-                                    <Popover placement="bottom" isOpen={this.state.popoverOpen} target="Popover1" toggle={this.toggleInfo}>
-                                        <PopoverHeader>Test Coverage</PopoverHeader>
+                                    <Popover
+                                        placement="bottom"
+                                        isOpen={this.state.popoverOpen}
+                                        target="Popover1"
+                                        toggle={this.toggleInfo}
+                                    >
+                                        <PopoverHeader>
+                                            Test Coverage
+                                        </PopoverHeader>
                                         <PopoverBody>
-                                            The test coverage view highlights untested code with a colored treemap.
-                                            Packages, types, and methods are mapped to nested rectangles where the LOC define the size and the test coverage defines the color of a rectangle.
+                                            The test coverage view highlights
+                                            untested code with a colored
+                                            treemap. Packages, types, and
+                                            methods are mapped to nested
+                                            rectangles where the LOC define the
+                                            size and the test coverage defines
+                                            the color of a rectangle.
                                         </PopoverBody>
                                     </Popover>
                                 </div>
@@ -57,7 +77,7 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                             <CardBody>
                                 <Row>
                                     <Col xs="12" sm="12" md="12">
-                                        <TestCoverageTreeMap/>
+                                        <TestCoverageTreeMap />
                                     </Col>
                                 </Row>
                             </CardBody>
@@ -65,7 +85,7 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                     </Col>
                 </Row>
             </div>
-        )
+        );
     }
 }
 

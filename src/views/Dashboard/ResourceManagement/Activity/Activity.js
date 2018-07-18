@@ -1,12 +1,21 @@
-import React, { Component } from 'react';
-import DashboardAbstract from '../../AbstractDashboardComponent';
+import React, { Component } from "react";
+import DashboardAbstract from "../../AbstractDashboardComponent";
 
-import CommitsPerAuthor from './visualizations/CommitsPerAuthor';
-import FilesPerAuthor from './visualizations/FilesPerAuthor';
-import CommitsTimescale from './visualizations/CommitsTimescale';
-import LatestCommits from './visualizations/LatestCommits';
+import CommitsPerAuthor from "./visualizations/CommitsPerAuthor";
+import FilesPerAuthor from "./visualizations/FilesPerAuthor";
+import CommitsTimescale from "./visualizations/CommitsTimescale";
+import LatestCommits from "./visualizations/LatestCommits";
 
-import {Row, Col, Card, CardHeader, CardBody, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
+import {
+    Row,
+    Col,
+    Card,
+    CardHeader,
+    CardBody,
+    Popover,
+    PopoverHeader,
+    PopoverBody
+} from "reactstrap";
 
 class PopoverItem extends Component {
     constructor(props) {
@@ -16,10 +25,14 @@ class PopoverItem extends Component {
         this.state = {
             popoverOpen: false,
             infoText: {
-                "Commits per author": "The bar chart shows the number of commits for each author.",
-                "Files per author": "The bar chart shows the number of files for each author.",
-                "Commits over time": "The calendar shows the number of commits per day. The darker the color is, the more commits were made.",
-                "Latest 20 commits": "The table shows the author, the date, and the commit message of the latest 20 commits."
+                "Commits per author":
+                    "The bar chart shows the number of commits for each author.",
+                "Files per author":
+                    "The bar chart shows the number of files for each author.",
+                "Commits over time":
+                    "The calendar shows the number of commits per day. The darker the color is, the more commits were made.",
+                "Latest 20 commits":
+                    "The table shows the author, the date, and the commit message of the latest 20 commits."
             }
         };
     }
@@ -33,20 +46,31 @@ class PopoverItem extends Component {
     render() {
         return (
             <span>
-                <a className="mr-1" color="secondary" id={'Popover-' + this.props.id} onClick={this.toggle}>
-                    <i className="text-muted fa fa-question-circle"></i>
+                <a
+                    className="mr-1"
+                    color="secondary"
+                    id={"Popover-" + this.props.id}
+                    onClick={this.toggle}
+                >
+                    <i className="text-muted fa fa-question-circle" />
                 </a>
-                <Popover placement={'bottom'} isOpen={this.state.popoverOpen} target={'Popover-' + this.props.id} toggle={this.toggle}>
+                <Popover
+                    placement={"bottom"}
+                    isOpen={this.state.popoverOpen}
+                    target={"Popover-" + this.props.id}
+                    toggle={this.toggle}
+                >
                     <PopoverHeader>{this.props.type}</PopoverHeader>
-                    <PopoverBody>{this.state.infoText[this.props.type]}</PopoverBody>
+                    <PopoverBody>
+                        {this.state.infoText[this.props.type]}
+                    </PopoverBody>
                 </Popover>
-      </span>
+            </span>
         );
     }
 }
 
 class ResourceManagementActivity extends DashboardAbstract {
-
     constructor(props) {
         super(props);
 
@@ -68,9 +92,9 @@ class ResourceManagementActivity extends DashboardAbstract {
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
-          return(redirect);
+            return redirect;
         }
-        
+
         return (
             <div className="animated fadeIn">
                 <Row>
@@ -79,11 +103,15 @@ class ResourceManagementActivity extends DashboardAbstract {
                             <CardHeader>
                                 Commits per author
                                 <div className="card-actions">
-                                    <PopoverItem key={"Commitsperauthor"} type={"Commits per author"} id={"Commitsperauthor"} />
+                                    <PopoverItem
+                                        key={"Commitsperauthor"}
+                                        type={"Commits per author"}
+                                        id={"Commitsperauthor"}
+                                    />
                                 </div>
                             </CardHeader>
                             <CardBody>
-                                <CommitsPerAuthor/>
+                                <CommitsPerAuthor />
                             </CardBody>
                         </Card>
                     </Col>
@@ -92,11 +120,15 @@ class ResourceManagementActivity extends DashboardAbstract {
                             <CardHeader>
                                 Files per author
                                 <div className="card-actions">
-                                    <PopoverItem key={"Filesperauthor"} type={"Files per author"} id={"Filesperauthor"} />
+                                    <PopoverItem
+                                        key={"Filesperauthor"}
+                                        type={"Files per author"}
+                                        id={"Filesperauthor"}
+                                    />
                                 </div>
                             </CardHeader>
                             <CardBody>
-                                <FilesPerAuthor/>
+                                <FilesPerAuthor />
                             </CardBody>
                         </Card>
                     </Col>
@@ -107,11 +139,15 @@ class ResourceManagementActivity extends DashboardAbstract {
                             <CardHeader>
                                 Commits over time
                                 <div className="card-actions">
-                                    <PopoverItem key={"Commitsovertime"} type={"Commits over time"} id={"Commitsovertime"} />
+                                    <PopoverItem
+                                        key={"Commitsovertime"}
+                                        type={"Commits over time"}
+                                        id={"Commitsovertime"}
+                                    />
                                 </div>
                             </CardHeader>
                             <CardBody>
-                                <CommitsTimescale/>
+                                <CommitsTimescale />
                             </CardBody>
                         </Card>
                     </Col>
@@ -120,17 +156,21 @@ class ResourceManagementActivity extends DashboardAbstract {
                             <CardHeader>
                                 Latest 20 commits
                                 <div className="card-actions">
-                                    <PopoverItem key={"Latest20commits"} type={"Latest 20 commits"} id={"Latest20commits"} />
+                                    <PopoverItem
+                                        key={"Latest20commits"}
+                                        type={"Latest 20 commits"}
+                                        id={"Latest20commits"}
+                                    />
                                 </div>
                             </CardHeader>
                             <CardBody>
-                                <LatestCommits/>
+                                <LatestCommits />
                             </CardBody>
                         </Card>
                     </Col>
                 </Row>
             </div>
-        )
+        );
     }
 }
 

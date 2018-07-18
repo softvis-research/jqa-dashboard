@@ -1,21 +1,31 @@
-import React from 'react';
-import DashboardAbstract, {databaseCredentialsProvided} from '../../AbstractDashboardComponent';
-import {Row, Col, Card, CardHeader, CardBody, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
-import DynamicBreadcrumb from '../../DynamicBreadcrumb/DynamicBreadcrumb';
-import SimpleBar from 'simplebar';
-import HotspotModel from '../../../../api/models/Hotspots';
-import HotspotBubble from './visualizations/HotspotBubble';
-import {Treebeard} from 'react-treebeard';
-import find from 'lodash/find';
+import React from "react";
+import DashboardAbstract, {
+    databaseCredentialsProvided
+} from "../../AbstractDashboardComponent";
+import {
+    Row,
+    Col,
+    Card,
+    CardHeader,
+    CardBody,
+    Popover,
+    PopoverHeader,
+    PopoverBody
+} from "reactstrap";
+import DynamicBreadcrumb from "../../DynamicBreadcrumb/DynamicBreadcrumb";
+import SimpleBar from "simplebar";
+import HotspotModel from "../../../../api/models/Hotspots";
+import HotspotBubble from "./visualizations/HotspotBubble";
+import { Treebeard } from "react-treebeard";
+import find from "lodash/find";
 
-var AppDispatcher = require('../../../../AppDispatcher');
-var treebeardCustomTheme = require('./TreebeardCustomTheme');
+var AppDispatcher = require("../../../../AppDispatcher");
+var treebeardCustomTheme = require("./TreebeardCustomTheme");
 
 var IDENTIFIER_PROJECT_NAME = "projectName";
 var dynamicBreadcrumbSeparator = " > ";
 
 class RiskManagementHotspots extends DashboardAbstract {
-
     constructor(props) {
         super(props);
 
@@ -23,12 +33,12 @@ class RiskManagementHotspots extends DashboardAbstract {
             maxCommits: 0,
             hotSpotData: {},
             treeViewData: {},
-            breadCrumbData: [''],
+            breadCrumbData: [""],
             popoverOpen: false,
             popovers: [
                 {
-                    placement: 'bottom',
-                    text: 'Bottom'
+                    placement: "bottom",
+                    text: "Bottom"
                 }
             ]
         };
@@ -48,9 +58,11 @@ class RiskManagementHotspots extends DashboardAbstract {
 
         if (databaseCredentialsProvided) {
             var hotspotModel = new HotspotModel();
-            hotspotModel.readHotspots(IDENTIFIER_PROJECT_NAME).then(function(data) {
-                thisBackup.setDataToState(data);
-            });
+            hotspotModel
+                .readHotspots(IDENTIFIER_PROJECT_NAME)
+                .then(function(data) {
+                    thisBackup.setDataToState(data);
+                });
         }
     }
 
@@ -67,7 +79,10 @@ class RiskManagementHotspots extends DashboardAbstract {
             return data.name === name;
         });
 
-        if (typeof(result) === 'object' && typeof(result.commits) !== 'undefined') {
+        if (
+            typeof result === "object" &&
+            typeof result.commits !== "undefined"
+        ) {
             return result.commits;
         }
     }
@@ -77,13 +92,17 @@ class RiskManagementHotspots extends DashboardAbstract {
     }
 
     triggerClickOnNode(node) {
-        var nodeId = node.id.replace(/[^\w]/gi, '-');
+        var nodeId = node.id.replace(/[^\w]/gi, "-");
         if (node.id) {
-            var bubbleBelongingToNode = document.querySelectorAll('div#' + nodeId);
+            var bubbleBelongingToNode = document.querySelectorAll(
+                "div#" + nodeId
+            );
             if (bubbleBelongingToNode && bubbleBelongingToNode.length === 1) {
                 bubbleBelongingToNode[0].click();
             } else if (bubbleBelongingToNode.length > 1) {
-                console.log("Found more than one candidate to click on, to prevent a mess nothing has been clicked. ");
+                console.log(
+                    "Found more than one candidate to click on, to prevent a mess nothing has been clicked. "
+                );
                 console.log(bubbleBelongingToNode);
             }
         }
@@ -102,29 +121,33 @@ class RiskManagementHotspots extends DashboardAbstract {
         }
         this.setState({ cursor: node });
 
-        var el = new SimpleBar(document.getElementById('treebeard-component'));
-        el.recalculate()
+        var el = new SimpleBar(document.getElementById("treebeard-component"));
+        el.recalculate();
     }
 
     handleAction(event) {
         var action = event.action;
         switch (action.actionType) {
             // Respond to CART_ADD action
-            case 'SELECT_HOTSPOT_PACKAGE':
+            case "SELECT_HOTSPOT_PACKAGE":
                 var selectedPackage = event.action.data.data.id;
 
                 var hotspotClone = this.state.hotSpotData;
 
                 var markSelectedPackageAsActive = function(hierarchicalData) {
                     for (var i = 0; i < hierarchicalData.children.length; i++) {
-                        if (hierarchicalData.children[i].id === selectedPackage) {
+                        if (
+                            hierarchicalData.children[i].id === selectedPackage
+                        ) {
                             hierarchicalData.children[i].active = true;
                         } else {
                             hierarchicalData.children[i].active = false;
                         }
 
                         if (hierarchicalData.children[i].children) {
-                            markSelectedPackageAsActive(hierarchicalData.children[i]);
+                            markSelectedPackageAsActive(
+                                hierarchicalData.children[i]
+                            );
                         }
                     }
                 };
@@ -135,21 +158,32 @@ class RiskManagementHotspots extends DashboardAbstract {
                         hierarchicalData.children[i].toggled = false;
 
                         if (hierarchicalData.children[i].children) {
-                            markAllPackagesAsUntoggled(hierarchicalData.children[i]);
+                            markAllPackagesAsUntoggled(
+                                hierarchicalData.children[i]
+                            );
                         }
                     }
                 };
 
                 markAllPackagesAsUntoggled(hotspotClone);
 
-                var markSelectedPackageAsToggled = function(hierarchicalData, targetElementName) {
+                var markSelectedPackageAsToggled = function(
+                    hierarchicalData,
+                    targetElementName
+                ) {
                     for (var i = 0; i < hierarchicalData.children.length; i++) {
-                        if (hierarchicalData.children[i].id === targetElementName) {
+                        if (
+                            hierarchicalData.children[i].id ===
+                            targetElementName
+                        ) {
                             hierarchicalData.children[i].toggled = true;
                         }
 
                         if (hierarchicalData.children[i].children) {
-                            markSelectedPackageAsToggled(hierarchicalData.children[i], targetElementName);
+                            markSelectedPackageAsToggled(
+                                hierarchicalData.children[i],
+                                targetElementName
+                            );
                         }
                     }
                 };
@@ -157,8 +191,8 @@ class RiskManagementHotspots extends DashboardAbstract {
                 var elementToDoList = selectedPackage.split(".");
                 var currentName = "";
                 for (var i = 0; i < elementToDoList.length; i++) {
-                    if (i > 0 ) {
-                        currentName += '.' + elementToDoList[i];
+                    if (i > 0) {
+                        currentName += "." + elementToDoList[i];
                     } else {
                         currentName = elementToDoList[i];
                     }
@@ -172,7 +206,7 @@ class RiskManagementHotspots extends DashboardAbstract {
                 });
 
                 break;
-            case 'SELECT_HOTSPOT_PACKAGE_FROM_BREADCRUMB':
+            case "SELECT_HOTSPOT_PACKAGE_FROM_BREADCRUMB":
                 var elementName = event.action.data;
                 var findNodeByName = function(hierarchicalData) {
                     for (var i = 0; i < hierarchicalData.children.length; i++) {
@@ -180,8 +214,10 @@ class RiskManagementHotspots extends DashboardAbstract {
                             return hierarchicalData.children[i];
                         } else {
                             if (hierarchicalData.children[i].children) {
-                                var node = findNodeByName(hierarchicalData.children[i]);
-                                if (typeof node !== 'undefined') {
+                                var node = findNodeByName(
+                                    hierarchicalData.children[i]
+                                );
+                                if (typeof node !== "undefined") {
                                     return node;
                                 }
                             }
@@ -192,7 +228,12 @@ class RiskManagementHotspots extends DashboardAbstract {
                 //setTimeout to prevent "Cannot dispatch in the middle of a dispatch"
                 // when the !!time is out!! the dispatch is completed and the next click can be handled
                 //TODO: a nice way of handling this would be awesome
-                setTimeout(function() { this.triggerClickOnNode(node) }.bind(this), 50);
+                setTimeout(
+                    function() {
+                        this.triggerClickOnNode(node);
+                    }.bind(this),
+                    50
+                );
                 break;
             default:
                 return true;
@@ -201,11 +242,14 @@ class RiskManagementHotspots extends DashboardAbstract {
 
     breadcrumbClicked(clickEvent) {
         var element = clickEvent.target;
-        var elementName = (element.id + "").replace(new RegExp(dynamicBreadcrumbSeparator, 'g'), '.');
+        var elementName = (element.id + "").replace(
+            new RegExp(dynamicBreadcrumbSeparator, "g"),
+            "."
+        );
 
         //var clickedPackage = element.id; //e.g. org.junit.tests.experimental...
         AppDispatcher.handleAction({
-            actionType: 'SELECT_HOTSPOT_PACKAGE_FROM_BREADCRUMB',
+            actionType: "SELECT_HOTSPOT_PACKAGE_FROM_BREADCRUMB",
             data: elementName
         });
     }
@@ -219,11 +263,11 @@ class RiskManagementHotspots extends DashboardAbstract {
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
-            return(redirect);
+            return redirect;
         }
 
         if (!this.state.hotSpotData.name) {
-            return '';
+            return "";
         }
 
         var thisBackup = this;
@@ -237,14 +281,23 @@ class RiskManagementHotspots extends DashboardAbstract {
                                 Hotspots
                                 <div className="card-actions">
                                     <a onClick={this.toggleInfo} id="Popover1">
-                                        <i className="text-muted fa fa-question-circle"></i>
+                                        <i className="text-muted fa fa-question-circle" />
                                     </a>
-                                    <Popover placement="bottom" isOpen={this.state.popoverOpen} target="Popover1" toggle={this.toggleInfo}>
+                                    <Popover
+                                        placement="bottom"
+                                        isOpen={this.state.popoverOpen}
+                                        target="Popover1"
+                                        toggle={this.toggleInfo}
+                                    >
                                         <PopoverHeader>Hotspots</PopoverHeader>
                                         <PopoverBody>
-                                            The hotspot analysis view highlights refactoring candidates.
-                                            Hotspots are complex or big parts of the source code that change often.
-                                            Packages and types are mapped to nested circles with LOC as the size and the number of commits as the color of a circle.
+                                            The hotspot analysis view highlights
+                                            refactoring candidates. Hotspots are
+                                            complex or big parts of the source
+                                            code that change often. Packages and
+                                            types are mapped to nested circles
+                                            with LOC as the size and the number
+                                            of commits as the color of a circle.
                                         </PopoverBody>
                                     </Popover>
                                 </div>
@@ -255,9 +308,16 @@ class RiskManagementHotspots extends DashboardAbstract {
                                         <Card>
                                             <CardBody>
                                                 <DynamicBreadcrumb
-                                                    items={this.state.breadCrumbData}
-                                                    onClickHandler={this.breadcrumbClicked}
-                                                    separator={dynamicBreadcrumbSeparator}
+                                                    items={
+                                                        this.state
+                                                            .breadCrumbData
+                                                    }
+                                                    onClickHandler={
+                                                        this.breadcrumbClicked
+                                                    }
+                                                    separator={
+                                                        dynamicBreadcrumbSeparator
+                                                    }
                                                 />
                                             </CardBody>
                                         </Card>
@@ -265,12 +325,23 @@ class RiskManagementHotspots extends DashboardAbstract {
                                 </Row>
                                 <Row>
                                     <Col xs="12" sm="6" md="4">
-                                        <Card id="treebeard-component" data-simplebar style={{height: "635px", overflow: "hidden"}}>
+                                        <Card
+                                            id="treebeard-component"
+                                            data-simplebar
+                                            style={{
+                                                height: "635px",
+                                                overflow: "hidden"
+                                            }}
+                                        >
                                             <CardBody>
                                                 <Treebeard
-                                                    data={this.state.hotSpotData}
+                                                    data={
+                                                        this.state.hotSpotData
+                                                    }
                                                     onToggle={this.onToggle}
-                                                    style={treebeardCustomTheme.default}
+                                                    style={
+                                                        treebeardCustomTheme.default
+                                                    }
                                                 />
                                             </CardBody>
                                         </Card>
@@ -278,11 +349,22 @@ class RiskManagementHotspots extends DashboardAbstract {
                                     <Col xs="12" sm="6" md="8">
                                         <Card id="hotspot-component">
                                             <CardBody>
-                                                <div className={'hotspot-component'} style={{height: "600px"}}>
+                                                <div
+                                                    className={
+                                                        "hotspot-component"
+                                                    }
+                                                    style={{ height: "600px" }}
+                                                >
                                                     <HotspotBubble
-                                                        data={this.state.hotSpotData}
+                                                        data={
+                                                            this.state
+                                                                .hotSpotData
+                                                        }
                                                         thisBackup={thisBackup}
-                                                        maxCommits={this.state.maxCommits}
+                                                        maxCommits={
+                                                            this.state
+                                                                .maxCommits
+                                                        }
                                                     />
                                                 </div>
                                             </CardBody>
@@ -294,7 +376,7 @@ class RiskManagementHotspots extends DashboardAbstract {
                     </Col>
                 </Row>
             </div>
-        )
+        );
     }
 }
 

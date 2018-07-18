@@ -1,10 +1,18 @@
-import React from 'react';
-import DashboardAbstract from '../../AbstractDashboardComponent';
-import {Row, Col, Card, CardHeader, CardBody, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
-import DependencyChord from './visualizations/DependencyChord';
+import React from "react";
+import DashboardAbstract from "../../AbstractDashboardComponent";
+import {
+    Row,
+    Col,
+    Card,
+    CardHeader,
+    CardBody,
+    Popover,
+    PopoverHeader,
+    PopoverBody
+} from "reactstrap";
+import DependencyChord from "./visualizations/DependencyChord";
 
 class ArchitectureDependencies extends DashboardAbstract {
-
     constructor(props) {
         super(props);
 
@@ -12,8 +20,8 @@ class ArchitectureDependencies extends DashboardAbstract {
             popoverOpen: false,
             popovers: [
                 {
-                    placement: 'bottom',
-                    text: 'Bottom'
+                    placement: "bottom",
+                    text: "Bottom"
                 }
             ]
         };
@@ -34,7 +42,7 @@ class ArchitectureDependencies extends DashboardAbstract {
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
-          return(redirect);
+            return redirect;
         }
 
         return (
@@ -46,25 +54,36 @@ class ArchitectureDependencies extends DashboardAbstract {
                                 Dependencies
                                 <div className="card-actions">
                                     <a onClick={this.toggleInfo} id="Popover1">
-                                        <i className="text-muted fa fa-question-circle"></i>
+                                        <i className="text-muted fa fa-question-circle" />
                                     </a>
-                                    <Popover placement="bottom" isOpen={this.state.popoverOpen} target="Popover1" toggle={this.toggleInfo}>
-                                        <PopoverHeader>Dependencies</PopoverHeader>
+                                    <Popover
+                                        placement="bottom"
+                                        isOpen={this.state.popoverOpen}
+                                        target="Popover1"
+                                        toggle={this.toggleInfo}
+                                    >
+                                        <PopoverHeader>
+                                            Dependencies
+                                        </PopoverHeader>
                                         <PopoverBody>
-                                            The dependency analysis view helps to assess the coupling and cohesion of a software system.
-                                            Packages are arranged radially around a circle and the dependencies are drawn as arcs.
+                                            The dependency analysis view helps
+                                            to assess the coupling and cohesion
+                                            of a software system. Packages are
+                                            arranged radially around a circle
+                                            and the dependencies are drawn as
+                                            arcs.
                                         </PopoverBody>
                                     </Popover>
                                 </div>
                             </CardHeader>
                             <CardBody>
-                                <DependencyChord/>
+                                <DependencyChord />
                             </CardBody>
                         </Card>
                     </Col>
                 </Row>
             </div>
-        )
+        );
     }
 }
 

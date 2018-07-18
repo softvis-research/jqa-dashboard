@@ -1,16 +1,17 @@
-import React from 'react';
-import DashboardAbstract, {databaseCredentialsProvided} from "../../../AbstractDashboardComponent";
-import { ResponsiveChord } from '@nivo/chord';
-import DependenciesModel from '../../../../../api/models/Dependencies';
+import React from "react";
+import DashboardAbstract, {
+    databaseCredentialsProvided
+} from "../../../AbstractDashboardComponent";
+import { ResponsiveChord } from "@nivo/chord";
+import DependenciesModel from "../../../../../api/models/Dependencies";
 
 class DependencyChord extends DashboardAbstract {
-
     constructor(props) {
         super(props);
 
         this.state = {
             finalMatrixData: [],
-            finalMatrixKeys: [],
+            finalMatrixKeys: []
         };
     }
 
@@ -26,23 +27,23 @@ class DependencyChord extends DashboardAbstract {
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
-            return(redirect);
+            return redirect;
         }
 
         if (this.state.finalMatrixData.length === 0) {
-            return '';
+            return "";
         }
 
         return (
-            <div style={{height: "700px"}}>
+            <div style={{ height: "700px" }}>
                 <ResponsiveChord
                     matrix={this.state.finalMatrixData}
                     keys={this.state.finalMatrixKeys}
                     margin={{
-                        "top": 170,
-                        "right": 170,
-                        "bottom": 170,
-                        "left": 170
+                        top: 170,
+                        right: 170,
+                        bottom: 170,
+                        left: 170
                     }}
                     padAngle={0.02}
                     innerRadiusRatio={0.96}
@@ -69,7 +70,7 @@ class DependencyChord extends DashboardAbstract {
                     motionDamping={7}
                 />
             </div>
-        )
+        );
     }
 }
 

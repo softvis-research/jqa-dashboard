@@ -1,12 +1,20 @@
-import React from 'react';
+import React from "react";
 
-import DashboardAbstract from '../../AbstractDashboardComponent';
-import FilesPerFiletypePerAuthor from './visualizations/FilesPerFiletypePerAuthor';
+import DashboardAbstract from "../../AbstractDashboardComponent";
+import FilesPerFiletypePerAuthor from "./visualizations/FilesPerFiletypePerAuthor";
 
-import {Row, Col, Card, CardHeader, CardBody, Popover, PopoverHeader, PopoverBody} from 'reactstrap';
+import {
+    Row,
+    Col,
+    Card,
+    CardHeader,
+    CardBody,
+    Popover,
+    PopoverHeader,
+    PopoverBody
+} from "reactstrap";
 
 class ResourceManagementKnowledgeDistribution extends DashboardAbstract {
-
     constructor(props) {
         super(props);
 
@@ -14,8 +22,8 @@ class ResourceManagementKnowledgeDistribution extends DashboardAbstract {
             popoverOpen: false,
             popovers: [
                 {
-                    placement: 'bottom',
-                    text: 'Bottom'
+                    placement: "bottom",
+                    text: "Bottom"
                 }
             ]
         };
@@ -36,9 +44,9 @@ class ResourceManagementKnowledgeDistribution extends DashboardAbstract {
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
-          return(redirect);
+            return redirect;
         }
-        
+
         return (
             <div>
                 <Row>
@@ -48,24 +56,34 @@ class ResourceManagementKnowledgeDistribution extends DashboardAbstract {
                                 Number of files per file type per author
                                 <div className="card-actions">
                                     <a onClick={this.toggleInfo} id="Popover1">
-                                        <i className="text-muted fa fa-question-circle"></i>
+                                        <i className="text-muted fa fa-question-circle" />
                                     </a>
-                                    <Popover placement="bottom" isOpen={this.state.popoverOpen} target="Popover1" toggle={this.toggleInfo}>
-                                        <PopoverHeader>Number of files per file type per author</PopoverHeader>
+                                    <Popover
+                                        placement="bottom"
+                                        isOpen={this.state.popoverOpen}
+                                        target="Popover1"
+                                        toggle={this.toggleInfo}
+                                    >
+                                        <PopoverHeader>
+                                            Number of files per file type per
+                                            author
+                                        </PopoverHeader>
                                         <PopoverBody>
-                                            The stacked bar chart shows the number of files per file type each author has added to the repository.
+                                            The stacked bar chart shows the
+                                            number of files per file type each
+                                            author has added to the repository.
                                         </PopoverBody>
                                     </Popover>
                                 </div>
                             </CardHeader>
                             <CardBody>
-                                <FilesPerFiletypePerAuthor/>
+                                <FilesPerFiletypePerAuthor />
                             </CardBody>
                         </Card>
                     </Col>
                 </Row>
             </div>
-        )
+        );
     }
 }
 

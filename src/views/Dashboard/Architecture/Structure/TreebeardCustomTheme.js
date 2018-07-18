@@ -3,75 +3,75 @@
 export default {
     tree: {
         base: {
-            listStyle: 'none',
-            backgroundColor: '#FFFFFF',
+            listStyle: "none",
+            backgroundColor: "#FFFFFF",
             margin: 0,
             padding: 0,
-            color: '#151b1e',
+            color: "#151b1e"
         },
         node: {
             base: {
-                position: 'relative'
+                position: "relative"
             },
             link: {
-                cursor: 'pointer',
-                position: 'relative',
-                padding: '0px 5px',
-                display: 'block'
+                cursor: "pointer",
+                position: "relative",
+                padding: "0px 5px",
+                display: "block"
             },
             activeLink: {
-                background: '#EEEEEE',
-                border: '1px solid #DDDDDD',
-                borderRadius: '3px'
+                background: "#EEEEEE",
+                border: "1px solid #DDDDDD",
+                borderRadius: "3px"
             },
             toggle: {
                 base: {
-                    position: 'relative',
-                    display: 'inline-block',
-                    verticalAlign: 'top',
-                    marginLeft: '-5px',
-                    height: '24px',
-                    width: '24px'
+                    position: "relative",
+                    display: "inline-block",
+                    verticalAlign: "top",
+                    marginLeft: "-5px",
+                    height: "24px",
+                    width: "24px"
                 },
                 wrapper: {
-                    position: 'absolute',
-                    top: '50%',
-                    left: '56%',
-                    margin: '-7px 0 0 -7px',
-                    height: '10px'
+                    position: "absolute",
+                    top: "50%",
+                    left: "56%",
+                    margin: "-7px 0 0 -7px",
+                    height: "10px"
                 },
                 height: 12,
                 width: 12,
                 arrow: {
-                    fill: '#9DA5AB',
+                    fill: "#9DA5AB",
                     strokeWidth: 0
                 }
             },
             header: {
                 base: {
-                    display: 'inline-block',
-                    verticalAlign: 'middle',
-                    color: '#151b1e'
+                    display: "inline-block",
+                    verticalAlign: "middle",
+                    color: "#151b1e"
                 },
                 connector: {
-                    width: '2px',
-                    height: '12px',
-                    borderLeft: 'solid 2px black',
-                    borderBottom: 'solid 2px black',
-                    position: 'absolute',
-                    top: '0px',
-                    left: '-21px'
+                    width: "2px",
+                    height: "12px",
+                    borderLeft: "solid 2px black",
+                    borderBottom: "solid 2px black",
+                    position: "absolute",
+                    top: "0px",
+                    left: "-21px"
                 },
                 title: {
-                    verticalAlign: 'middle'
+                    verticalAlign: "middle"
                 }
             },
             subtree: {
-                listStyle: 'none',
-                paddingLeft: '19px'
+                listStyle: "none",
+                paddingLeft: "19px"
             },
             loading: {
-                color: '#E2C089'
+                color: "#E2C089"
             }
         }
     }

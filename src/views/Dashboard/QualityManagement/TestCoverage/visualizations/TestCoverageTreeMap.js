@@ -1,18 +1,19 @@
-import React from 'react';
-import DashboardAbstract, { databaseCredentialsProvided } from '../../../AbstractDashboardComponent';
-import tinygradient from 'tinygradient';
-import TestCoverageModel from '../../../../../api/models/TestCoverage';
-import {ResponsiveTreeMapHtml} from '@nivo/treemap';
+import React from "react";
+import DashboardAbstract, {
+    databaseCredentialsProvided
+} from "../../../AbstractDashboardComponent";
+import tinygradient from "tinygradient";
+import TestCoverageModel from "../../../../../api/models/TestCoverage";
+import { ResponsiveTreeMapHtml } from "@nivo/treemap";
 
 var IDENTIFIER_PROJECT_NAME = "projectName";
 
 class TestCoverageTreeMap extends DashboardAbstract {
-
     constructor(props) {
         super(props);
 
         this.state = {
-            testCoverageData: {},
+            testCoverageData: {}
         };
     }
 
@@ -25,7 +26,10 @@ class TestCoverageTreeMap extends DashboardAbstract {
 
         if (databaseCredentialsProvided) {
             var testCoverageModel = new TestCoverageModel();
-            testCoverageModel.readTestCoverage(this, localStorage.getItem(IDENTIFIER_PROJECT_NAME));
+            testCoverageModel.readTestCoverage(
+                this,
+                localStorage.getItem(IDENTIFIER_PROJECT_NAME)
+            );
         }
     }
 
@@ -39,7 +43,10 @@ class TestCoverageTreeMap extends DashboardAbstract {
                     return hierarchicalData.children[i];
                 }
                 if (hierarchicalData.children[i].children) {
-                    var found = findIdInHierarchicalData(hierarchicalData.children[i], idToFind);
+                    var found = findIdInHierarchicalData(
+                        hierarchicalData.children[i],
+                        idToFind
+                    );
                     if (found) {
                         return found;
                     }
@@ -47,7 +54,10 @@ class TestCoverageTreeMap extends DashboardAbstract {
             }
         };
 
-        var foundElement = findIdInHierarchicalData(this.state.testCoverageData, hoveredNodeId);
+        var foundElement = findIdInHierarchicalData(
+            this.state.testCoverageData,
+            hoveredNodeId
+        );
 
         if (!foundElement) {
             if (this.state.testCoverageData.id === hoveredNodeId) {
@@ -55,22 +65,25 @@ class TestCoverageTreeMap extends DashboardAbstract {
             }
         }
 
-        if (typeof(foundElement) === 'object' && typeof(foundElement.coverage) !== 'undefined') {
+        if (
+            typeof foundElement === "object" &&
+            typeof foundElement.coverage !== "undefined"
+        ) {
             return foundElement.coverage;
         }
     }
 
     static reversePathForDisplay(node) {
         var path = node.path;
-        path = path.substr( node.id.length );
+        path = path.substr(node.id.length);
 
         if (path.length > 0) {
-            path = path.substr(1)  //+1 to cut first "." away
+            path = path.substr(1); //+1 to cut first "." away
         }
-        var pathParts = path.split('.');
+        var pathParts = path.split(".");
         var correctPath = "";
         for (var i = pathParts.length - 1; i > -1; i--) {
-            correctPath += '.' + pathParts[i];
+            correctPath += "." + pathParts[i];
         }
 
         if (correctPath.length > 0) {
@@ -87,17 +100,17 @@ class TestCoverageTreeMap extends DashboardAbstract {
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
-            return(redirect);
+            return redirect;
         }
 
         if (!this.state.testCoverageData.name) {
-            return '';
+            return "";
         }
 
         var thisBackup = this;
 
         return (
-            <div className={'test-coverage'} style={{height: "800px"}}>
+            <div className={"test-coverage"} style={{ height: "800px" }}>
                 <ResponsiveTreeMapHtml
                     root={this.state.testCoverageData}
                     identity="name"
@@ -105,15 +118,14 @@ class TestCoverageTreeMap extends DashboardAbstract {
                     innerPadding={2}
                     outerPadding={2}
                     margin={{
-                        "top": 10,
-                        "right": 10,
-                        "bottom": 10,
-                        "left": 10
+                        top: 10,
+                        right: 10,
+                        bottom: 10,
+                        left: 10
                     }}
                     enableLabel={false}
                     colors="nivo"
-                    colorBy={ function (e) {
-
+                    colorBy={function(e) {
                         var data = e.data;
 
                         var role = "undefined";
@@ -125,40 +137,60 @@ class TestCoverageTreeMap extends DashboardAbstract {
 
                         if (data && role === "leaf") {
                             var coverage = data.coverage / 100;
-                            var rgbObject = tinygradient('red', 'green').rgbAt(coverage);
+                            var rgbObject = tinygradient("red", "green").rgbAt(
+                                coverage
+                            );
                             r = Math.round(rgbObject._r);
                             g = Math.round(rgbObject._g);
                             b = Math.round(rgbObject._b);
-                            return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+                            return "rgb(" + r + ", " + g + ", " + b + ")";
                         } else if (data) {
                             var level = data.level;
-                            r = 228 - (11 * level * 2);
-                            g = 242 - (6 * level * 2);
-                            b = 243 - (6 * level * 2);
-                            return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+                            r = 228 - 11 * level * 2;
+                            g = 242 - 6 * level * 2;
+                            b = 243 - 6 * level * 2;
+                            return "rgb(" + r + ", " + g + ", " + b + ")";
                         }
-                    } }
+                    }}
                     borderColor="inherit:darker(0.3)"
                     animate={true}
                     motionStiffness={90}
                     motionDamping={11}
                     tooltip={({ id, value, color, node }) => (
-                        <div style={{whiteSpace: 'pre', display: 'flex', alignItems: 'center'}}>
-                            <span style={{display: 'block', height: '12px', width: '12px', marginRight: '7px', backgroundColor: color}}></span>
+                        <div
+                            style={{
+                                whiteSpace: "pre",
+                                display: "flex",
+                                alignItems: "center"
+                            }}
+                        >
+                            <span
+                                style={{
+                                    display: "block",
+                                    height: "12px",
+                                    width: "12px",
+                                    marginRight: "7px",
+                                    backgroundColor: color
+                                }}
+                            />
                             <span>
                                 <strong>
-                                    <span className={'additional'}>
-                                        {TestCoverageTreeMap.reversePathForDisplay(node)}
+                                    <span className={"additional"}>
+                                        {TestCoverageTreeMap.reversePathForDisplay(
+                                            node
+                                        )}
                                     </span>
-                                    <span className={'additional'}>
-                                        {id}
-                                    </span>
-                                    <span className={'additional'}>
-                                        LOC: {value}{
-                                        thisBackup.findCoverageByNode(node) > -1 ?
-                                            ', Test coverage: ' + thisBackup.findCoverageByNode(node) + '%':
-                                            ''
-                                    }
+                                    <span className={"additional"}>{id}</span>
+                                    <span className={"additional"}>
+                                        LOC: {value}
+                                        {thisBackup.findCoverageByNode(node) >
+                                        -1
+                                            ? ", Test coverage: " +
+                                              thisBackup.findCoverageByNode(
+                                                  node
+                                              ) +
+                                              "%"
+                                            : ""}
                                     </span>
                                 </strong>
                             </span>
@@ -166,7 +198,7 @@ class TestCoverageTreeMap extends DashboardAbstract {
                     )}
                 />
             </div>
-        )
+        );
     }
 }
 
