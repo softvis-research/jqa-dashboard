@@ -49,7 +49,7 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                                         <PopoverHeader>Test Coverage</PopoverHeader>
                                         <PopoverBody>
                                             The test coverage view highlights untested code with a colored treemap.
-                                            Packages, types, and methods are mapped to nested rectangles where the LOC define the size and the coverage defines the color of a rectangle.
+                                            Packages, types, and methods are mapped to nested rectangles where the LOC define the size and the test coverage defines the color of a rectangle.
                                         </PopoverBody>
                                     </Popover>
                                 </div>
