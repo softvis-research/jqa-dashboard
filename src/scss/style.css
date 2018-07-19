@@ -9975,6 +9975,9 @@ html {
 a:hover {
   text-decoration: none; }
 
+.navbar-brand img {
+  width: 100%; }
+
 .dashboard a {
   color: #151b1e; }
 
