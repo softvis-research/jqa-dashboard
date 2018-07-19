@@ -27,6 +27,7 @@ const IDENTIFIER_CONNECTION_STRING = "connectionString";
 const IDENTIFIER_NEO4J_USERNAME = "username";
 const IDENTIFIER_NEO4J_PASSWORD = "password";
 
+var AppDispatcher = require("../../../AppDispatcher");
 var localStorageConnectionString = localStorage.getItem(
     IDENTIFIER_CONNECTION_STRING
 );
@@ -63,12 +64,19 @@ class Settings extends DashboardAbstract {
         this.toggleInfo = this.toggleInfo.bind(this);
     }
 
+    componentWillMount() {
+        this.handleAction = this.handleAction.bind(this);
+        this.setState({
+            dispatcherEventId: AppDispatcher.register(this.handleAction)
+        });
+    }
+
     componentDidMount() {
         //super.componentDidMount(); //do nothing, we don't need a database here
     }
 
     componentWillUnmount() {
-        //super.componentWillUnmount(); //do nothing, we don't have a database here
+        AppDispatcher.unregister(this.state.dispatcherEventId);
     }
 
     refreshConnectionSettingsWrapper() {
