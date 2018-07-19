@@ -13,9 +13,9 @@ To extract the data of a software project using jQAssistant and import it into N
 Alternatively, one of the sample projects spring-petclinic or jUnit can be imported directly into neo4j using the dump files in the data directory of this repository.
 The following command can be executed in the command line.
 
-`` `
-$ neo4j-admin load --from = <archive-path> [-force]
-`` `
+```
+$ neo4j-admin load --from=<archive-path> [--force]
+```
 
 For more information on importing neo4j dumps, see [here](https://neo4j.com/docs/operations-manual/current/tools/dump-load/).
 ## Installation ##
