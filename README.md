@@ -6,18 +6,16 @@
 
 A web-based dashboard for software analysis and visualization using software artifacts' data scanned by jQAssistant. This [screencast](https://youtu.be/LebVqfzQ_KE) shows how to scan, analyze, and visualize software artifacts' data with the open source stack (jQAssistant, Neo4j, React, D3).
 
-## Preparations ##
+## Prerequisites ##
 
-The dashboard requires a Neo4j database where the information of the software to be analyzed has been imported via jQAssistant.
-To extract the data of a software project using jQAssistant and import it into Neo4j, the instructions in the repository [bushchmais/spring-petclinic](https://github.com/buschmais/spring-petclinic/tree/master) can be used.
-Alternatively, one of the sample projects spring-petclinic or jUnit can be imported directly into neo4j using the dump files in the data directory of this repository.
-The following command can be executed in the command line.
+The dashboard requires a Neo4j database where the information of the software to be analyzed has been imported with jQAssistant.
+To extract the data of a software project using jQAssistant and import it into Neo4j, follow the instructions on [jQAssistant - Get Started](https://jqassistant.org/get-started/). Alternatively, one of the sample project dumps ([spring-petclinic](https://github.com/buschmais/spring-petclinic/tree/master) or [jUnit](https://github.com/jqassistant-demo/junit4/tree/jqassistant/vissoft-2018)) stored in the data directory of this repository can be imported directly into Neo4j with the following command.
 
 ```
-$ neo4j-admin load --from=<archive-path> [--force]
+$ neo4j-admin load --from=<path-to-neo4j-dump> [--force]
 ```
 
-For more information on importing neo4j dumps, see [here](https://neo4j.com/docs/operations-manual/current/tools/dump-load/).
+Further information on importing Neo4j dumps is provided [here](https://neo4j.com/docs/operations-manual/current/tools/dump-load/).
 ## Installation ##
 
 Clone the repository and execute the following command.
