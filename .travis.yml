@@ -8,3 +8,6 @@ install:
 
 script:
 - npm run test-dashboard
+
+after_success:
+- node_modules/.bin/codecov
