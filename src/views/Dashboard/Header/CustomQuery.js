@@ -67,15 +67,6 @@ class CustomQuery extends DashboardAbstract {
     }
 
     clear(event) {
-        var element = document.querySelector(".ReactCodeMirror textarea");
-        if ("createEvent" in document) {
-            var evt = document.createEvent("HTMLEvents");
-            evt.initEvent("change", false, true);
-            element.dispatchEvent(evt);
-        } else {
-            element.fireEvent("onchange");
-        }
-
         this.setState({
             query: "",
             readData: [
@@ -218,6 +209,7 @@ class CustomQuery extends DashboardAbstract {
                                     onClick={this.sendQuery.bind(this)}
                                     className="btn btn-success send-query float-right"
                                     color="success"
+                                    id="send"
                                 >
                                     Send
                                 </Button>
@@ -225,6 +217,7 @@ class CustomQuery extends DashboardAbstract {
                                     onClick={this.clear.bind(this)}
                                     className="btn btn-success send-query float-right margin-right"
                                     color="danger"
+                                    id="reset"
                                 >
                                     Reset
                                 </Button>

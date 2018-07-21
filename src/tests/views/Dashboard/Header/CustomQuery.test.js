@@ -38,8 +38,21 @@ describe("<Structure />", () => {
     it("Test popover click event", () => {
         var wrapper = shallow(<CustomQuery />);
         var html = wrapper.html();
-        //console.log(wrapper);
         wrapper.find("#Popover").simulate("click");
+        expect(html).to.contain("Custom Cypher query");
+    });
+
+    it("Test clear button", () => {
+        var wrapper = shallow(<CustomQuery />);
+        var html = wrapper.html();
+        wrapper.find("#reset").simulate("click");
+        expect(html).to.contain("Custom Cypher query");
+    });
+
+    it("Test send button", () => {
+        var wrapper = shallow(<CustomQuery />);
+        var html = wrapper.html();
+        wrapper.find("#send").simulate("click");
         expect(html).to.contain("Custom Cypher query");
     });
 });
