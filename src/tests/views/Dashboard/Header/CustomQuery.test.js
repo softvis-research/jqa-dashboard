@@ -10,7 +10,7 @@ Enzyme.configure({ adapter: new Adapter() });
 import CustomQuery from "../../../../views/Dashboard/Header/CustomQuery";
 import { expect } from "chai";
 
-describe("<Structure />", () => {
+describe("<CustomQuery />", () => {
     it("should render without throwing an error", () => {
         var wrapper = shallow(<CustomQuery />);
         wrapper.setState = {

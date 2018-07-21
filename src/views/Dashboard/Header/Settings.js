@@ -364,6 +364,7 @@ class Settings extends DashboardAbstract {
                                                 className="float-right"
                                                 color="success"
                                                 onClick={this.updateSettings}
+                                                id="save"
                                             >
                                                 Save
                                             </Button>
@@ -371,6 +372,7 @@ class Settings extends DashboardAbstract {
                                                 className="float-right margin-right"
                                                 color="danger"
                                                 onClick={this.resetSettings}
+                                                id="reset"
                                             >
                                                 Reset
                                             </Button>
