@@ -19,14 +19,13 @@ class PmdRadar extends DashboardAbstract {
         }
 
         var radarData = [];
-        {
-            Object.keys(pmdData).map(function(key, i) {
-                var violation = {};
-                violation.ruleSet = key;
-                violation.violations = pmdData[key] ? pmdData[key].length : 0;
-                radarData.push(violation);
-            }, this);
-        }
+
+        Object.keys(pmdData).map(function(key, i) {
+            var violation = {};
+            violation.ruleSet = key;
+            violation.violations = pmdData[key] ? pmdData[key].length : 0;
+            return radarData.push(violation);
+        }, this);
 
         return (
             <ResponsiveRadar

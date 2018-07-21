@@ -15,6 +15,8 @@ import {
 } from "reactstrap";
 import PMDModel from "../../../../../api/models/PMD";
 import PmdRadar from "./visualization/PmdRadar";
+
+//eslint-disable-next-line
 import SimpleBar from "simplebar";
 
 class PopoverItem extends Component {
