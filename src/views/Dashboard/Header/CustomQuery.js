@@ -208,8 +208,7 @@ class CustomQuery extends DashboardAbstract {
                                     value={this.state.query}
                                     options={{
                                         mode: "cypher",
-                                        theme: "cypher",
-                                        lineNumberFormatter: line => line
+                                        theme: "cypher"
                                     }}
                                     onValueChange={this.updateStateQuery.bind(
                                         this
