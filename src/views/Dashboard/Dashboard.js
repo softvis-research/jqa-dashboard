@@ -100,6 +100,9 @@ class Dashboard extends DashboardAbstract {
                 commitsWithoutMerges: "loading",
                 commitsWithMerges: "loading"
             },
+            hotspotMetrics: {
+                commitHotspots: "loading"
+            },
             staticCodeAnalysisPMDMetrics: {
                 violations: "loading"
             },
@@ -119,6 +122,7 @@ class Dashboard extends DashboardAbstract {
             dashboardModel.readDependencyMetrics(this);
             dashboardModel.readActivityMetrics(this);
             dashboardModel.readStaticCodeAnalysisPMDMetrics(this);
+            dashboardModel.readHotspotMetrics(this);
             dashboardModel.readTestCoverageMetrics(this);
         }
 
@@ -301,7 +305,42 @@ class Dashboard extends DashboardAbstract {
                                     />
                                 </div>
                             </CardHeader>
-                            <CardBody>currently empty</CardBody>
+                            <CardBody>
+                                <a href="#/risk-management/hotspots">
+                                    <strong>Hotspot metrics</strong>
+                                    <ListGroup className="margin-bottom">
+                                        {Object.keys(
+                                            this.state.hotspotMetrics
+                                        ).map(function(key) {
+                                            var label = key
+                                                // insert a space before all caps
+                                                .replace(/([A-Z])/g, " $1")
+                                                .toLowerCase()
+                                                // uppercase the first character
+                                                .replace(/^./, function(str) {
+                                                    return str.toUpperCase();
+                                                });
+
+                                            return (
+                                                <ListGroupItem
+                                                    key={key}
+                                                    className="justify-content-between"
+                                                >
+                                                    {label}{" "}
+                                                    <div className="float-right">
+                                                        {
+                                                            this.state
+                                                                .hotspotMetrics[
+                                                                key
+                                                            ]
+                                                        }
+                                                    </div>
+                                                </ListGroupItem>
+                                            );
+                                        }, this)}
+                                    </ListGroup>
+                                </a>
+                            </CardBody>
                         </Card>
                     </Col>
                     <Col xs="12" sm="6" md="3">

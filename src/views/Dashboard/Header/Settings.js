@@ -26,6 +26,7 @@ const IDENTIFIER_PROJECT_NAME = "projectName";
 const IDENTIFIER_CONNECTION_STRING = "connectionString";
 const IDENTIFIER_NEO4J_USERNAME = "username";
 const IDENTIFIER_NEO4J_PASSWORD = "password";
+const IDENTIFIER_LIMIT_COUNTING_HOTSPOTS = "limitCountingHotspots";
 
 var AppDispatcher = require("../../../AppDispatcher");
 var localStorageConnectionString = localStorage.getItem(
@@ -34,6 +35,9 @@ var localStorageConnectionString = localStorage.getItem(
 var localStorageNeo4jUsername = localStorage.getItem(IDENTIFIER_NEO4J_USERNAME);
 var localStorageNeo4jPassword = localStorage.getItem(IDENTIFIER_NEO4J_PASSWORD);
 var localStorageProjectName = localStorage.getItem(IDENTIFIER_PROJECT_NAME);
+var localStorageLimitCountingHotspots = localStorage.getItem(
+    IDENTIFIER_LIMIT_COUNTING_HOTSPOTS
+);
 
 function handleDatabaseError(error) {
     console.log(error);
@@ -156,6 +160,9 @@ class Settings extends DashboardAbstract {
             IDENTIFIER_NEO4J_PASSWORD
         );
         localStorageProjectName = localStorage.getItem(IDENTIFIER_PROJECT_NAME);
+        localStorageLimitCountingHotspots = localStorage.getItem(
+            IDENTIFIER_LIMIT_COUNTING_HOTSPOTS
+        );
 
         return (
             <div className="animated fadeIn">
@@ -197,7 +204,7 @@ class Settings extends DashboardAbstract {
                                         </Col>
                                     </FormGroup>
                                     <FormGroup row>
-                                        <Col md="2">
+                                        <Col md="3">
                                             <Label
                                                 htmlFor={
                                                     IDENTIFIER_CONNECTION_STRING +
@@ -207,7 +214,7 @@ class Settings extends DashboardAbstract {
                                                 URL
                                             </Label>
                                         </Col>
-                                        <Col xs="12" md="10">
+                                        <Col xs="12" md="9">
                                             <Input
                                                 type="text"
                                                 id={
@@ -236,7 +243,7 @@ class Settings extends DashboardAbstract {
                                         </Col>
                                     </FormGroup>
                                     <FormGroup row>
-                                        <Col md="2">
+                                        <Col md="3">
                                             <Label
                                                 htmlFor={
                                                     IDENTIFIER_NEO4J_USERNAME +
@@ -246,7 +253,7 @@ class Settings extends DashboardAbstract {
                                                 Username
                                             </Label>
                                         </Col>
-                                        <Col xs="12" md="10">
+                                        <Col xs="12" md="9">
                                             <Input
                                                 type="text"
                                                 id={
@@ -275,7 +282,7 @@ class Settings extends DashboardAbstract {
                                         </Col>
                                     </FormGroup>
                                     <FormGroup row>
-                                        <Col md="2">
+                                        <Col md="3">
                                             <Label
                                                 htmlFor={
                                                     IDENTIFIER_NEO4J_PASSWORD +
@@ -285,7 +292,7 @@ class Settings extends DashboardAbstract {
                                                 Password
                                             </Label>
                                         </Col>
-                                        <Col xs="12" md="10">
+                                        <Col xs="12" md="9">
                                             <Input
                                                 type="password"
                                                 id={
@@ -320,7 +327,7 @@ class Settings extends DashboardAbstract {
                                         </Col>
                                     </FormGroup>
                                     <FormGroup row>
-                                        <Col md="2">
+                                        <Col md="3">
                                             <Label
                                                 htmlFor={
                                                     IDENTIFIER_PROJECT_NAME +
@@ -330,7 +337,7 @@ class Settings extends DashboardAbstract {
                                                 Name
                                             </Label>
                                         </Col>
-                                        <Col xs="12" md="10">
+                                        <Col xs="12" md="9">
                                             <Input
                                                 type="text"
                                                 id={
@@ -355,6 +362,50 @@ class Settings extends DashboardAbstract {
                                             />
                                             <FormText color="muted">
                                                 Example: "jUnit"
+                                            </FormText>
+                                        </Col>
+                                    </FormGroup>
+                                    <FormGroup row>
+                                        <Col md="3">
+                                            <Label
+                                                htmlFor={
+                                                    IDENTIFIER_LIMIT_COUNTING_HOTSPOTS +
+                                                    "-input"
+                                                }
+                                            >
+                                                Lower limit for counting
+                                                hotspots (in %)
+                                            </Label>
+                                        </Col>
+                                        <Col xs="12" md="9">
+                                            <Input
+                                                type="text"
+                                                id={
+                                                    IDENTIFIER_LIMIT_COUNTING_HOTSPOTS +
+                                                    "-input"
+                                                }
+                                                name={
+                                                    IDENTIFIER_LIMIT_COUNTING_HOTSPOTS +
+                                                    "-input"
+                                                }
+                                                className={"setting"}
+                                                placeholder="Please provide percentage limit for counting hotspots..."
+                                                defaultValue={
+                                                    localStorageLimitCountingHotspots !==
+                                                        null &&
+                                                    localStorageLimitCountingHotspots !==
+                                                        ""
+                                                        ? localStorageLimitCountingHotspots
+                                                        : "75"
+                                                }
+                                                required
+                                            />
+                                            <FormText color="muted">
+                                                Lower limit of the percentage
+                                                commit count of a resource from
+                                                the maximum commit count to
+                                                identify a resource as a
+                                                hotspot. Default: "75"
                                             </FormText>
                                         </Col>
                                     </FormGroup>

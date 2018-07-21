@@ -133,6 +133,63 @@ class DashboardModel {
             });
     }
 
+    readHotspotMetrics(thisBackup) {
+        const IDENTIFIER_LIMIT_COUNTING_HOTSPOTS = "limitCountingHotspots";
+
+        var localStorageLimitCountingHotspots = localStorage.getItem(
+            IDENTIFIER_LIMIT_COUNTING_HOTSPOTS
+        );
+        var hotspotMetrics = [];
+
+        neo4jSession
+            .run(
+                // number of commits
+                "MATCH (c:Commit)-[:CONTAINS_CHANGE]->()-[:MODIFIES]->(f:File) WHERE NOT c:Merge WITH f, count(c) as commits MATCH (t:Type)-[:HAS_SOURCE]->(f), (t)-[:DECLARES]->(m:Method) RETURN t.fqn as fqn, sum(commits) as commits ORDER BY fqn ASCENDING"
+            )
+            .then(function(result) {
+                var maxCommits = 0;
+
+                result.records.forEach(function(record) {
+                    var currentCommmits = record.get(1).low;
+
+                    if (currentCommmits > maxCommits) {
+                        maxCommits = currentCommmits;
+                    }
+                });
+                console.log("maxCommits: " + maxCommits);
+
+                var hotspotCount = 0;
+                result.records.forEach(function(record) {
+                    var currentCommmits = record.get(1).low;
+                    var limit =
+                        maxCommits * (localStorageLimitCountingHotspots / 100);
+
+                    if (currentCommmits > limit) {
+                        hotspotCount++;
+                        console.log(
+                            record.get(0) +
+                                " - commits: " +
+                                currentCommmits +
+                                ", saturation: " +
+                                currentCommmits / maxCommits
+                        );
+                    }
+                });
+
+                hotspotMetrics = {
+                    commitHotspots: hotspotCount
+                };
+            })
+            .then(function(context) {
+                thisBackup.setState({
+                    hotspotMetrics: hotspotMetrics
+                });
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
+    }
+
     readStaticCodeAnalysisPMDMetrics(thisBackup) {
         var staticCodeAnalysisPMDMetrics = [];
 
