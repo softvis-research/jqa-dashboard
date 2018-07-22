@@ -11,6 +11,5 @@ import routes from "../routes";
 import { expect } from "chai";
 
 it("should render without throwing an error", () => {
-    console.log(routes);
     expect(routes);
 });
