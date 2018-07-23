@@ -72,7 +72,6 @@ class TestCoverageModel extends DashboardAbstract {
                     flatData,
                     collectedNames
                 );
-                console.log(flatData);
                 cpHelper.normalizeTestCoverage(hierarchicalData);
 
                 //normalize the root element

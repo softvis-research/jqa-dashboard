@@ -10,6 +10,8 @@ Enzyme.configure({ adapter: new Adapter() });
 import Hotspots from "../../../../../views/Dashboard/RiskManagement/Hotspots/Hotspots";
 import { expect } from "chai";
 
+var AppDispatcher = require("../../../../../AppDispatcher");
+
 describe("<Hotspots />", () => {
     it("should render without throwing an error", () => {
         var wrapper = shallow(<Hotspots />);
@@ -48,6 +50,11 @@ describe("<Hotspots />", () => {
             }
         });
         var html = wrapper.html();
+
+        AppDispatcher.handleAction({
+            actionType: "SELECT_HOTSPOT_PACKAGE_FROM_BREADCRUMB",
+            data: "test"
+        });
 
         expect(html).to.contain('<div class="card-header">Hotspots');
         //expect(html).to.contain('<svg>');
