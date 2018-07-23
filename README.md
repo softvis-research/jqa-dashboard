@@ -13,7 +13,7 @@ The dashboard requires a Neo4j database where the information of the software to
 To extract the data of a software project using jQAssistant and import it into Neo4j, follow the instructions on [jQAssistant - Get Started](https://jqassistant.org/get-started/). Alternatively, one of the sample project dumps ([spring-petclinic](https://github.com/buschmais/spring-petclinic/tree/master) or [jUnit](https://github.com/jqassistant-demo/junit4/tree/jqassistant/vissoft-2018)) stored in the data directory of this repository can be imported directly into Neo4j with the following command.
 
 ```
-$ neo4j-admin load --from=<path-to-neo4j-dump> [--force]
+$ neo4j-admin load --from=<path-to-neo4j-dump> [--force=true]
 ```
 
 Further information on importing Neo4j dumps is provided [here](https://neo4j.com/docs/operations-manual/current/tools/dump-load/).
