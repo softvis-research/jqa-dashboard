@@ -15,33 +15,55 @@ import ReactDOM from "react-dom";
 describe("Circle Packing", () => {
     it("should render without throwing an error", () => {
         var cpHelper = new CirclePackingHelper();
-        var hierarchicalData = cpHelper.circlePackingByName("test", [
+        var flatData = [
             {
-                name: "junit.extensions.ActiveTestSuite",
-                complexity: 22,
-                loc: 46,
-                commits: 30,
-                level: 3,
-                role: "leaf"
+                id: 5,
+                name: "org.springframework",
+                coverage: -1,
+                loc: 0,
+                level: 2
             },
             {
-                name: "junit.extensions",
-                complexity: 0,
+                id: 6,
+                name: "org",
+                coverage: -1,
                 loc: 0,
-                commits: 0,
-                level: 2,
-                role: "node"
-            },
-            {
-                name: "junit",
-                complexity: 0,
-                loc: 0,
-                commits: 0,
-                level: 1,
-                role: "node"
+                level: 1
             }
-        ]);
+        ];
+
+        var hierarchicalData = cpHelper.circlePackingByName("test", flatData);
+
+        cpHelper.normalizeHotspots(hierarchicalData);
+        cpHelper.normalizeTestCoverage(hierarchicalData);
 
         expect(hierarchicalData);
+    });
+
+    it("should render without throwing an error", () => {
+        var cpHelper = new CirclePackingHelper();
+        var flatData = [
+            {
+                id: 5,
+                name: "org.springframework",
+                coverage: -1,
+                loc: 0,
+                level: 2
+            },
+            {
+                id: 6,
+                name: "org",
+                coverage: -1,
+                loc: 0,
+                level: 1
+            }
+        ];
+
+        var collectedNames = [];
+        collectedNames["org"] = 6;
+        collectedNames["org.springframework"] = 5;
+        cpHelper.circlePackingById("test", flatData, collectedNames);
+
+        expect(flatData);
     });
 });
