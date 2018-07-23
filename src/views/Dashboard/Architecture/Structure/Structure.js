@@ -29,6 +29,9 @@ var treebeardCustomTheme = require("./TreebeardCustomTheme");
 
 var dynamicBreadcrumbSeparator = " > ";
 
+//eslint-disable-next-line
+import SimpleBar from "simplebar";
+
 class ArchitectureStructure extends DashboardAbstract {
     constructor(props) {
         super(props);
