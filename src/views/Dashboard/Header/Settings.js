@@ -373,8 +373,7 @@ class Settings extends DashboardAbstract {
                                                     "-input"
                                                 }
                                             >
-                                                Lower limit for counting
-                                                hotspots (in %)
+                                                Commit hotspot threshold [%]
                                             </Label>
                                         </Col>
                                         <Col xs="12" md="9">
@@ -396,7 +395,7 @@ class Settings extends DashboardAbstract {
                                                     localStorageLimitCountingHotspots !==
                                                         ""
                                                         ? localStorageLimitCountingHotspots
-                                                        : "75"
+                                                        : "70"
                                                 }
                                                 required
                                             />
@@ -405,7 +404,7 @@ class Settings extends DashboardAbstract {
                                                 commit count of a resource from
                                                 the maximum commit count to
                                                 identify a resource as a
-                                                hotspot. Default: "75"
+                                                hotspot. Default: "70"
                                             </FormText>
                                         </Col>
                                     </FormGroup>

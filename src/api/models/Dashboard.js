@@ -156,23 +156,16 @@ class DashboardModel {
                         maxCommits = currentCommmits;
                     }
                 });
-                console.log("maxCommits: " + maxCommits);
 
                 var hotspotCount = 0;
                 result.records.forEach(function(record) {
                     var currentCommmits = record.get(1).low;
-                    var limit =
-                        maxCommits * (localStorageLimitCountingHotspots / 100);
 
-                    if (currentCommmits > limit) {
+                    if (
+                        Math.round((currentCommmits / maxCommits) * 100) >=
+                        localStorageLimitCountingHotspots
+                    ) {
                         hotspotCount++;
-                        console.log(
-                            record.get(0) +
-                                " - commits: " +
-                                currentCommmits +
-                                ", saturation: " +
-                                currentCommmits / maxCommits
-                        );
                     }
                 });
 
