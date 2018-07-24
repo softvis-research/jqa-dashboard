@@ -47,6 +47,7 @@
     "matrix-utilities": "^1.2.4",
     "moment": "^2.22.2",
     "neo4j-driver": "^1.6.2",
+    "object-array-converter": "^1.0.1",
     "prop-types": "^15.6.2",
     "react": "^16.4.1",
     "react-bootstrap-daterangepicker": "^4.1.0",

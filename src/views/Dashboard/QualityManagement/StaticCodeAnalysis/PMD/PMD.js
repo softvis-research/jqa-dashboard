@@ -19,6 +19,9 @@ import PmdRadar from "./visualization/PmdRadar";
 //eslint-disable-next-line
 import SimpleBar from "simplebar";
 
+var arraySort = require("array-sort");
+var convert = require("object-array-converter");
+
 class PopoverItem extends Component {
     constructor(props) {
         super(props);
@@ -115,6 +118,20 @@ class QualityManagementStaticCodeAnalysisPMD extends DashboardAbstract {
             return "";
         }
 
+        var categoryData = [];
+
+        Object.keys(this.state.pmdData).map(function(key, i) {
+            var violation = {};
+            violation[key] = this.state.pmdData[key];
+            violation.violations = this.state.pmdData[key]
+                ? this.state.pmdData[key].length
+                : 0;
+            return categoryData.push(violation);
+        }, this);
+
+        categoryData = arraySort(categoryData, "violations", { reverse: true });
+        categoryData = convert.toObject(categoryData);
+
         //special case: instead of fetching data inside of pmdRadar we need to inject it here because they are also needed below
         return (
             <div className="animated fadeIn">
@@ -139,16 +156,20 @@ class QualityManagementStaticCodeAnalysisPMD extends DashboardAbstract {
                         </Card>
                     </Col>
 
-                    {Object.keys(this.state.pmdData).map(function(key, i) {
+                    {Object.keys(categoryData).map(function(key, i) {
+                        var categoryName = Object.keys(categoryData[key])[0];
                         return (
-                            <Col xs="12" sm="6" md="6" key={key + i}>
+                            <Col xs="12" sm="6" md="6" key={categoryName + i}>
                                 <Card className={"pmd-card"}>
                                     <CardHeader>
-                                        {key} ({this.state.pmdData[key].length})
+                                        {categoryName} ({
+                                            this.state.pmdData[categoryName]
+                                                .length
+                                        })
                                         <div className="card-actions">
                                             <PopoverItem
                                                 key={i}
-                                                type={key}
+                                                type={categoryName}
                                                 id={i}
                                             />
                                         </div>
@@ -161,10 +182,10 @@ class QualityManagementStaticCodeAnalysisPMD extends DashboardAbstract {
                                         }}
                                     >
                                         {Object.keys(
-                                            this.state.pmdData[key]
+                                            this.state.pmdData[categoryName]
                                         ).map(function(violationItem, i) {
                                             var violation = this.state.pmdData[
-                                                key
+                                                categoryName
                                             ][violationItem];
 
                                             return (

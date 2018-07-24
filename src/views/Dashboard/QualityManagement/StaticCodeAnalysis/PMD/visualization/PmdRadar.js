@@ -1,8 +1,8 @@
 import React from "react";
-
 import DashboardAbstract from "../../../../AbstractDashboardComponent";
-
 import { ResponsiveRadar } from "@nivo/radar";
+
+var arraySort = require("array-sort");
 
 class PmdRadar extends DashboardAbstract {
     render() {
@@ -26,6 +26,8 @@ class PmdRadar extends DashboardAbstract {
             violation.violations = pmdData[key] ? pmdData[key].length : 0;
             return radarData.push(violation);
         }, this);
+
+        radarData = arraySort(radarData, "violations", { reverse: true });
 
         return (
             <ResponsiveRadar
