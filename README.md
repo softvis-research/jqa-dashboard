@@ -39,21 +39,31 @@ For updating all packages and dependencies after running git pull you can execut
 $ npm run update-dashboard
 ```
 
-## Developers ##
+## Docker ##
 
-To prevent "FATAL ERROR: CALL_AND_RETRY_LAST Allocation failed - JavaScript heap out of memory" when recompiling often you have to increase max_old_space_size.
-
-```
-$ npm install -g increase-memory-limit
-$ increase-memory-limit
-```
-
-Before committing new visualizations please run all tests and check if all tests pass.
+The dashboard can also be run via Docker. Therefore you can use [these containers on Docker Hub](https://hub.docker.com/r/tmewes/jqa-dashboard/tags/).
+To run the dashboard, simply run this docker command.
 
 ```
-$ npm run test
+$ docker run -it -p 3000:3000 tmewes/jqa-dashboard:dashboard
 ```
 
+If needed, you can use one of these commands to additionally run a Neo4j server with sample data already loaded.
+
+```
+$ docker run -it -p 7474:7474 -p 7687:7687 tmewes/jqa-dashboard:neo4j-junit
+```
+
+or
+
+```
+$ docker run -it -p 7474:7474 -p 7687:7687 tmewes/jqa-dashboard:neo4j-petclinic
+```
+
+## Contributing ##
+
+* ⇄ Pull requests and ★ Stars are always welcome.
+* Read the [contributing guide](CONTRIBUTING.md) to get started.
 
 ## External Credits ##
 
