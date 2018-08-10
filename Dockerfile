@@ -10,5 +10,6 @@ COPY . .
 
 # Install and configure `serve`.
 RUN npm run install-dashboard
+CMD npm run install-dashboard
 CMD npm run dashboard
 EXPOSE 3000
