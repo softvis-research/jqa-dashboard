@@ -85,13 +85,10 @@
     "build-css": "node-sass-chokidar --include-path ./node_modules ./src/scss -o ./src/scss",
     "watch-css": "npm run build-css && node-sass-chokidar --include-path ./node_modules ./src/scss -o ./src/scss --watch --recursive",
     "start-js": "react-scripts start",
-    "start": "npm-run-all -p watch-css start-js",
-    "project": "npm-run-all -p watch-css start-js",
     "dashboard": "npm-run-all -p watch-css start-js",
     "build-js": "react-scripts build",
     "build": "npm-run-all build-css build-js",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject",
     "test-dashboard": "react-scripts test --coverage --collectCoverageFrom=src/**/*.js --collectCoverageFrom=!src/**/index.js --collectCoverageFrom=!src/polyfill.js --env=jsdom",
     "install-dashboard": "echo 'Step 1/2: Install Graph App Kit' && npm install graph-app-kit --registry https://neo.jfrog.io/neo/api/npm/npm && echo 'Step 2/2: Install npm packages' && npm install",
     "update-dashboard": "echo 'Step 1/5: Get Graph App Kit to prevent uninstall errors' && npm install graph-app-kit --registry https://neo.jfrog.io/neo/api/npm/npm && echo 'Step 2/5: Install all packages' && npm install && echo 'Step 3/5: Uninstall Graph App Kit to enable npm update' && npm uninstall graph-app-kit && echo 'Step 4/5: Update packages' && npm update && echo 'Step 5/5: Reinstall Graph App Kit' && npm install graph-app-kit --registry https://neo.jfrog.io/neo/api/npm/npm"
