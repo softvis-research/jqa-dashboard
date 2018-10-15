@@ -66,6 +66,18 @@ class CommitsTimescale extends DashboardAbstract {
         var xPosition = 0;
         for (var i = 0; i < colors.length; i++) {
             xPosition += 20;
+
+            var legendData = {
+                id: i,
+                fill: colors[i],
+                color: "#151b1e",
+                label: ""
+            };
+            var theme = {
+                legends: {
+                    textColor: "#151b1e"
+                }
+            };
             var legendSvgItem = (
                 <LegendSvgItem
                     key={i}
@@ -76,6 +88,8 @@ class CommitsTimescale extends DashboardAbstract {
                     label={""}
                     fill={colors[i]}
                     textColor={"#151b1e"}
+                    data={legendData}
+                    theme={theme}
                 />
             );
             legendItems.push(legendSvgItem);
