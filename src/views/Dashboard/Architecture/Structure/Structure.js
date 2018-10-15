@@ -261,9 +261,12 @@ class ArchitectureStructure extends DashboardAbstract {
                             <CardHeader>
                                 Structure
                                 <div className="card-actions">
-                                    <a onClick={this.toggleInfo} id="Popover2">
+                                    <button
+                                        onClick={this.toggleInfo}
+                                        id="Popover2"
+                                    >
                                         <i className="text-muted fa fa-question-circle" />
-                                    </a>
+                                    </button>
                                     <Popover
                                         placement="bottom"
                                         isOpen={this.state.popoverOpen}

@@ -55,14 +55,14 @@ class PopoverItem extends Component {
     render() {
         return (
             <span>
-                <a
+                <button
                     className="mr-1"
                     color="secondary"
                     id={"Popover-" + this.props.id}
                     onClick={this.toggle}
                 >
                     <i className="text-muted fa fa-question-circle" />
-                </a>
+                </button>
                 <Popover
                     placement={"bottom"}
                     isOpen={this.state.popoverOpen}
@@ -162,10 +162,12 @@ class QualityManagementStaticCodeAnalysisPMD extends DashboardAbstract {
                             <Col xs="12" sm="6" md="6" key={categoryName + i}>
                                 <Card className={"pmd-card"}>
                                     <CardHeader>
-                                        {categoryName} ({
+                                        {categoryName} (
+                                        {
                                             this.state.pmdData[categoryName]
                                                 .length
-                                        })
+                                        }
+                                        )
                                         <div className="card-actions">
                                             <PopoverItem
                                                 key={i}
@@ -223,6 +225,7 @@ class QualityManagementStaticCodeAnalysisPMD extends DashboardAbstract {
                                                                     href={
                                                                         violation.externalInfoUrl
                                                                     }
+                                                                    rel="noopener noreferrer"
                                                                 >
                                                                     [Explanation]
                                                                 </a>

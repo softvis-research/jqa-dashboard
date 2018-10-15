@@ -113,16 +113,14 @@ class Settings extends DashboardAbstract {
                     // show success message
                     document.getElementById(
                         "database-settings-alert"
-                    ).innerHTML =
-                        "Successfully saved settings.";
+                    ).innerHTML = "Successfully saved settings.";
                     document.getElementById(
                         "database-settings-alert"
                     ).className =
                         "float-right settings-alert alert alert-success fade show";
                     document.getElementById(
                         "database-settings-alert"
-                    ).style.display =
-                        "block";
+                    ).style.display = "block";
                 })
                 .catch(handleDatabaseError); //check database connection
         } catch (e) {
@@ -172,9 +170,12 @@ class Settings extends DashboardAbstract {
                             <CardHeader>
                                 Settings
                                 <div className="card-actions">
-                                    <a onClick={this.toggleInfo} id="Popover2">
+                                    <button
+                                        onClick={this.toggleInfo}
+                                        id="Popover2"
+                                    >
                                         <i className="text-muted fa fa-question-circle" />
-                                    </a>
+                                    </button>
                                     <Popover
                                         placement="bottom"
                                         isOpen={this.state.popoverOpen}

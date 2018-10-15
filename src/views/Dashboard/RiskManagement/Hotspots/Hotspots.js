@@ -280,9 +280,12 @@ class RiskManagementHotspots extends DashboardAbstract {
                             <CardHeader>
                                 Hotspots
                                 <div className="card-actions">
-                                    <a onClick={this.toggleInfo} id="Popover1">
+                                    <button
+                                        onClick={this.toggleInfo}
+                                        id="Popover1"
+                                    >
                                         <i className="text-muted fa fa-question-circle" />
-                                    </a>
+                                    </button>
                                     <Popover
                                         placement="bottom"
                                         isOpen={this.state.popoverOpen}
