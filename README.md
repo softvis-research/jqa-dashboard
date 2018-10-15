@@ -10,7 +10,7 @@ A web-based dashboard for software analysis and visualization using software art
 ## Prerequisites ##
 
 The dashboard requires a Neo4j database where the information of the software to be analyzed has been imported with jQAssistant.
-To extract the data of a software project using jQAssistant and import it into Neo4j, follow the instructions on [jQAssistant - Get Started](https://jqassistant.org/get-started/). Alternatively, one of the sample project dumps ([spring-petclinic](https://github.com/buschmais/spring-petclinic/tree/master) or [jUnit](https://github.com/jqassistant-demo/junit4/tree/jqassistant/vissoft-2018)) stored in the data directory of this repository can be imported directly into Neo4j with the following command. Further information on importing Neo4j dumps is provided [here](https://neo4j.com/docs/operations-manual/current/tools/dump-load/).
+There are three possibilities how to achieve this. You can use jQAssistant to extract the data of your software project as described [here](https://jqassistant.org/get-started/). Alternatively, you can use one of the [pre-built Docker images](https://hub.docker.com/r/visualsoftwareanalytics/jqa-dashboard/tags/) containing a Neo4j server with sample data ([spring-petclinic](https://github.com/buschmais/spring-petclinic/tree/master) or [jUnit](https://github.com/jqassistant-demo/junit4/tree/jqassistant/vissoft-2018)). Or you import the dumps provided in the [data directory](https://github.com/softvis-research/jqa-dashboard/tree/master/data) directly into your Neo4j database with the following command.
 
 ```
 $ neo4j-admin load --from=<path-to-neo4j-dump> [--force=true]
