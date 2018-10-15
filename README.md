@@ -10,13 +10,12 @@ A web-based dashboard for software analysis and visualization using software art
 ## Prerequisites ##
 
 The dashboard requires a Neo4j database where the information of the software to be analyzed has been imported with jQAssistant.
-To extract the data of a software project using jQAssistant and import it into Neo4j, follow the instructions on [jQAssistant - Get Started](https://jqassistant.org/get-started/). Alternatively, one of the sample project dumps ([spring-petclinic](https://github.com/buschmais/spring-petclinic/tree/master) or [jUnit](https://github.com/jqassistant-demo/junit4/tree/jqassistant/vissoft-2018)) stored in the data directory of this repository can be imported directly into Neo4j with the following command.
+To extract the data of a software project using jQAssistant and import it into Neo4j, follow the instructions on [jQAssistant - Get Started](https://jqassistant.org/get-started/). Alternatively, one of the sample project dumps ([spring-petclinic](https://github.com/buschmais/spring-petclinic/tree/master) or [jUnit](https://github.com/jqassistant-demo/junit4/tree/jqassistant/vissoft-2018)) stored in the data directory of this repository can be imported directly into Neo4j with the following command. Further information on importing Neo4j dumps is provided [here](https://neo4j.com/docs/operations-manual/current/tools/dump-load/).
 
 ```
 $ neo4j-admin load --from=<path-to-neo4j-dump> [--force=true]
 ```
 
-Further information on importing Neo4j dumps is provided [here](https://neo4j.com/docs/operations-manual/current/tools/dump-load/).
 ## Installation ##
 
 Clone the repository and execute the following command.
@@ -41,29 +40,31 @@ $ npm run update-dashboard
 
 ## Docker ##
 
-The dashboard can also be run via Docker. Therefore you can use [these containers on Docker Hub](https://hub.docker.com/r/tmewes/jqa-dashboard/tags/).
-To run the dashboard, simply run this docker command.
+The dashboard can also be run via Docker. Therefore, you can use these [pre-built Docker images](https://hub.docker.com/r/visualsoftwareanalytics/jqa-dashboard/tags/).
 
 ```
-$ docker run -it -p 3000:3000 tmewes/jqa-dashboard:dashboard
+$ docker pull visualsoftwareanalytics/jqa-dashboard:dashboard
+$ docker run -it -p 3000:3000 visualsoftwareanalytics/jqa-dashboard:dashboard
 ```
 
 If needed, you can use one of these commands to additionally run a Neo4j server with sample data already loaded.
 
 ```
-$ docker run -it -p 7474:7474 -p 7687:7687 tmewes/jqa-dashboard:neo4j-junit
+$ docker pull visualsoftwareanalytics/jqa-dashboard:neo4j-junit
+$ docker run -it -p 7474:7474 -p 7687:7687 visualsoftwareanalytics/jqa-dashboard:neo4j-junit
 ```
 
 or
 
 ```
-$ docker run -it -p 7474:7474 -p 7687:7687 tmewes/jqa-dashboard:neo4j-petclinic
+$ docker pull visualsoftwareanalytics/jqa-dashboard:neo4j-petclinic
+$ docker run -it -p 7474:7474 -p 7687:7687 visualsoftwareanalytics/jqa-dashboard:neo4j-petclinic
 ```
+
 
 ## Contributing ##
 
-* ⇄ Pull requests and ★ Stars are always welcome.
-* Read the [contributing guide](CONTRIBUTING.md) to get started.
+⇄ Pull requests and ★ Stars are always welcome. We invite you to read the [contributing guide](CONTRIBUTING.md) to get started.
 
 ## External Credits ##
 
