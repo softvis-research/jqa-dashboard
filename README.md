@@ -63,8 +63,7 @@ $ docker run -it -p 7474:7474 -p 7687:7687 visualsoftwareanalytics/jqa-dashboard
 
 ## Contributing ##
 
-* ⇄ Pull requests and ★ Stars are always welcome.
-* Read the [contributing guide](CONTRIBUTING.md) to get started.
+⇄ Pull requests and ★ Stars are always welcome. We invite you to read the [contributing guide](CONTRIBUTING.md) to get started.
 
 ## External Credits ##
 
