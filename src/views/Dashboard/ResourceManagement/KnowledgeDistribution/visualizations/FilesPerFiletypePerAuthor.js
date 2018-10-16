@@ -67,6 +67,18 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
                 continue; //filter out obviously broken elements
             }
             yPosition += 20;
+
+            var legendData = {
+                id: i,
+                fill: stringToColour(label),
+                color: "#151b1e",
+                label: label
+            };
+            var theme = {
+                legends: {
+                    textColor: "#151b1e"
+                }
+            };
             var legendSvgItem = (
                 <LegendSvgItem
                     key={i}
@@ -77,6 +89,8 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
                     label={label}
                     fill={stringToColour(label)}
                     textColor={"#151b1e"}
+                    data={legendData}
+                    theme={theme}
                 />
             );
             legendItems.push(legendSvgItem);
@@ -134,7 +148,7 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
                             tickPadding: 15,
                             tickRotation: 0,
                             legend: "# Files",
-                            legendPosition: "center",
+                            legendPosition: "middle",
                             legendOffset: 46
                         }}
                         axisLeft={{
@@ -143,7 +157,7 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
                             tickPadding: 5,
                             tickRotation: 0,
                             legend: "Authors",
-                            legendPosition: "center",
+                            legendPosition: "middle",
                             legendOffset: -140
                         }}
                         labelSkipWidth={12}

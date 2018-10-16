@@ -46,14 +46,14 @@ class PopoverItem extends Component {
     render() {
         return (
             <span>
-                <a
+                <button
                     className="mr-1"
                     color="secondary"
                     id={"Popover-" + this.props.id}
                     onClick={this.toggle}
                 >
                     <i className="text-muted fa fa-question-circle" />
-                </a>
+                </button>
                 <Popover
                     placement={"bottom"}
                     isOpen={this.state.popoverOpen}

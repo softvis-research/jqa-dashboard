@@ -173,9 +173,12 @@ class CustomQuery extends DashboardAbstract {
                             <CardHeader>
                                 Custom Cypher query
                                 <div className="card-actions">
-                                    <a onClick={this.toggleInfo} id="Popover">
+                                    <button
+                                        onClick={this.toggleInfo}
+                                        id="Popover"
+                                    >
                                         <i className="text-muted fa fa-question-circle" />
-                                    </a>
+                                    </button>
                                     <Popover
                                         placement="bottom"
                                         isOpen={this.state.popoverOpen}

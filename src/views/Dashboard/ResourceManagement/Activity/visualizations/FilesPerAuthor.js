@@ -119,7 +119,7 @@ class FilesPerAuthor extends DashboardAbstract {
                             tickPadding: 15,
                             tickRotation: 0,
                             legend: "# Files",
-                            legendPosition: "center",
+                            legendPosition: "middle",
                             legendOffset: 46
                         }}
                         axisLeft={{
@@ -128,7 +128,7 @@ class FilesPerAuthor extends DashboardAbstract {
                             tickPadding: 5,
                             tickRotation: 0,
                             legend: "Author",
-                            legendPosition: "center",
+                            legendPosition: "middle",
                             legendOffset: -140
                         }}
                         labelSkipWidth={12}

@@ -5,6 +5,7 @@ import DashboardAbstract, {
 import FileTypesModel from "../../../../../api/models/FileTypes";
 import { ResponsivePie } from "@nivo/pie";
 
+var stringToColour = require("string-to-color");
 var AppDispatcher = require("../../../../../AppDispatcher");
 
 class FileType extends DashboardAbstract {
@@ -64,8 +65,11 @@ class FileType extends DashboardAbstract {
                         innerRadius={0}
                         padAngle={0}
                         cornerRadius={0}
-                        colors="d320c"
-                        colorBy="id"
+                        colors="nivo"
+                        //colorBy="id"
+                        colorBy={function(e) {
+                            return stringToColour(e.id);
+                        }}
                         borderColor="inherit:darker(0.6)"
                         radialLabelsSkipAngle={5}
                         radialLabelsTextXOffset={6}

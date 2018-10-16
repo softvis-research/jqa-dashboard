@@ -5,8 +5,8 @@ export default {
         base: {
             listStyle: "none",
             backgroundColor: "#FFFFFF",
-            margin: 0,
-            padding: 0,
+            margin: "0px",
+            padding: "0px",
             color: "#151b1e"
         },
         node: {
@@ -37,14 +37,14 @@ export default {
                     position: "absolute",
                     top: "50%",
                     left: "56%",
-                    margin: "-7px 0 0 -7px",
+                    margin: "-7px 0px 0px -7px",
                     height: "10px"
                 },
                 height: 12,
                 width: 12,
                 arrow: {
                     fill: "#9DA5AB",
-                    strokeWidth: 0
+                    strokeWidth: "0px"
                 }
             },
             header: {

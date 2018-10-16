@@ -118,7 +118,7 @@ class CommitsPerAuthor extends DashboardAbstract {
                             tickPadding: 15,
                             tickRotation: 0,
                             legend: "# Commits",
-                            legendPosition: "center",
+                            legendPosition: "middle",
                             legendOffset: 46
                         }}
                         axisLeft={{
@@ -127,7 +127,7 @@ class CommitsPerAuthor extends DashboardAbstract {
                             tickPadding: 5,
                             tickRotation: 0,
                             legend: "Author",
-                            legendPosition: "center",
+                            legendPosition: "middle",
                             legendOffset: -140
                         }}
                         labelSkipWidth={12}
