@@ -123,19 +123,19 @@ describe("<StaticCodeAnalysisPMD />", () => {
         var html = wrapper.html();
 
         expect(html).to.contain(
-            '<div class="card-header">Error Prone (1)<div class="card-actions"><span><a class="mr-1" color="secondary" id="Popover-0"><i class="text-muted fa fa-question-circle"></i></a></span></div></div>'
+            '<div class="card-header">Error Prone (1)<div class="card-actions"><span><button class="mr-1" color="secondary" id="Popover-0"><i class="text-muted fa fa-question-circle"></i></button></span></div></div>'
         );
         expect(html).to.contain(
-            '<div class="card-header">Code Style (1)<div class="card-actions"><span><a class="mr-1" color="secondary" id="Popover-1"><i class="text-muted fa fa-question-circle"></i></a></span></div></div>'
+            '<div class="card-header">Code Style (1)<div class="card-actions"><span><button class="mr-1" color="secondary" id="Popover-1"><i class="text-muted fa fa-question-circle"></i></button></span></div></div>'
         );
         expect(html).to.contain(
-            '<div class="card-header">Best Practices (1)<div class="card-actions"><span><a class="mr-1" color="secondary" id="Popover-2"><i class="text-muted fa fa-question-circle"></i></a></span></div></div>'
+            '<div class="card-header">Best Practices (1)<div class="card-actions"><span><button class="mr-1" color="secondary" id="Popover-2"><i class="text-muted fa fa-question-circle"></i></button></span></div></div>'
         );
         expect(html).to.contain(
-            '<div class="card-header">Multithreading (1)<div class="card-actions"><span><a class="mr-1" color="secondary" id="Popover-3"><i class="text-muted fa fa-question-circle"></i></a></span></div></div>'
+            '<div class="card-header">Multithreading (1)<div class="card-actions"><span><button class="mr-1" color="secondary" id="Popover-3"><i class="text-muted fa fa-question-circle"></i></button></span></div></div>'
         );
         expect(html).to.contain(
-            '<div class="card-header">Design (1)<div class="card-actions"><span><a class="mr-1" color="secondary" id="Popover-4"><i class="text-muted fa fa-question-circle"></i></a></span></div></div>'
+            '<div class="card-header">Design (1)<div class="card-actions"><span><button class="mr-1" color="secondary" id="Popover-4"><i class="text-muted fa fa-question-circle"></i></button></span></div></div>'
         );
     });
 });
