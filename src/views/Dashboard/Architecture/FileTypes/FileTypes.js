@@ -3,7 +3,7 @@ import React from "react";
 import DashboardAbstract from "../../AbstractDashboardComponent";
 import FileType from "./visualizations/FileType";
 import { CypherEditor } from "graph-app-kit/components/Editor";
-
+import { AppSwitch } from "@coreui/react";
 import {
     Button,
     Row,
@@ -15,6 +15,7 @@ import {
     PopoverHeader,
     PopoverBody
 } from "reactstrap";
+import $ from "jquery";
 
 var AppDispatcher = require("../../../../AppDispatcher");
 
@@ -41,6 +42,10 @@ class ArchitectureFileTypes extends DashboardAbstract {
 
     componentDidMount() {
         super.componentDidMount();
+
+        $(".expert-mode").on("change", function() {
+            alert(1);
+        });
     }
 
     componentWillUnmount() {
@@ -87,6 +92,23 @@ class ArchitectureFileTypes extends DashboardAbstract {
                             <CardHeader>
                                 Number of files per file type
                                 <div className="card-actions">
+                                    <div className={"float-left"}>
+                                        <div
+                                            className={
+                                                "float-left expert-label"
+                                            }
+                                        >
+                                            Expert mode
+                                        </div>
+                                        <AppSwitch
+                                            className={
+                                                "mx-1 float-right display-block expert-mode"
+                                            }
+                                            color={"secondary"}
+                                            size={"sm"}
+                                        />
+                                    </div>
+
                                     <button
                                         onClick={this.toggleInfo}
                                         id="Popover1"
