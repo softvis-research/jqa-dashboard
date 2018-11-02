@@ -1,9 +1,13 @@
 import React from "react";
 
-import DashboardAbstract from "../../AbstractDashboardComponent";
+import DashboardAbstract, {
+    neo4jSession
+} from "../../AbstractDashboardComponent";
 import FileType from "./visualizations/FileType";
+import { CypherEditor } from "graph-app-kit/components/Editor";
 
 import {
+    Button,
     Row,
     Col,
     Card,
@@ -13,6 +17,8 @@ import {
     PopoverHeader,
     PopoverBody
 } from "reactstrap";
+
+var AppDispatcher = require("../../../../AppDispatcher");
 
 class ArchitectureFileTypes extends DashboardAbstract {
     constructor(props) {
@@ -31,8 +37,43 @@ class ArchitectureFileTypes extends DashboardAbstract {
         this.toggleInfo = this.toggleInfo.bind(this);
     }
 
+    componentWillMount() {
+        super.componentWillMount();
+    }
+
     componentDidMount() {
         super.componentDidMount();
+    }
+
+    componentWillUnmount() {
+        super.componentWillUnmount();
+    }
+
+    clear(event) {
+        this.setState({
+            query: ""
+        });
+    }
+
+    sendQuery(event) {
+        var aggregatedData = [];
+        var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
+
+        var isFirst = true;
+
+        console.log("sendQuery");
+        AppDispatcher.handleAction({
+            actionType: "EXPERT_QUERY",
+            data: {
+                queryString: localStorage.getItem("filetype_expert_query")
+            }
+        });
+    }
+
+    updateStateQuery(event) {
+        localStorage.setItem("filetype_expert_query", event);
+
+        console.log(localStorage.getItem("filetype_expert_query"));
     }
 
     toggleInfo() {
@@ -80,6 +121,35 @@ class ArchitectureFileTypes extends DashboardAbstract {
                                 </div>
                             </CardHeader>
                             <CardBody>
+                                <CypherEditor
+                                    className="cypheredit"
+                                    value={localStorage.getItem(
+                                        "filetype_expert_query"
+                                    )}
+                                    options={{
+                                        mode: "cypher",
+                                        theme: "cypher"
+                                    }}
+                                    onValueChange={this.updateStateQuery.bind(
+                                        this
+                                    )}
+                                />
+                                <Button
+                                    onClick={this.sendQuery.bind(this)}
+                                    className="btn btn-success send-query float-right"
+                                    color="success"
+                                    id="send"
+                                >
+                                    Send
+                                </Button>
+                                <Button
+                                    onClick={this.clear.bind(this)}
+                                    className="btn btn-success send-query float-right margin-right"
+                                    color="danger"
+                                    id="reset"
+                                >
+                                    Reset
+                                </Button>
                                 <FileType />
                             </CardBody>
                         </Card>
