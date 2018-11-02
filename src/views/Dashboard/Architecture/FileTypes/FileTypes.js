@@ -1,8 +1,6 @@
 import React from "react";
 
-import DashboardAbstract, {
-    neo4jSession
-} from "../../AbstractDashboardComponent";
+import DashboardAbstract from "../../AbstractDashboardComponent";
 import FileType from "./visualizations/FileType";
 import { CypherEditor } from "graph-app-kit/components/Editor";
 
@@ -56,12 +54,6 @@ class ArchitectureFileTypes extends DashboardAbstract {
     }
 
     sendQuery(event) {
-        var aggregatedData = [];
-        var thisBackup = this; //we need this because this is undefined in then() but we want to access the current state
-
-        var isFirst = true;
-
-        console.log("sendQuery");
         AppDispatcher.handleAction({
             actionType: "EXPERT_QUERY",
             data: {
@@ -72,8 +64,6 @@ class ArchitectureFileTypes extends DashboardAbstract {
 
     updateStateQuery(event) {
         localStorage.setItem("filetype_expert_query", event);
-
-        console.log(localStorage.getItem("filetype_expert_query"));
     }
 
     toggleInfo() {
