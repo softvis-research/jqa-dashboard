@@ -44,7 +44,12 @@ class ArchitectureFileTypes extends DashboardAbstract {
         super.componentDidMount();
 
         $(".expert-mode").on("change", function() {
-            alert(1);
+            var editor = $(".expert-mode-editor");
+            if (editor.css("opacity") === "0") {
+                editor.css("opacity", "1");
+            } else {
+                editor.css("opacity", "0");
+            }
         });
     }
 
@@ -133,35 +138,40 @@ class ArchitectureFileTypes extends DashboardAbstract {
                                 </div>
                             </CardHeader>
                             <CardBody>
-                                <CypherEditor
-                                    className="cypheredit"
-                                    value={localStorage.getItem(
-                                        "filetype_expert_query"
-                                    )}
-                                    options={{
-                                        mode: "cypher",
-                                        theme: "cypher"
-                                    }}
-                                    onValueChange={this.updateStateQuery.bind(
-                                        this
-                                    )}
-                                />
-                                <Button
-                                    onClick={this.sendQuery.bind(this)}
-                                    className="btn btn-success send-query float-right"
-                                    color="success"
-                                    id="send"
+                                <div
+                                    className={"expert-mode-editor"}
+                                    style={{ opacity: "0" }}
                                 >
-                                    Send
-                                </Button>
-                                <Button
-                                    onClick={this.clear.bind(this)}
-                                    className="btn btn-success send-query float-right margin-right"
-                                    color="danger"
-                                    id="reset"
-                                >
-                                    Reset
-                                </Button>
+                                    <CypherEditor
+                                        className="cypheredit"
+                                        value={localStorage.getItem(
+                                            "filetype_expert_query"
+                                        )}
+                                        options={{
+                                            mode: "cypher",
+                                            theme: "cypher"
+                                        }}
+                                        onValueChange={this.updateStateQuery.bind(
+                                            this
+                                        )}
+                                    />
+                                    <Button
+                                        onClick={this.sendQuery.bind(this)}
+                                        className="btn btn-success send-query float-right"
+                                        color="success"
+                                        id="send"
+                                    >
+                                        Send
+                                    </Button>
+                                    <Button
+                                        onClick={this.clear.bind(this)}
+                                        className="btn btn-success send-query float-right margin-right"
+                                        color="danger"
+                                        id="reset"
+                                    >
+                                        Reset
+                                    </Button>
+                                </div>
                                 <FileType />
                             </CardBody>
                         </Card>
