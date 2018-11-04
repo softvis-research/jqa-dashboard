@@ -29,7 +29,8 @@ class ArchitectureDependencies extends DashboardAbstract {
                     placement: "bottom",
                     text: "Bottom"
                 }
-            ]
+            ],
+            query: localStorage.getItem("dependencies_expert_query")
         };
 
         this.toggleInfo = this.toggleInfo.bind(this);
@@ -54,12 +55,18 @@ class ArchitectureDependencies extends DashboardAbstract {
     }
 
     clear(event) {
-        this.setState({
-            query: ""
-        });
+        localStorage.setItem(
+            "dependencies_expert_query",
+            localStorage.getItem("dependencies_original_query")
+        );
+        this.sendQuery(this);
     }
 
     sendQuery(event) {
+        this.setState({
+            query: localStorage.getItem("dependencies_expert_query")
+        });
+
         AppDispatcher.handleAction({
             actionType: "EXPERT_QUERY",
             data: {
@@ -143,9 +150,7 @@ class ArchitectureDependencies extends DashboardAbstract {
                                 >
                                     <CypherEditor
                                         className="cypheredit"
-                                        value={localStorage.getItem(
-                                            "dependencies_expert_query"
-                                        )}
+                                        value={this.state.query}
                                         options={{
                                             mode: "cypher",
                                             theme: "cypher"
