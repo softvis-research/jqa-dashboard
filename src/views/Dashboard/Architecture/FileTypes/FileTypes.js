@@ -30,7 +30,8 @@ class ArchitectureFileTypes extends DashboardAbstract {
                     placement: "bottom",
                     text: "Bottom"
                 }
-            ]
+            ],
+            query: localStorage.getItem("filetype_expert_query")
         };
 
         this.toggleInfo = this.toggleInfo.bind(this);
@@ -63,12 +64,18 @@ class ArchitectureFileTypes extends DashboardAbstract {
     }
 
     clear(event) {
-        this.setState({
-            query: ""
-        });
+        localStorage.setItem(
+            "filetype_expert_query",
+            localStorage.getItem("filetype_original_query")
+        );
+        this.sendQuery(this);
     }
 
     sendQuery(event) {
+        this.setState({
+            query: localStorage.getItem("filetype_expert_query")
+        });
+
         AppDispatcher.handleAction({
             actionType: "EXPERT_QUERY",
             data: {
@@ -150,9 +157,7 @@ class ArchitectureFileTypes extends DashboardAbstract {
                                 >
                                     <CypherEditor
                                         className="cypheredit"
-                                        value={localStorage.getItem(
-                                            "filetype_expert_query"
-                                        )}
+                                        value={this.state.query}
                                         options={{
                                             mode: "cypher",
                                             theme: "cypher"

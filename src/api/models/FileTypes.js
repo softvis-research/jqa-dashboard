@@ -2,13 +2,16 @@ import { neo4jSession } from "../../views/Dashboard/AbstractDashboardComponent";
 
 class FileTypesModel {
     constructor(props) {
+        const fileTypeQuery =
+            "MATCH (f:Git:File) " +
+            'WITH f, split(f.relativePath, ".") as splittedFileName ' +
+            "SET f.type = splittedFileName[size(splittedFileName)-1] " +
+            "RETURN f.type as filetype, count(f) as files " +
+            "ORDER BY files DESC";
+        localStorage.setItem("filetype_original_query", fileTypeQuery);
+
         this.state = {
-            queryString:
-                "MATCH (f:Git:File) " +
-                'WITH f, split(f.relativePath, ".") as splittedFileName ' +
-                "SET f.type = splittedFileName[size(splittedFileName)-1] " +
-                "RETURN f.type as filetype, count(f) as files " +
-                "ORDER BY files DESC"
+            queryString: fileTypeQuery
         };
 
         if (!localStorage.getItem("filetype_expert_query")) {
