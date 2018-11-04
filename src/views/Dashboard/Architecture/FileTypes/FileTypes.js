@@ -45,10 +45,15 @@ class ArchitectureFileTypes extends DashboardAbstract {
 
         $(".expert-mode").on("change", function() {
             var editor = $(".expert-mode-editor");
-            if (editor.css("opacity") === "0") {
-                editor.css("opacity", "1");
+            var visualizationWrapper = $(".visualization-wrapper");
+            if (editor.hasClass("hide-expert-mode")) {
+                editor.removeClass("hide-expert-mode");
+                visualizationWrapper.addClass("margin-top-50 margin-bottom-50");
             } else {
-                editor.css("opacity", "0");
+                editor.addClass("hide-expert-mode");
+                visualizationWrapper.removeClass(
+                    "margin-top-50 margin-bottom-50"
+                );
             }
         });
     }
@@ -139,8 +144,9 @@ class ArchitectureFileTypes extends DashboardAbstract {
                             </CardHeader>
                             <CardBody>
                                 <div
-                                    className={"expert-mode-editor"}
-                                    style={{ opacity: "0" }}
+                                    className={
+                                        "expert-mode-editor hide-expert-mode"
+                                    }
                                 >
                                     <CypherEditor
                                         className="cypheredit"

@@ -59,7 +59,7 @@ class FileType extends DashboardAbstract {
         }
 
         return (
-            <div style={{ marginTop: "50px" }}>
+            <div className={"visualization-wrapper"}>
                 <div style={{ height: "600px" }}>
                     <ResponsivePie
                         data={this.state.filetypeData}

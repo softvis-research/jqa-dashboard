@@ -10182,10 +10182,24 @@ a.breadcrumb-item {
 .display-block {
   display: block !important; }
 
+.hidden {
+  display: none !important; }
+
 .expert-label {
   font-size: 11px;
   margin-top: 10px;
   margin-right: 3px; }
+
+.hide-expert-mode {
+  opacity: 0;
+  height: 0;
+  overflow: hidden; }
+
+.margin-top-50 {
+  margin-top: 50px; }
+
+.margin-bottom-50 {
+  margin-bottom: 50px; }
 
 html body .app.flex-row.align-items-center {
   height: 100vh; }
