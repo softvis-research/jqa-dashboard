@@ -1,6 +1,9 @@
 import React from "react";
 import DashboardAbstract from "../../AbstractDashboardComponent";
+import { AppSwitch } from "@coreui/react";
+import { CypherEditor } from "graph-app-kit/components/Editor";
 import {
+    Button,
     Row,
     Col,
     Card,
@@ -11,6 +14,9 @@ import {
     PopoverBody
 } from "reactstrap";
 import DependencyChord from "./visualizations/DependencyChord";
+import $ from "jquery";
+
+var AppDispatcher = require("../../../../AppDispatcher");
 
 class ArchitectureDependencies extends DashboardAbstract {
     constructor(props) {
@@ -31,6 +37,39 @@ class ArchitectureDependencies extends DashboardAbstract {
 
     componentDidMount() {
         super.componentDidMount();
+
+        $(".expert-mode").on("change", function() {
+            var editor = $(".expert-mode-editor");
+            var visualizationWrapper = $(".visualization-wrapper");
+            if (editor.hasClass("hide-expert-mode")) {
+                editor.removeClass("hide-expert-mode");
+                visualizationWrapper.addClass("margin-top-50 margin-bottom-50");
+            } else {
+                editor.addClass("hide-expert-mode");
+                visualizationWrapper.removeClass(
+                    "margin-top-50 margin-bottom-50"
+                );
+            }
+        });
+    }
+
+    clear(event) {
+        this.setState({
+            query: ""
+        });
+    }
+
+    sendQuery(event) {
+        AppDispatcher.handleAction({
+            actionType: "EXPERT_QUERY",
+            data: {
+                queryString: localStorage.getItem("dependencies_expert_query")
+            }
+        });
+    }
+
+    updateStateQuery(event) {
+        localStorage.setItem("dependencies_expert_query", event);
     }
 
     toggleInfo() {
@@ -53,6 +92,23 @@ class ArchitectureDependencies extends DashboardAbstract {
                             <CardHeader>
                                 Dependencies
                                 <div className="card-actions">
+                                    <div className={"float-left"}>
+                                        <div
+                                            className={
+                                                "float-left expert-label"
+                                            }
+                                        >
+                                            Expert mode
+                                        </div>
+                                        <AppSwitch
+                                            className={
+                                                "mx-1 float-right display-block expert-mode"
+                                            }
+                                            color={"secondary"}
+                                            size={"sm"}
+                                        />
+                                    </div>
+
                                     <button
                                         onClick={this.toggleInfo}
                                         id="Popover1"
@@ -80,6 +136,41 @@ class ArchitectureDependencies extends DashboardAbstract {
                                 </div>
                             </CardHeader>
                             <CardBody>
+                                <div
+                                    className={
+                                        "expert-mode-editor hide-expert-mode"
+                                    }
+                                >
+                                    <CypherEditor
+                                        className="cypheredit"
+                                        value={localStorage.getItem(
+                                            "dependencies_expert_query"
+                                        )}
+                                        options={{
+                                            mode: "cypher",
+                                            theme: "cypher"
+                                        }}
+                                        onValueChange={this.updateStateQuery.bind(
+                                            this
+                                        )}
+                                    />
+                                    <Button
+                                        onClick={this.sendQuery.bind(this)}
+                                        className="btn btn-success send-query float-right"
+                                        color="success"
+                                        id="send"
+                                    >
+                                        Send
+                                    </Button>
+                                    <Button
+                                        onClick={this.clear.bind(this)}
+                                        className="btn btn-success send-query float-right margin-right"
+                                        color="danger"
+                                        id="reset"
+                                    >
+                                        Reset
+                                    </Button>
+                                </div>
                                 <DependencyChord />
                             </CardBody>
                         </Card>

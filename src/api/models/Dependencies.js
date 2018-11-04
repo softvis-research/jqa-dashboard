@@ -1,15 +1,31 @@
 import { neo4jSession } from "../../views/Dashboard/AbstractDashboardComponent";
 
 class DependenciesModel {
+    constructor(props) {
+        this.state = {
+            queryString:
+                "MATCH (dependent_package:Package)-[:CONTAINS]->(dependent:Type)-[depends:DEPENDS_ON]->(dependency:Type)<-[:CONTAINS]-(dependency_package:Package) WHERE (dependent)-[:HAS_SOURCE]->(:File) AND (dependency)-[:HAS_SOURCE]->(:File) WITH dependent_package.fqn as dependent, dependency_package.fqn as dependency, count(dependency) as dependencies  RETURN  dependent , dependency, dependencies ORDER BY dependent, dependency"
+        };
+
+        if (!localStorage.getItem("dependencies_expert_query")) {
+            localStorage.setItem(
+                "dependencies_expert_query",
+                this.state.queryString
+            );
+        } else {
+            this.state.queryString = localStorage.getItem(
+                "dependencies_expert_query"
+            );
+        }
+    }
+
     readDependencies(thisBackup) {
         var aggregatedData = [];
         var keyList = [];
         var chordData = [];
 
         neo4jSession
-            .run(
-                "MATCH (dependent_package:Package)-[:CONTAINS]->(dependent:Type)-[depends:DEPENDS_ON]->(dependency:Type)<-[:CONTAINS]-(dependency_package:Package) WHERE (dependent)-[:HAS_SOURCE]->(:File) AND (dependency)-[:HAS_SOURCE]->(:File) WITH dependent_package.fqn as dependent, dependency_package.fqn as dependency, count(dependency) as dependencies  RETURN  dependent , dependency, dependencies ORDER BY dependent, dependency"
-            )
+            .run(this.state.queryString)
             .then(function(result) {
                 result.records.forEach(function(record) {
                     var recordConverted = {
@@ -23,8 +39,7 @@ class DependenciesModel {
                     }
                     aggregatedData[recordConverted.dependent][
                         recordConverted.dependency
-                    ] =
-                        recordConverted.dependencies;
+                    ] = recordConverted.dependencies;
                 });
             })
             .then(function(context) {
