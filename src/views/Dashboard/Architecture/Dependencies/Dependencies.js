@@ -30,7 +30,7 @@ class ArchitectureDependencies extends DashboardAbstract {
                     text: "Bottom"
                 }
             ],
-            query: localStorage.getItem("dependencies_expert_query")
+            query: ""
         };
 
         this.toggleInfo = this.toggleInfo.bind(this);
@@ -38,6 +38,10 @@ class ArchitectureDependencies extends DashboardAbstract {
 
     componentDidMount() {
         super.componentDidMount();
+
+        this.setState({
+            query: localStorage.getItem("dependencies_expert_query")
+        });
 
         $(".expert-mode").on("change", function() {
             var editor = $(".expert-mode-editor");
