@@ -1,6 +1,6 @@
 import React from "react";
 import DashboardAbstract from "../../AbstractDashboardComponent";
-import { AppSwitch } from "@coreui/react";
+//import { AppSwitch } from "@coreui/react";
 import { CypherEditor } from "graph-app-kit/components/Editor";
 import {
     Button,
@@ -43,7 +43,7 @@ class ArchitectureDependencies extends DashboardAbstract {
             query: localStorage.getItem("dependencies_expert_query")
         });
 
-        $(".expert-mode").on("change", function() {
+        $(".customize-query-label").on("click", function() {
             var editor = $(".expert-mode-editor");
             var visualizationWrapper = $(".visualization-wrapper");
             if (editor.hasClass("hide-expert-mode")) {
@@ -104,20 +104,12 @@ class ArchitectureDependencies extends DashboardAbstract {
                                 Dependencies
                                 <div className="card-actions">
                                     <div className={"float-left"}>
-                                        <div
-                                            className={
-                                                "float-left expert-label"
-                                            }
+                                        <Button
+                                            className="customize-query-label float-left"
+                                            color="link"
                                         >
-                                            Expert mode
-                                        </div>
-                                        <AppSwitch
-                                            className={
-                                                "mx-1 float-right display-block expert-mode"
-                                            }
-                                            color={"secondary"}
-                                            size={"sm"}
-                                        />
+                                            Customize query
+                                        </Button>
                                     </div>
 
                                     <button

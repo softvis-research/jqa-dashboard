@@ -10201,5 +10201,19 @@ a.breadcrumb-item {
 .margin-bottom-50 {
   margin-bottom: 50px; }
 
+.switch-secondary .switch-input:checked + .switch-slider {
+  background: #73818f;
+  border-color: #73818f; }
+
+.switch-secondary .switch-input:checked + .switch-slider::before {
+  border-color: #73818f; }
+
+.customize-query-label {
+  padding-right: 10px !important;
+  padding-left: 10px !important;
+  width: auto !important; }
+  .customize-query-label:focus {
+    text-decoration: none; }
+
 html body .app.flex-row.align-items-center {
   height: 100vh; }

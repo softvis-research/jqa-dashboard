@@ -127,6 +127,7 @@ class ArchitectureFileTypes extends DashboardAbstract {
                                             }
                                             color={"secondary"}
                                             size={"sm"}
+                                            label
                                         />
                                     </div>
 
