@@ -1,21 +1,9 @@
 import React from "react";
-
 import DashboardAbstract from "../../AbstractDashboardComponent";
+import CustomCardHeader from "../../CustomCardHeader/CustomCardHeader";
 import FileType from "./visualizations/FileType";
 import { CypherEditor } from "graph-app-kit/components/Editor";
-import { AppSwitch } from "@coreui/react";
-import {
-    Button,
-    Row,
-    Col,
-    Card,
-    CardHeader,
-    CardBody,
-    Popover,
-    PopoverHeader,
-    PopoverBody
-} from "reactstrap";
-import $ from "jquery";
+import { Button, Row, Col, Card, CardBody } from "reactstrap";
 
 var AppDispatcher = require("../../../../AppDispatcher");
 
@@ -24,17 +12,8 @@ class ArchitectureFileTypes extends DashboardAbstract {
         super(props);
 
         this.state = {
-            popoverOpen: false,
-            popovers: [
-                {
-                    placement: "bottom",
-                    text: "Bottom"
-                }
-            ],
             query: ""
         };
-
-        this.toggleInfo = this.toggleInfo.bind(this);
     }
 
     componentWillMount() {
@@ -46,20 +25,6 @@ class ArchitectureFileTypes extends DashboardAbstract {
 
         this.setState({
             query: localStorage.getItem("filetype_expert_query")
-        });
-
-        $(".expert-mode").on("change", function() {
-            var editor = $(".expert-mode-editor");
-            var visualizationWrapper = $(".visualization-wrapper");
-            if (editor.hasClass("hide-expert-mode")) {
-                editor.removeClass("hide-expert-mode");
-                visualizationWrapper.addClass("margin-top-50 margin-bottom-50");
-            } else {
-                editor.addClass("hide-expert-mode");
-                visualizationWrapper.removeClass(
-                    "margin-top-50 margin-bottom-50"
-                );
-            }
         });
     }
 
@@ -92,12 +57,6 @@ class ArchitectureFileTypes extends DashboardAbstract {
         localStorage.setItem("filetype_expert_query", event);
     }
 
-    toggleInfo() {
-        this.setState({
-            popoverOpen: !this.state.popoverOpen
-        });
-    }
-
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
@@ -110,50 +69,18 @@ class ArchitectureFileTypes extends DashboardAbstract {
                 <Row>
                     <Col xs="12" sm="12" md="12">
                         <Card>
-                            <CardHeader>
-                                Number of files per file type
-                                <div className="card-actions">
-                                    <div className={"float-left"}>
-                                        <div
-                                            className={
-                                                "float-left expert-label"
-                                            }
-                                        >
-                                            Expert mode
-                                        </div>
-                                        <AppSwitch
-                                            className={
-                                                "mx-1 float-right display-block expert-mode"
-                                            }
-                                            color={"secondary"}
-                                            size={"sm"}
-                                            label
-                                        />
-                                    </div>
-
-                                    <button
-                                        onClick={this.toggleInfo}
-                                        id="Popover1"
-                                    >
-                                        <i className="text-muted fa fa-question-circle" />
-                                    </button>
-                                    <Popover
-                                        placement="bottom"
-                                        isOpen={this.state.popoverOpen}
-                                        target="Popover1"
-                                        toggle={this.toggleInfo}
-                                    >
-                                        <PopoverHeader>
-                                            Number of files per file type
-                                        </PopoverHeader>
-                                        <PopoverBody>
-                                            The pie chart shows all file types
-                                            of the project with the number of
-                                            corresponding files.
-                                        </PopoverBody>
-                                    </Popover>
-                                </div>
-                            </CardHeader>
+                            <CustomCardHeader
+                                cardHeaderText={"Number of files per file type"}
+                                showExpertMode={true}
+                                placement={"bottom"}
+                                target={"Popover1"}
+                                popoverHeaderText={
+                                    "Number of files per file type"
+                                }
+                                popoverBody={
+                                    "The pie chart shows all file types of the project with the number of corresponding files."
+                                }
+                            />
                             <CardBody>
                                 <div
                                     className={

@@ -1,20 +1,9 @@
 import React from "react";
 import DashboardAbstract from "../../AbstractDashboardComponent";
-//import { AppSwitch } from "@coreui/react";
-import { CypherEditor } from "graph-app-kit/components/Editor";
-import {
-    Button,
-    Row,
-    Col,
-    Card,
-    CardHeader,
-    CardBody,
-    Popover,
-    PopoverHeader,
-    PopoverBody
-} from "reactstrap";
+import CustomCardHeader from "../../CustomCardHeader/CustomCardHeader";
 import DependencyChord from "./visualizations/DependencyChord";
-import $ from "jquery";
+import { CypherEditor } from "graph-app-kit/components/Editor";
+import { Button, Row, Col, Card, CardBody } from "reactstrap";
 
 var AppDispatcher = require("../../../../AppDispatcher");
 
@@ -23,17 +12,8 @@ class ArchitectureDependencies extends DashboardAbstract {
         super(props);
 
         this.state = {
-            popoverOpen: false,
-            popovers: [
-                {
-                    placement: "bottom",
-                    text: "Bottom"
-                }
-            ],
             query: ""
         };
-
-        this.toggleInfo = this.toggleInfo.bind(this);
     }
 
     componentDidMount() {
@@ -41,20 +21,6 @@ class ArchitectureDependencies extends DashboardAbstract {
 
         this.setState({
             query: localStorage.getItem("dependencies_expert_query")
-        });
-
-        $(".customize-query-label").on("click", function() {
-            var editor = $(".expert-mode-editor");
-            var visualizationWrapper = $(".visualization-wrapper");
-            if (editor.hasClass("hide-expert-mode")) {
-                editor.removeClass("hide-expert-mode");
-                visualizationWrapper.addClass("margin-top-50 margin-bottom-50");
-            } else {
-                editor.addClass("hide-expert-mode");
-                visualizationWrapper.removeClass(
-                    "margin-top-50 margin-bottom-50"
-                );
-            }
         });
     }
 
@@ -83,12 +49,6 @@ class ArchitectureDependencies extends DashboardAbstract {
         localStorage.setItem("dependencies_expert_query", event);
     }
 
-    toggleInfo() {
-        this.setState({
-            popoverOpen: !this.state.popoverOpen
-        });
-    }
-
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
@@ -100,44 +60,16 @@ class ArchitectureDependencies extends DashboardAbstract {
                 <Row>
                     <Col xs="12" sm="12" md="12">
                         <Card>
-                            <CardHeader>
-                                Dependencies
-                                <div className="card-actions">
-                                    <div className={"float-left"}>
-                                        <Button
-                                            className="customize-query-label float-left"
-                                            color="link"
-                                        >
-                                            Customize query
-                                        </Button>
-                                    </div>
-
-                                    <button
-                                        onClick={this.toggleInfo}
-                                        id="Popover1"
-                                    >
-                                        <i className="text-muted fa fa-question-circle" />
-                                    </button>
-                                    <Popover
-                                        placement="bottom"
-                                        isOpen={this.state.popoverOpen}
-                                        target="Popover1"
-                                        toggle={this.toggleInfo}
-                                    >
-                                        <PopoverHeader>
-                                            Dependencies
-                                        </PopoverHeader>
-                                        <PopoverBody>
-                                            The dependency analysis view helps
-                                            to assess the coupling and cohesion
-                                            of a software system. Packages are
-                                            arranged radially around a circle
-                                            and the dependencies are drawn as
-                                            arcs.
-                                        </PopoverBody>
-                                    </Popover>
-                                </div>
-                            </CardHeader>
+                            <CustomCardHeader
+                                cardHeaderText={"Dependencies"}
+                                showExpertMode={true}
+                                placement={"bottom"}
+                                target={"Popover1"}
+                                popoverHeaderText={"Dependencies"}
+                                popoverBody={
+                                    "The dependency analysis view helps to assess the coupling and cohesion of a software system. Packages are arranged radially around a circle and the dependencies are drawn as arcs."
+                                }
+                            />
                             <CardBody>
                                 <div
                                     className={
