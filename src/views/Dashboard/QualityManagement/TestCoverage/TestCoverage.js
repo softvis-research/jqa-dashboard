@@ -1,39 +1,61 @@
 import React from "react";
 import DashboardAbstract from "../../AbstractDashboardComponent";
-import {
-    Row,
-    Col,
-    Card,
-    CardHeader,
-    CardBody,
-    Popover,
-    PopoverHeader,
-    PopoverBody
-} from "reactstrap";
+import CustomCardHeader from "../../CustomCardHeader/CustomCardHeader";
+import { Button, Row, Col, Card, CardBody } from "reactstrap";
 
 import TestCoverageTreeMap from "./visualizations/TestCoverageTreeMap";
+import { CypherEditor } from "graph-app-kit/components/Editor";
+
+var AppDispatcher = require("../../../../AppDispatcher");
 
 class QualityManagementTestCoverage extends DashboardAbstract {
     constructor(props) {
         super(props);
 
         this.state = {
-            popoverOpen: false,
-            popovers: [
-                {
-                    placement: "bottom",
-                    text: "Bottom"
-                }
-            ]
+            query: ""
         };
-
-        this.toggleInfo = this.toggleInfo.bind(this);
     }
 
-    toggleInfo() {
+    componentWillMount() {
+        super.componentWillMount();
+    }
+
+    componentDidMount() {
+        super.componentDidMount();
+
         this.setState({
-            popoverOpen: !this.state.popoverOpen
+            query: localStorage.getItem("test_coverage_expert_query")
         });
+    }
+
+    componentWillUnmount() {
+        super.componentWillUnmount();
+    }
+
+    clear(event) {
+        localStorage.setItem(
+            "test_coverage_expert_query",
+            localStorage.getItem("test_coverage_original_query")
+        );
+        this.sendQuery(this);
+    }
+
+    sendQuery(event) {
+        this.setState({
+            query: localStorage.getItem("test_coverage_expert_query")
+        });
+
+        AppDispatcher.handleAction({
+            actionType: "EXPERT_QUERY",
+            data: {
+                queryString: localStorage.getItem("test_coverage_expert_query")
+            }
+        });
+    }
+
+    updateStateQuery(event) {
+        localStorage.setItem("test_coverage_expert_query", event);
     }
 
     render() {
@@ -47,39 +69,54 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                 <Row>
                     <Col xs="12" sm="12" md="12">
                         <Card>
-                            <CardHeader>
-                                Test Coverage
-                                <div className="card-actions">
-                                    <button
-                                        onClick={this.toggleInfo}
-                                        id="Popover1"
-                                    >
-                                        <i className="text-muted fa fa-question-circle" />
-                                    </button>
-                                    <Popover
-                                        placement="bottom"
-                                        isOpen={this.state.popoverOpen}
-                                        target="Popover1"
-                                        toggle={this.toggleInfo}
-                                    >
-                                        <PopoverHeader>
-                                            Test Coverage
-                                        </PopoverHeader>
-                                        <PopoverBody>
-                                            The test coverage view highlights
-                                            untested code with a colored
-                                            treemap. Packages, types, and
-                                            methods are mapped to nested
-                                            rectangles where the LOC define the
-                                            size and the test coverage defines
-                                            the color of a rectangle.
-                                        </PopoverBody>
-                                    </Popover>
-                                </div>
-                            </CardHeader>
+                            <CustomCardHeader
+                                cardHeaderText={"Test Coverage"}
+                                showExpertMode={true}
+                                placement={"bottom"}
+                                target={"Popover1"}
+                                popoverHeaderText={"Test Coverage"}
+                                popoverBody={
+                                    "The test coverage view highlights untested code with a colored treemap. Packages, types, and methods are mapped to nested rectangles where the LOC define the size and the test coverage defines the color of a rectangle."
+                                }
+                            />
                             <CardBody>
                                 <Row>
                                     <Col xs="12" sm="12" md="12">
+                                        <div
+                                            className={
+                                                "expert-mode-editor hide-expert-mode"
+                                            }
+                                        >
+                                            <CypherEditor
+                                                className="cypheredit"
+                                                value={this.state.query}
+                                                options={{
+                                                    mode: "cypher",
+                                                    theme: "cypher"
+                                                }}
+                                                onValueChange={this.updateStateQuery.bind(
+                                                    this
+                                                )}
+                                            />
+                                            <Button
+                                                onClick={this.sendQuery.bind(
+                                                    this
+                                                )}
+                                                className="btn btn-success send-query float-right"
+                                                color="success"
+                                                id="send"
+                                            >
+                                                Send
+                                            </Button>
+                                            <Button
+                                                onClick={this.clear.bind(this)}
+                                                className="btn btn-success send-query float-right margin-right"
+                                                color="danger"
+                                                id="reset"
+                                            >
+                                                Reset
+                                            </Button>
+                                        </div>
                                         <TestCoverageTreeMap />
                                     </Col>
                                 </Row>
