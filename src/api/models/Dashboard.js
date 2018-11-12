@@ -1,31 +1,91 @@
 import { neo4jSession } from "../../views/Dashboard/AbstractDashboardComponent";
 
 class DashboardModel {
+    constructor(props) {
+        const dashboardStructureQuery =
+            // architecture metrics (table 1)
+            // number of classes
+            "OPTIONAL MATCH (t:Type:Class)-[:HAS_SOURCE]->(:File) " +
+            "WITH count(t) as classes " +
+            // number of interfaces
+            "OPTIONAL MATCH (t:Type:Interface)-[:HAS_SOURCE]->(:File) " +
+            "WITH classes, count(t) as interfaces " +
+            // number of enums
+            "OPTIONAL MATCH (t:Type:Enum)-[:HAS_SOURCE]->(:File) " +
+            "WITH classes, interfaces, count(t) as enums " +
+            // number of annotations
+            "OPTIONAL MATCH (t:Type:Enum)-[:HAS_SOURCE]->(:File) " +
+            "WITH  classes, interfaces, enums, count(t) as annotations " +
+            // number of methods and lines of code
+            "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[:DECLARES]->(m:Method) " +
+            "WITH classes, interfaces, enums, annotations, count(m) as methods, sum(m.effectiveLineCount) as loc " +
+            // number of fields
+            "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[:DECLARES]->(f:Field) " +
+            "RETURN classes, interfaces, enums, annotations, methods, loc, count(f) as fields";
+        localStorage.setItem(
+            "dashboard_structure_original_query",
+            dashboardStructureQuery
+        );
+
+        const dashboardDependenciesQuery =
+            // relation metrics (table 2)
+            // dependencies
+            "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[d:DEPENDS_ON]->(:Type) " +
+            "WITH count(d) as dependencies " +
+            // extends
+            "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[e:EXTENDS]->(superType:Type) " +
+            'WHERE superType.name <> "Object" ' +
+            "WITH dependencies, count(e) as extends " +
+            // implements
+            "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[i:IMPLEMENTS]->(:Type) " +
+            "WITH dependencies, extends, count(i) as implements " +
+            // calls
+            "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[:DECLARES]->(m:Method)-[i:INVOKES]->(:Method) " +
+            "WITH dependencies, extends, implements, count(i) as invocations " +
+            // reads
+            "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[:DECLARES]->(m:Method)-[r:READS]->(:Field) " +
+            "WITH dependencies, extends, implements, invocations, count(r) as reads " +
+            // writes
+            "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[:DECLARES]->(m:Method)-[w:WRITES]->(:Field) " +
+            "RETURN dependencies, extends, implements, invocations, reads, count(w) as writes";
+        localStorage.setItem(
+            "dashboard_dependencies_original_query",
+            dashboardDependenciesQuery
+        );
+
+        this.state = {
+            queryStringStructure: dashboardStructureQuery,
+            queryStringDependencies: dashboardDependenciesQuery
+        };
+
+        if (!localStorage.getItem("dashboard_structure_expert_query")) {
+            localStorage.setItem(
+                "dashboard_structure_expert_query",
+                this.state.queryStringStructure
+            );
+        } else {
+            this.state.queryStringStructure = localStorage.getItem(
+                "dashboard_structure_expert_query"
+            );
+        }
+
+        if (!localStorage.getItem("dashboard_dependencies_expert_query")) {
+            localStorage.setItem(
+                "dashboard_dependencies_expert_query",
+                this.state.queryStringDependencies
+            );
+        } else {
+            this.state.queryStringDependencies = localStorage.getItem(
+                "dashboard_dependencies_expert_query"
+            );
+        }
+    }
+
     readStructureMetrics(thisBackup) {
         var structureMetrics = [];
 
         neo4jSession
-            .run(
-                // architecture metrics (table 1)
-                // number of classes
-                "OPTIONAL MATCH (t:Type:Class)-[:HAS_SOURCE]->(:File) " +
-                    "WITH count(t) as classes " +
-                    // number of interfaces
-                    "OPTIONAL MATCH (t:Type:Interface)-[:HAS_SOURCE]->(:File) " +
-                    "WITH classes, count(t) as interfaces " +
-                    // number of enums
-                    "OPTIONAL MATCH (t:Type:Enum)-[:HAS_SOURCE]->(:File) " +
-                    "WITH classes, interfaces, count(t) as enums " +
-                    // number of annotations
-                    "OPTIONAL MATCH (t:Type:Enum)-[:HAS_SOURCE]->(:File) " +
-                    "WITH  classes, interfaces, enums, count(t) as annotations " +
-                    // number of methods and lines of code
-                    "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[:DECLARES]->(m:Method) " +
-                    "WITH classes, interfaces, enums, annotations, count(m) as methods, sum(m.effectiveLineCount) as loc " +
-                    // number of fields
-                    "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[:DECLARES]->(f:Field) " +
-                    "RETURN classes, interfaces, enums, annotations, methods, loc, count(f) as fields"
-            )
+            .run(this.state.queryStringStructure)
             .then(function(result) {
                 result.records.forEach(function(record) {
                     structureMetrics = {
@@ -53,28 +113,7 @@ class DashboardModel {
         var dependencyMetrics = [];
 
         neo4jSession
-            .run(
-                // relation metrics (table 2)
-                // dependencies
-                "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[d:DEPENDS_ON]->(:Type) " +
-                    "WITH count(d) as dependencies " +
-                    // extends
-                    "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[e:EXTENDS]->(superType:Type) " +
-                    'WHERE superType.name <> "Object" ' +
-                    "WITH dependencies, count(e) as extends " +
-                    // implements
-                    "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[i:IMPLEMENTS]->(:Type) " +
-                    "WITH dependencies, extends, count(i) as implements " +
-                    // calls
-                    "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[:DECLARES]->(m:Method)-[i:INVOKES]->(:Method) " +
-                    "WITH dependencies, extends, implements, count(i) as invocations " +
-                    // reads
-                    "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[:DECLARES]->(m:Method)-[r:READS]->(:Field) " +
-                    "WITH dependencies, extends, implements, invocations, count(r) as reads " +
-                    // writes
-                    "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[:DECLARES]->(m:Method)-[w:WRITES]->(:Field) " +
-                    "RETURN dependencies, extends, implements, invocations, reads, count(w) as writes"
-            )
+            .run(this.state.queryStringDependencies)
             .then(function(result) {
                 result.records.forEach(function(record) {
                     dependencyMetrics = {

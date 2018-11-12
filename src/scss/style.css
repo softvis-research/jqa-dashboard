@@ -10215,5 +10215,8 @@ a.breadcrumb-item {
   .customize-query-label:focus {
     text-decoration: none; }
 
+.height-auto {
+  height: auto !important; }
+
 html body .app.flex-row.align-items-center {
   height: 100vh; }

@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-
 import DashboardAbstract, {
     databaseCredentialsProvided
 } from "./AbstractDashboardComponent";
-
+import CustomCardHeader from "./CustomCardHeader/CustomCardHeader";
+import { CypherEditor } from "graph-app-kit/components/Editor";
 import {
+    Button,
     Row,
     Col,
     Card,
@@ -17,8 +18,9 @@ import {
     PopoverBody
 } from "reactstrap";
 import DashboardModel from "../../api/models/Dashboard";
-
 import $ from "jquery";
+
+var AppDispatcher = require("../../AppDispatcher");
 
 class PopoverItem extends Component {
     constructor(props) {
@@ -78,6 +80,8 @@ class Dashboard extends DashboardAbstract {
         super(props);
 
         this.state = {
+            queryStructure: "",
+            queryDependencies: "",
             structureMetrics: {
                 classes: "loading",
                 interfaces: "loading",
@@ -116,6 +120,7 @@ class Dashboard extends DashboardAbstract {
 
     componentDidMount() {
         super.componentDidMount();
+
         if (databaseCredentialsProvided) {
             var dashboardModel = new DashboardModel();
             dashboardModel.readStructureMetrics(this);
@@ -124,6 +129,15 @@ class Dashboard extends DashboardAbstract {
             dashboardModel.readStaticCodeAnalysisPMDMetrics(this);
             dashboardModel.readHotspotMetrics(this);
             dashboardModel.readTestCoverageMetrics(this);
+
+            this.setState({
+                queryStructure: localStorage.getItem(
+                    "dashboard_structure_expert_query"
+                ),
+                queryDependencies: localStorage.getItem(
+                    "dashboard_dependencies_expert_query"
+                )
+            });
         }
 
         $(document).ready(function() {
@@ -143,6 +157,76 @@ class Dashboard extends DashboardAbstract {
         });
     }
 
+    componentWillUnmount() {
+        super.componentWillUnmount();
+    }
+
+    handleAction(event) {
+        var action = event.action;
+        switch (action.actionType) {
+            case "EXPERT_QUERY":
+                if (databaseCredentialsProvided) {
+                    var dashboardModel = new DashboardModel();
+                    dashboardModel.readStructureMetrics(this);
+                    dashboardModel.readDependencyMetrics(this);
+                    dashboardModel.readActivityMetrics(this);
+                    dashboardModel.readStaticCodeAnalysisPMDMetrics(this);
+                    dashboardModel.readHotspotMetrics(this);
+                    dashboardModel.readTestCoverageMetrics(this);
+                }
+                break;
+            default:
+                return true;
+        }
+    }
+
+    clearStructure(event) {
+        localStorage.setItem(
+            "dashboard_structure_expert_query",
+            localStorage.getItem("dashboard_structure_original_query")
+        );
+        this.sendQuery(this);
+    }
+
+    clearDependencies(event) {
+        localStorage.setItem(
+            "dashboard_dependencies_expert_query",
+            localStorage.getItem("dashboard_dependencies_original_query")
+        );
+        this.sendQuery(this);
+    }
+
+    sendQuery(event) {
+        this.setState({
+            queryStructure: localStorage.getItem(
+                "dashboard_structure_expert_query"
+            ),
+            queryDependencies: localStorage.getItem(
+                "dashboard_dependencies_expert_query"
+            )
+        });
+
+        AppDispatcher.handleAction({
+            actionType: "EXPERT_QUERY",
+            data: {
+                queryStringStructure: localStorage.getItem(
+                    "dashboard_structure_expert_query"
+                ),
+                queryStringDependencies: localStorage.getItem(
+                    "dashboard_dependencies_expert_query"
+                )
+            }
+        });
+    }
+
+    updateStateQueryStructure(event) {
+        localStorage.setItem("dashboard_structure_expert_query", event);
+    }
+
+    updateStateQueryDependencies(event) {
+        localStorage.setItem("dashboard_dependencies_expert_query", event);
+    }
+
     toggleInfo() {
         this.setState({
             popoverOpen: !this.state.popoverOpen
@@ -160,18 +244,54 @@ class Dashboard extends DashboardAbstract {
                 <Row>
                     <Col xs="12" sm="6" md="3">
                         <Card>
-                            <CardHeader>
-                                Architecture
-                                <div className="card-actions">
-                                    <PopoverItem
-                                        key={"Architecture"}
-                                        type={"Architecture"}
-                                        id={"Architecture"}
-                                    />
-                                </div>
-                            </CardHeader>
+                            <CustomCardHeader
+                                cardHeaderText={"Architecture"}
+                                showExpertMode={true}
+                                placement={"bottom"}
+                                target={"Popover1"}
+                                popoverHeaderText={"Architecture"}
+                                popoverBody={
+                                    "Common architecture and dependency metrics provide an overview of the project, e.g., number of classes, LOC, number of dependencies, and field reads."
+                                }
+                            />
                             <CardBody>
-                                <a href="#/architecture/structure">
+                                <div
+                                    className={
+                                        "expert-mode-editor hide-expert-mode"
+                                    }
+                                >
+                                    <CypherEditor
+                                        className="cypheredit"
+                                        value={this.state.queryStructure}
+                                        options={{
+                                            mode: "cypher",
+                                            theme: "cypher"
+                                        }}
+                                        onValueChange={this.updateStateQueryStructure.bind(
+                                            this
+                                        )}
+                                    />
+                                    <Button
+                                        onClick={this.sendQuery.bind(this)}
+                                        className="btn btn-success send-query float-right"
+                                        color="success"
+                                        id="send"
+                                    >
+                                        Send
+                                    </Button>
+                                    <Button
+                                        onClick={this.clearStructure.bind(this)}
+                                        className="btn btn-success send-query float-right margin-right"
+                                        color="danger"
+                                        id="reset"
+                                    >
+                                        Reset
+                                    </Button>
+                                </div>
+                                <a
+                                    href="#/architecture/structure"
+                                    className={"display-block clear"}
+                                >
                                     <strong>Structure metrics</strong>
                                     <ListGroup className="margin-bottom">
                                         {Object.keys(
@@ -206,7 +326,46 @@ class Dashboard extends DashboardAbstract {
                                     </ListGroup>
                                 </a>
 
-                                <a href="#/architecture/dependencies">
+                                <div
+                                    className={
+                                        "expert-mode-editor hide-expert-mode"
+                                    }
+                                >
+                                    <CypherEditor
+                                        className="cypheredit"
+                                        value={this.state.queryDependencies}
+                                        options={{
+                                            mode: "cypher",
+                                            theme: "cypher"
+                                        }}
+                                        onValueChange={this.updateStateQueryDependencies.bind(
+                                            this
+                                        )}
+                                    />
+                                    <Button
+                                        onClick={this.sendQuery.bind(this)}
+                                        className="btn btn-success send-query float-right"
+                                        color="success"
+                                        id="send"
+                                    >
+                                        Send
+                                    </Button>
+                                    <Button
+                                        onClick={this.clearDependencies.bind(
+                                            this
+                                        )}
+                                        className="btn btn-success send-query float-right margin-right"
+                                        color="danger"
+                                        id="reset"
+                                    >
+                                        Reset
+                                    </Button>
+                                </div>
+
+                                <a
+                                    href="#/architecture/dependencies"
+                                    className={"display-block clear"}
+                                >
                                     <strong>Dependency metrics</strong>
                                     <ListGroup>
                                         {Object.keys(

@@ -27,11 +27,13 @@ class CustomCardHeader extends Component {
             if (editor.hasClass("hide-expert-mode")) {
                 editor.removeClass("hide-expert-mode");
                 visualizationWrapper.addClass("margin-top-50 margin-bottom-50");
+                editor.parent(".card-body").addClass("height-auto");
             } else {
                 editor.addClass("hide-expert-mode");
                 visualizationWrapper.removeClass(
                     "margin-top-50 margin-bottom-50"
                 );
+                editor.parent(".card-body").removeClass("height-auto");
             }
         });
     }
