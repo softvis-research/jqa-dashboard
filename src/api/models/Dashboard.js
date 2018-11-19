@@ -53,9 +53,27 @@ class DashboardModel {
             dashboardDependenciesQuery
         );
 
+        const dashboardActivityQuery =
+            // activity metrics (table)
+            // number of authors
+            "OPTIONAL MATCH (a:Author) " +
+            "WITH count(a) as authors " +
+            // number of commits (without merges)
+            "OPTIONAL MATCH (c:Commit)-[:CONTAINS_CHANGE]->()-[:MODIFIES]->(f:File) " +
+            "WHERE NOT c:Merge " +
+            "WITH authors, count(c) as commitsWithoutMerges " +
+            // number of commits (including merges)
+            "OPTIONAL MATCH (c:Commit)-[:CONTAINS_CHANGE]->()-[:MODIFIES]->(f:File) " +
+            "RETURN authors, commitsWithoutMerges, count(c) as commitsWithMerges";
+        localStorage.setItem(
+            "dashboard_activity_original_query",
+            dashboardActivityQuery
+        );
+
         this.state = {
             queryStringStructure: dashboardStructureQuery,
-            queryStringDependencies: dashboardDependenciesQuery
+            queryStringDependencies: dashboardDependenciesQuery,
+            queryStringActivity: dashboardActivityQuery
         };
 
         if (!localStorage.getItem("dashboard_structure_expert_query")) {
@@ -77,6 +95,17 @@ class DashboardModel {
         } else {
             this.state.queryStringDependencies = localStorage.getItem(
                 "dashboard_dependencies_expert_query"
+            );
+        }
+
+        if (!localStorage.getItem("dashboard_activity_expert_query")) {
+            localStorage.setItem(
+                "dashboard_activity_expert_query",
+                this.state.queryStringActivity
+            );
+        } else {
+            this.state.queryStringActivity = localStorage.getItem(
+                "dashboard_activity_expert_query"
             );
         }
     }
@@ -140,19 +169,7 @@ class DashboardModel {
         var activityMetrics = [];
 
         neo4jSession
-            .run(
-                // activity metrics (table)
-                // number of authors
-                "OPTIONAL MATCH (a:Author) " +
-                    "WITH count(a) as authors " +
-                    // number of commits (without merges)
-                    "OPTIONAL MATCH (c:Commit)-[:CONTAINS_CHANGE]->()-[:MODIFIES]->(f:File) " +
-                    "WHERE NOT c:Merge " +
-                    "WITH authors, count(c) as commitsWithoutMerges " +
-                    // number of commits (including merges)
-                    "OPTIONAL MATCH (c:Commit)-[:CONTAINS_CHANGE]->()-[:MODIFIES]->(f:File) " +
-                    "RETURN authors, commitsWithoutMerges, count(c) as commitsWithMerges"
-            )
+            .run(this.state.queryStringActivity)
             .then(function(result) {
                 result.records.forEach(function(record) {
                     activityMetrics = {

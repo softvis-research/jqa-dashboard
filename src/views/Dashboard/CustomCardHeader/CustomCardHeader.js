@@ -21,19 +21,35 @@ class CustomCardHeader extends Component {
     }
 
     componentDidMount() {
-        $(".expert-mode").on("change", function() {
-            var editor = $(".expert-mode-editor");
-            var visualizationWrapper = $(".visualization-wrapper");
-            if (editor.hasClass("hide-expert-mode")) {
-                editor.removeClass("hide-expert-mode");
-                visualizationWrapper.addClass("margin-top-50 margin-bottom-50");
-                editor.parent(".card-body").addClass("height-auto");
-            } else {
-                editor.addClass("hide-expert-mode");
-                visualizationWrapper.removeClass(
-                    "margin-top-50 margin-bottom-50"
-                );
-                editor.parent(".card-body").removeClass("height-auto");
+        $(".expert-mode").each(function() {
+            if ($(this).hasClass("expert-mode-set") === false) {
+                $(this).on("change", function() {
+                    var group = $(this)
+                        .find("input")
+                        .attr("id");
+                    var editor = $(".expert-mode-editor");
+                    if (
+                        typeof group !== "undefined" &&
+                        editor.hasClass(group)
+                    ) {
+                        editor = $(".expert-mode-editor." + group);
+                    }
+                    var visualizationWrapper = $(".visualization-wrapper");
+                    if (editor.hasClass("hide-expert-mode")) {
+                        editor.removeClass("hide-expert-mode");
+                        visualizationWrapper.addClass(
+                            "margin-top-50 margin-bottom-50"
+                        );
+                        editor.parent(".card-body").addClass("height-auto");
+                    } else {
+                        editor.addClass("hide-expert-mode");
+                        visualizationWrapper.removeClass(
+                            "margin-top-50 margin-bottom-50"
+                        );
+                        editor.parent(".card-body").removeClass("height-auto");
+                    }
+                });
+                $(this).addClass("expert-mode-set");
             }
         });
     }
@@ -53,6 +69,7 @@ class CustomCardHeader extends Component {
         //var popoverToggle = this.props.toggle;
         var popoverHeaderText = this.props.popoverHeaderText;
         var popoverBody = this.props.popoverBody;
+        var cssClass = headerText.toLowerCase().replace(" ", "");
 
         var expertToggle = "";
         if (showExpertMode) {
@@ -60,7 +77,11 @@ class CustomCardHeader extends Component {
                 <div className={"float-left"}>
                     <div className={"float-left expert-label"}>Expert mode</div>
                     <AppSwitch
-                        className={"mx-1 float-right display-block expert-mode"}
+                        id={cssClass}
+                        className={
+                            "mx-1 float-right display-block expert-mode " +
+                            cssClass
+                        }
                         color={"secondary"}
                         size={"sm"}
                         label
@@ -74,7 +95,7 @@ class CustomCardHeader extends Component {
                 {headerText}
                 <div className="card-actions">
                     {expertToggle}
-                    <button onClick={this.toggleInfo} id="Popover1">
+                    <button onClick={this.toggleInfo} id={popoverTarget}>
                         <i className="text-muted fa fa-question-circle" />
                     </button>
                     <Popover

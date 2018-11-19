@@ -82,6 +82,7 @@ class Dashboard extends DashboardAbstract {
         this.state = {
             queryStructure: "",
             queryDependencies: "",
+            queryActivity: "",
             structureMetrics: {
                 classes: "loading",
                 interfaces: "loading",
@@ -136,6 +137,9 @@ class Dashboard extends DashboardAbstract {
                 ),
                 queryDependencies: localStorage.getItem(
                     "dashboard_dependencies_expert_query"
+                ),
+                queryActivity: localStorage.getItem(
+                    "dashboard_activity_expert_query"
                 )
             });
         }
@@ -196,6 +200,14 @@ class Dashboard extends DashboardAbstract {
         this.sendQuery(this);
     }
 
+    clearActivity(event) {
+        localStorage.setItem(
+            "dashboard_activity_expert_query",
+            localStorage.getItem("dashboard_activity_original_query")
+        );
+        this.sendQuery(this);
+    }
+
     sendQuery(event) {
         this.setState({
             queryStructure: localStorage.getItem(
@@ -203,6 +215,9 @@ class Dashboard extends DashboardAbstract {
             ),
             queryDependencies: localStorage.getItem(
                 "dashboard_dependencies_expert_query"
+            ),
+            queryActivity: localStorage.getItem(
+                "dashboard_activity_expert_query"
             )
         });
 
@@ -214,6 +229,9 @@ class Dashboard extends DashboardAbstract {
                 ),
                 queryStringDependencies: localStorage.getItem(
                     "dashboard_dependencies_expert_query"
+                ),
+                queryStringActivity: localStorage.getItem(
+                    "dashboard_activity_expert_query"
                 )
             }
         });
@@ -225,6 +243,10 @@ class Dashboard extends DashboardAbstract {
 
     updateStateQueryDependencies(event) {
         localStorage.setItem("dashboard_dependencies_expert_query", event);
+    }
+
+    updateStateQueryActivity(event) {
+        localStorage.setItem("dashboard_activity_expert_query", event);
     }
 
     toggleInfo() {
@@ -257,7 +279,7 @@ class Dashboard extends DashboardAbstract {
                             <CardBody>
                                 <div
                                     className={
-                                        "expert-mode-editor hide-expert-mode"
+                                        "expert-mode-editor hide-expert-mode architecture"
                                     }
                                 >
                                     <CypherEditor
@@ -328,7 +350,7 @@ class Dashboard extends DashboardAbstract {
 
                                 <div
                                     className={
-                                        "expert-mode-editor hide-expert-mode"
+                                        "expert-mode-editor hide-expert-mode architecture"
                                     }
                                 >
                                     <CypherEditor
@@ -404,18 +426,54 @@ class Dashboard extends DashboardAbstract {
                     </Col>
                     <Col xs="12" sm="6" md="3">
                         <Card>
-                            <CardHeader>
-                                Resource Management
-                                <div className="card-actions">
-                                    <PopoverItem
-                                        key={"ResourceManagement"}
-                                        type={"Resource Management"}
-                                        id={"ResourceManagement"}
-                                    />
-                                </div>
-                            </CardHeader>
+                            <CustomCardHeader
+                                cardHeaderText={"Resource Management"}
+                                showExpertMode={true}
+                                placement={"bottom"}
+                                target={"Popover2"}
+                                popoverHeaderText={"Resource Management"}
+                                popoverBody={
+                                    "Resource management provides an overview of development activities, authors, and their commits."
+                                }
+                            />
                             <CardBody>
-                                <a href="#/resource-management/activity">
+                                <div
+                                    className={
+                                        "expert-mode-editor hide-expert-mode resourcemanagement"
+                                    }
+                                >
+                                    <CypherEditor
+                                        className="cypheredit"
+                                        value={this.state.queryActivity}
+                                        options={{
+                                            mode: "cypher",
+                                            theme: "cypher"
+                                        }}
+                                        onValueChange={this.updateStateQueryActivity.bind(
+                                            this
+                                        )}
+                                    />
+                                    <Button
+                                        onClick={this.sendQuery.bind(this)}
+                                        className="btn btn-success send-query float-right"
+                                        color="success"
+                                        id="send"
+                                    >
+                                        Send
+                                    </Button>
+                                    <Button
+                                        onClick={this.clearActivity.bind(this)}
+                                        className="btn btn-success send-query float-right margin-right"
+                                        color="danger"
+                                        id="reset"
+                                    >
+                                        Reset
+                                    </Button>
+                                </div>
+                                <a
+                                    href="#/resource-management/activity"
+                                    className={"display-block clear"}
+                                >
                                     <strong>Activity metrics</strong>
                                     <ListGroup>
                                         {Object.keys(
