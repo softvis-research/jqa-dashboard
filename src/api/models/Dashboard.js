@@ -70,10 +70,34 @@ class DashboardModel {
             dashboardActivityQuery
         );
 
+        const dashboardHotspotQuery =
+            // number of commits
+            "MATCH (c:Commit)-[:CONTAINS_CHANGE]->()-[:MODIFIES]->(f:File) WHERE NOT c:Merge WITH f, count(c) as commits MATCH (t:Type)-[:HAS_SOURCE]->(f), (t)-[:DECLARES]->(m:Method) RETURN t.fqn as fqn, sum(commits) as commits ORDER BY fqn ASCENDING";
+        localStorage.setItem(
+            "dashboard_hotspot_original_query",
+            dashboardHotspotQuery
+        );
+
+        const dashboardPMDQuery =
+            // number of violations
+            "MATCH (:Report)-[:HAS_FILE]->(file:File:Pmd)-[:HAS_VIOLATION]->(violation:Violation) RETURN count(violation)";
+        localStorage.setItem("dashboard_pmd_original_query", dashboardPMDQuery);
+
+        const dashboardTestCoverageQuery =
+            // number of violations
+            "MATCH (c:Jacoco:Class)-[:HAS_METHOD]->(m:Method:Jacoco)-[:HAS_COUNTER]->(t:Counter) WHERE t.type='INSTRUCTION' RETURN (sum(t.covered)*100)/(sum(t.covered)+sum(t.missed)) as coverage";
+        localStorage.setItem(
+            "dashboard_test_coverage_original_query",
+            dashboardTestCoverageQuery
+        );
+
         this.state = {
             queryStringStructure: dashboardStructureQuery,
             queryStringDependencies: dashboardDependenciesQuery,
-            queryStringActivity: dashboardActivityQuery
+            queryStringActivity: dashboardActivityQuery,
+            queryStringHotspot: dashboardHotspotQuery,
+            queryStringPMD: dashboardPMDQuery,
+            queryStringTestCoverage: dashboardTestCoverageQuery
         };
 
         if (!localStorage.getItem("dashboard_structure_expert_query")) {
@@ -106,6 +130,39 @@ class DashboardModel {
         } else {
             this.state.queryStringActivity = localStorage.getItem(
                 "dashboard_activity_expert_query"
+            );
+        }
+
+        if (!localStorage.getItem("dashboard_hotspot_expert_query")) {
+            localStorage.setItem(
+                "dashboard_hotspot_expert_query",
+                this.state.queryStringHotspot
+            );
+        } else {
+            this.state.queryStringHotspot = localStorage.getItem(
+                "dashboard_hotspot_expert_query"
+            );
+        }
+
+        if (!localStorage.getItem("dashboard_pmd_expert_query")) {
+            localStorage.setItem(
+                "dashboard_pmd_expert_query",
+                this.state.queryStringPMD
+            );
+        } else {
+            this.state.queryStringPMD = localStorage.getItem(
+                "dashboard_pmd_expert_query"
+            );
+        }
+
+        if (!localStorage.getItem("dashboard_test_coverage_expert_query")) {
+            localStorage.setItem(
+                "dashboard_test_coverage_expert_query",
+                this.state.queryStringTestCoverage
+            );
+        } else {
+            this.state.queryStringTestCoverage = localStorage.getItem(
+                "dashboard_test_coverage_expert_query"
             );
         }
     }
@@ -198,10 +255,7 @@ class DashboardModel {
         var hotspotMetrics = [];
 
         neo4jSession
-            .run(
-                // number of commits
-                "MATCH (c:Commit)-[:CONTAINS_CHANGE]->()-[:MODIFIES]->(f:File) WHERE NOT c:Merge WITH f, count(c) as commits MATCH (t:Type)-[:HAS_SOURCE]->(f), (t)-[:DECLARES]->(m:Method) RETURN t.fqn as fqn, sum(commits) as commits ORDER BY fqn ASCENDING"
-            )
+            .run(this.state.queryStringHotspot)
             .then(function(result) {
                 var maxCommits = 0;
 
@@ -243,10 +297,7 @@ class DashboardModel {
         var staticCodeAnalysisPMDMetrics = [];
 
         neo4jSession
-            .run(
-                // number of violations
-                "MATCH (:Report)-[:HAS_FILE]->(file:File:Pmd)-[:HAS_VIOLATION]->(violation:Violation) RETURN count(violation)"
-            )
+            .run(this.state.queryStringPMD)
             .then(function(result) {
                 result.records.forEach(function(record) {
                     staticCodeAnalysisPMDMetrics = {
@@ -270,10 +321,7 @@ class DashboardModel {
         var testCoverageMetrics = [];
 
         neo4jSession
-            .run(
-                // number of violations
-                "MATCH (c:Jacoco:Class)-[:HAS_METHOD]->(m:Method:Jacoco)-[:HAS_COUNTER]->(t:Counter) WHERE t.type='INSTRUCTION' RETURN (sum(t.covered)*100)/(sum(t.covered)+sum(t.missed)) as coverage"
-            )
+            .run(this.state.queryStringTestCoverage)
             .then(function(result) {
                 result.records.forEach(function(record) {
                     testCoverageMetrics = {

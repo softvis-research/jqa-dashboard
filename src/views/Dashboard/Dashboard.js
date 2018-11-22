@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import DashboardAbstract, {
     databaseCredentialsProvided
 } from "./AbstractDashboardComponent";
@@ -9,71 +9,14 @@ import {
     Row,
     Col,
     Card,
-    CardHeader,
     CardBody,
     ListGroup,
-    ListGroupItem,
-    Popover,
-    PopoverHeader,
-    PopoverBody
+    ListGroupItem
 } from "reactstrap";
 import DashboardModel from "../../api/models/Dashboard";
 import $ from "jquery";
 
 var AppDispatcher = require("../../AppDispatcher");
-
-class PopoverItem extends Component {
-    constructor(props) {
-        super(props);
-
-        this.toggle = this.toggle.bind(this);
-        this.state = {
-            popoverOpen: false,
-            infoText: {
-                Architecture:
-                    "Common architecture and dependency metrics provide an overview of the project, e.g., number of classes, LOC, number of dependencies, and field reads.",
-                "Resource Management":
-                    "Resource management provides an overview of development activities, authors, and their commits.",
-                "Risk Management":
-                    "Risk management helps to identify hotspots of the project.",
-                "Quality Management":
-                    "Quality management supports quality monitoring with regard to static code analysis results and test coverage."
-            }
-        };
-    }
-
-    toggle() {
-        this.setState({
-            popoverOpen: !this.state.popoverOpen
-        });
-    }
-
-    render() {
-        return (
-            <span>
-                <button
-                    className="mr-1"
-                    color="secondary"
-                    id={"Popover-" + this.props.id}
-                    onClick={this.toggle}
-                >
-                    <i className="text-muted fa fa-question-circle" />
-                </button>
-                <Popover
-                    placement={"bottom"}
-                    isOpen={this.state.popoverOpen}
-                    target={"Popover-" + this.props.id}
-                    toggle={this.toggle}
-                >
-                    <PopoverHeader>{this.props.type}</PopoverHeader>
-                    <PopoverBody>
-                        {this.state.infoText[this.props.type]}
-                    </PopoverBody>
-                </Popover>
-            </span>
-        );
-    }
-}
 
 class Dashboard extends DashboardAbstract {
     constructor(props) {
@@ -83,6 +26,9 @@ class Dashboard extends DashboardAbstract {
             queryStructure: "",
             queryDependencies: "",
             queryActivity: "",
+            queryHotspot: "",
+            queryPMD: "",
+            queryTestCoverage: "",
             structureMetrics: {
                 classes: "loading",
                 interfaces: "loading",
@@ -140,6 +86,13 @@ class Dashboard extends DashboardAbstract {
                 ),
                 queryActivity: localStorage.getItem(
                     "dashboard_activity_expert_query"
+                ),
+                queryHotspot: localStorage.getItem(
+                    "dashboard_hotspot_expert_query"
+                ),
+                queryPMD: localStorage.getItem("dashboard_pmd_expert_query"),
+                queryTestCoverage: localStorage.getItem(
+                    "dashboard_test_coverage_expert_query"
                 )
             });
         }
@@ -208,6 +161,30 @@ class Dashboard extends DashboardAbstract {
         this.sendQuery(this);
     }
 
+    clearHotspot(event) {
+        localStorage.setItem(
+            "dashboard_hotspot_expert_query",
+            localStorage.getItem("dashboard_hotspot_original_query")
+        );
+        this.sendQuery(this);
+    }
+
+    clearPMD(event) {
+        localStorage.setItem(
+            "dashboard_pmd_expert_query",
+            localStorage.getItem("dashboard_pmd_original_query")
+        );
+        this.sendQuery(this);
+    }
+
+    clearTestCoverage(event) {
+        localStorage.setItem(
+            "dashboard_test_coverage_expert_query",
+            localStorage.getItem("dashboard_test_coverage_original_query")
+        );
+        this.sendQuery(this);
+    }
+
     sendQuery(event) {
         this.setState({
             queryStructure: localStorage.getItem(
@@ -218,6 +195,13 @@ class Dashboard extends DashboardAbstract {
             ),
             queryActivity: localStorage.getItem(
                 "dashboard_activity_expert_query"
+            ),
+            queryHotspot: localStorage.getItem(
+                "dashboard_hotspot_expert_query"
+            ),
+            queryPMD: localStorage.getItem("dashboard_pmd_expert_query"),
+            queryTestCoverage: localStorage.getItem(
+                "dashboard_test_coverage_expert_query"
             )
         });
 
@@ -232,6 +216,15 @@ class Dashboard extends DashboardAbstract {
                 ),
                 queryStringActivity: localStorage.getItem(
                     "dashboard_activity_expert_query"
+                ),
+                queryStringHotspot: localStorage.getItem(
+                    "dashboard_hotspot_expert_query"
+                ),
+                queryStringPMD: localStorage.getItem(
+                    "dashboard_pmd_expert_query"
+                ),
+                queryStringTestCoverage: localStorage.getItem(
+                    "dashboard_test_coverage_expert_query"
                 )
             }
         });
@@ -247,6 +240,18 @@ class Dashboard extends DashboardAbstract {
 
     updateStateQueryActivity(event) {
         localStorage.setItem("dashboard_activity_expert_query", event);
+    }
+
+    updateStateQueryHotspot(event) {
+        localStorage.setItem("dashboard_hotspot_expert_query", event);
+    }
+
+    updateStateQueryPMD(event) {
+        localStorage.setItem("dashboard_pmd_expert_query", event);
+    }
+
+    updateStateQueryTestCoverage(event) {
+        localStorage.setItem("dashboard_test_coverage_expert_query", event);
     }
 
     toggleInfo() {
@@ -512,18 +517,54 @@ class Dashboard extends DashboardAbstract {
                     </Col>
                     <Col xs="12" sm="6" md="3">
                         <Card>
-                            <CardHeader>
-                                Risk Management
-                                <div className="card-actions">
-                                    <PopoverItem
-                                        key={"RiskManagement"}
-                                        type={"Risk Management"}
-                                        id={"RiskManagement"}
-                                    />
-                                </div>
-                            </CardHeader>
+                            <CustomCardHeader
+                                cardHeaderText={"Risk Management"}
+                                showExpertMode={true}
+                                placement={"bottom"}
+                                target={"Popover3"}
+                                popoverHeaderText={"Risk Management"}
+                                popoverBody={
+                                    "Risk management helps to identify hotspots of the project."
+                                }
+                            />
                             <CardBody>
-                                <a href="#/risk-management/hotspots">
+                                <div
+                                    className={
+                                        "expert-mode-editor hide-expert-mode riskmanagement"
+                                    }
+                                >
+                                    <CypherEditor
+                                        className="cypheredit"
+                                        value={this.state.queryHotspot}
+                                        options={{
+                                            mode: "cypher",
+                                            theme: "cypher"
+                                        }}
+                                        onValueChange={this.updateStateQueryHotspot.bind(
+                                            this
+                                        )}
+                                    />
+                                    <Button
+                                        onClick={this.sendQuery.bind(this)}
+                                        className="btn btn-success send-query float-right"
+                                        color="success"
+                                        id="send"
+                                    >
+                                        Send
+                                    </Button>
+                                    <Button
+                                        onClick={this.clearHotspot.bind(this)}
+                                        className="btn btn-success send-query float-right margin-right"
+                                        color="danger"
+                                        id="reset"
+                                    >
+                                        Reset
+                                    </Button>
+                                </div>
+                                <a
+                                    href="#/risk-management/hotspots"
+                                    className={"display-block clear"}
+                                >
                                     <strong>Hotspot metrics</strong>
                                     <ListGroup className="margin-bottom">
                                         {Object.keys(
@@ -562,18 +603,54 @@ class Dashboard extends DashboardAbstract {
                     </Col>
                     <Col xs="12" sm="6" md="3">
                         <Card>
-                            <CardHeader>
-                                Quality Management
-                                <div className="card-actions">
-                                    <PopoverItem
-                                        key={"QualityManagement"}
-                                        type={"Quality Management"}
-                                        id={"QualityManagement"}
-                                    />
-                                </div>
-                            </CardHeader>
+                            <CustomCardHeader
+                                cardHeaderText={"Quality Management"}
+                                showExpertMode={true}
+                                placement={"bottom"}
+                                target={"Popover4"}
+                                popoverHeaderText={"Quality Management"}
+                                popoverBody={
+                                    "Quality management supports quality monitoring with regard to static code analysis results and test coverage."
+                                }
+                            />
                             <CardBody>
-                                <a href="#/quality-management/static-code-analysis/pmd">
+                                <div
+                                    className={
+                                        "expert-mode-editor hide-expert-mode qualitymanagement"
+                                    }
+                                >
+                                    <CypherEditor
+                                        className="cypheredit"
+                                        value={this.state.queryPMD}
+                                        options={{
+                                            mode: "cypher",
+                                            theme: "cypher"
+                                        }}
+                                        onValueChange={this.updateStateQueryPMD.bind(
+                                            this
+                                        )}
+                                    />
+                                    <Button
+                                        onClick={this.sendQuery.bind(this)}
+                                        className="btn btn-success send-query float-right"
+                                        color="success"
+                                        id="send"
+                                    >
+                                        Send
+                                    </Button>
+                                    <Button
+                                        onClick={this.clearPMD.bind(this)}
+                                        className="btn btn-success send-query float-right margin-right"
+                                        color="danger"
+                                        id="reset"
+                                    >
+                                        Reset
+                                    </Button>
+                                </div>
+                                <a
+                                    href="#/quality-management/static-code-analysis/pmd"
+                                    className={"display-block clear"}
+                                >
                                     <strong>Static Code Analysis (PMD)</strong>
                                     <ListGroup className="margin-bottom">
                                         {Object.keys(
@@ -609,7 +686,45 @@ class Dashboard extends DashboardAbstract {
                                     </ListGroup>
                                 </a>
 
-                                <a href="#/quality-management/test-coverage">
+                                <div
+                                    className={
+                                        "expert-mode-editor hide-expert-mode qualitymanagement"
+                                    }
+                                >
+                                    <CypherEditor
+                                        className="cypheredit"
+                                        value={this.state.queryTestCoverage}
+                                        options={{
+                                            mode: "cypher",
+                                            theme: "cypher"
+                                        }}
+                                        onValueChange={this.updateStateQueryTestCoverage.bind(
+                                            this
+                                        )}
+                                    />
+                                    <Button
+                                        onClick={this.sendQuery.bind(this)}
+                                        className="btn btn-success send-query float-right"
+                                        color="success"
+                                        id="send"
+                                    >
+                                        Send
+                                    </Button>
+                                    <Button
+                                        onClick={this.clearTestCoverage.bind(
+                                            this
+                                        )}
+                                        className="btn btn-success send-query float-right margin-right"
+                                        color="danger"
+                                        id="reset"
+                                    >
+                                        Reset
+                                    </Button>
+                                </div>
+                                <a
+                                    href="#/quality-management/test-coverage"
+                                    className={"display-block clear"}
+                                >
                                     <strong>Test Coverage</strong>
                                     <ListGroup>
                                         {Object.keys(
