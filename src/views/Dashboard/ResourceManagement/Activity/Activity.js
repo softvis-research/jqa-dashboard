@@ -1,12 +1,14 @@
 import React, { Component } from "react";
 import DashboardAbstract from "../../AbstractDashboardComponent";
-
+import CustomCardHeader from "../../CustomCardHeader/CustomCardHeader";
 import CommitsPerAuthor from "./visualizations/CommitsPerAuthor";
 import FilesPerAuthor from "./visualizations/FilesPerAuthor";
 import CommitsTimescale from "./visualizations/CommitsTimescale";
 import LatestCommits from "./visualizations/LatestCommits";
+import { CypherEditor } from "graph-app-kit/components/Editor";
 
 import {
+    Button,
     Row,
     Col,
     Card,
@@ -16,6 +18,8 @@ import {
     PopoverHeader,
     PopoverBody
 } from "reactstrap";
+
+var AppDispatcher = require("../../../../AppDispatcher");
 
 class PopoverItem extends Component {
     constructor(props) {
@@ -74,13 +78,50 @@ class ResourceManagementActivity extends DashboardAbstract {
     constructor(props) {
         super(props);
 
-        this.state = {};
+        this.state = {
+            query: ""
+        };
 
         this.toggleInfo = this.toggleInfo.bind(this);
     }
 
     componentDidMount() {
         super.componentDidMount();
+
+        this.setState({
+            query: localStorage.getItem("commits_per_author_expert_query")
+        });
+    }
+
+    componentWillUnmount() {
+        super.componentWillUnmount();
+    }
+
+    clear(event) {
+        localStorage.setItem(
+            "commits_per_author_expert_query",
+            localStorage.getItem("commits_per_author_original_query")
+        );
+        this.sendQuery(this);
+    }
+
+    sendQuery(event) {
+        this.setState({
+            query: localStorage.getItem("commits_per_author_expert_query")
+        });
+
+        AppDispatcher.handleAction({
+            actionType: "EXPERT_QUERY",
+            data: {
+                queryString: localStorage.getItem(
+                    "commits_per_author_expert_query"
+                )
+            }
+        });
+    }
+
+    updateStateQuery(event) {
+        localStorage.setItem("commits_per_author_expert_query", event);
     }
 
     toggleInfo() {
@@ -100,17 +141,50 @@ class ResourceManagementActivity extends DashboardAbstract {
                 <Row>
                     <Col xs="12" sm="6" md="6">
                         <Card>
-                            <CardHeader>
-                                Commits per author
-                                <div className="card-actions">
-                                    <PopoverItem
-                                        key={"Commitsperauthor"}
-                                        type={"Commits per author"}
-                                        id={"Commitsperauthor"}
-                                    />
-                                </div>
-                            </CardHeader>
+                            <CustomCardHeader
+                                cardHeaderText={"Commits per author"}
+                                showExpertMode={true}
+                                placement={"bottom"}
+                                target={"Popover1"}
+                                popoverHeaderText={"Commits per author"}
+                                popoverBody={
+                                    "The bar chart shows the number of commits for each author."
+                                }
+                            />
                             <CardBody>
+                                <div
+                                    className={
+                                        "expert-mode-editor hide-expert-mode"
+                                    }
+                                >
+                                    <CypherEditor
+                                        className="cypheredit"
+                                        value={this.state.query}
+                                        options={{
+                                            mode: "cypher",
+                                            theme: "cypher"
+                                        }}
+                                        onValueChange={this.updateStateQuery.bind(
+                                            this
+                                        )}
+                                    />
+                                    <Button
+                                        onClick={this.sendQuery.bind(this)}
+                                        className="btn btn-success send-query float-right"
+                                        color="success"
+                                        id="send"
+                                    >
+                                        Send
+                                    </Button>
+                                    <Button
+                                        onClick={this.clear.bind(this)}
+                                        className="btn btn-success send-query float-right margin-right"
+                                        color="danger"
+                                        id="reset"
+                                    >
+                                        Reset
+                                    </Button>
+                                </div>
                                 <CommitsPerAuthor />
                             </CardBody>
                         </Card>
