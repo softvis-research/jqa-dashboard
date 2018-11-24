@@ -13,16 +13,16 @@ class CommitsPerAuthorModel {
         );
 
         this.state = {
-            queryString: commitsPerAuthorQuery
+            queryStringCommitsPerAuthor: commitsPerAuthorQuery
         };
 
         if (!localStorage.getItem("commits_per_author_expert_query")) {
             localStorage.setItem(
                 "commits_per_author_expert_query",
-                this.state.queryString
+                this.state.queryStringCommitsPerAuthor
             );
         } else {
-            this.state.queryString = localStorage.getItem(
+            this.state.queryStringCommitsPerAuthor = localStorage.getItem(
                 "commits_per_author_expert_query"
             );
         }
@@ -33,7 +33,7 @@ class CommitsPerAuthorModel {
         var recordCount = 0;
 
         neo4jSession
-            .run(this.state.queryString, {
+            .run(this.state.queryStringCommitsPerAuthor, {
                 startDate: startDate,
                 endDate: endDate
             })

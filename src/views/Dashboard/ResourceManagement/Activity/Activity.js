@@ -79,7 +79,8 @@ class ResourceManagementActivity extends DashboardAbstract {
         super(props);
 
         this.state = {
-            query: ""
+            queryCommitsPerAuthor: "",
+            queryFilesPerAuthor: ""
         };
 
         this.toggleInfo = this.toggleInfo.bind(this);
@@ -89,7 +90,12 @@ class ResourceManagementActivity extends DashboardAbstract {
         super.componentDidMount();
 
         this.setState({
-            query: localStorage.getItem("commits_per_author_expert_query")
+            queryCommitsPerAuthor: localStorage.getItem(
+                "commits_per_author_expert_query"
+            ),
+            queryFilesPerAuthor: localStorage.getItem(
+                "files_per_author_expert_query"
+            )
         });
     }
 
@@ -97,7 +103,7 @@ class ResourceManagementActivity extends DashboardAbstract {
         super.componentWillUnmount();
     }
 
-    clear(event) {
+    clearCommitsPerAuthor(event) {
         localStorage.setItem(
             "commits_per_author_expert_query",
             localStorage.getItem("commits_per_author_original_query")
@@ -105,23 +111,43 @@ class ResourceManagementActivity extends DashboardAbstract {
         this.sendQuery(this);
     }
 
+    clearFilesPerAuthor(event) {
+        localStorage.setItem(
+            "files_per_author_expert_query",
+            localStorage.getItem("files_per_author_original_query")
+        );
+        this.sendQuery(this);
+    }
+
     sendQuery(event) {
         this.setState({
-            query: localStorage.getItem("commits_per_author_expert_query")
+            queryCommitsPerAuthor: localStorage.getItem(
+                "commits_per_author_expert_query"
+            ),
+            queryFilesPerAuthor: localStorage.getItem(
+                "files_per_author_expert_query"
+            )
         });
 
         AppDispatcher.handleAction({
             actionType: "EXPERT_QUERY",
             data: {
-                queryString: localStorage.getItem(
+                queryStringCommitsPerAuthor: localStorage.getItem(
                     "commits_per_author_expert_query"
+                ),
+                queryStringFilesPerAuthor: localStorage.getItem(
+                    "files_per_author_expert_query"
                 )
             }
         });
     }
 
-    updateStateQuery(event) {
+    updateStateQueryCommitsPerAuthor(event) {
         localStorage.setItem("commits_per_author_expert_query", event);
+    }
+
+    updateStateQueryFilesPerAuthor(event) {
+        localStorage.setItem("files_per_author_expert_query", event);
     }
 
     toggleInfo() {
@@ -154,17 +180,17 @@ class ResourceManagementActivity extends DashboardAbstract {
                             <CardBody>
                                 <div
                                     className={
-                                        "expert-mode-editor hide-expert-mode"
+                                        "expert-mode-editor hide-expert-mode commits-per-author"
                                     }
                                 >
                                     <CypherEditor
                                         className="cypheredit"
-                                        value={this.state.query}
+                                        value={this.state.queryCommitsPerAuthor}
                                         options={{
                                             mode: "cypher",
                                             theme: "cypher"
                                         }}
-                                        onValueChange={this.updateStateQuery.bind(
+                                        onValueChange={this.updateStateQueryCommitsPerAuthor.bind(
                                             this
                                         )}
                                     />
@@ -177,7 +203,9 @@ class ResourceManagementActivity extends DashboardAbstract {
                                         Send
                                     </Button>
                                     <Button
-                                        onClick={this.clear.bind(this)}
+                                        onClick={this.clearCommitsPerAuthor.bind(
+                                            this
+                                        )}
                                         className="btn btn-success send-query float-right margin-right"
                                         color="danger"
                                         id="reset"
@@ -191,17 +219,52 @@ class ResourceManagementActivity extends DashboardAbstract {
                     </Col>
                     <Col xs="12" sm="6" md="6">
                         <Card>
-                            <CardHeader>
-                                Files per author
-                                <div className="card-actions">
-                                    <PopoverItem
-                                        key={"Filesperauthor"}
-                                        type={"Files per author"}
-                                        id={"Filesperauthor"}
-                                    />
-                                </div>
-                            </CardHeader>
+                            <CustomCardHeader
+                                cardHeaderText={"Files per author"}
+                                showExpertMode={true}
+                                placement={"bottom"}
+                                target={"Popover2"}
+                                popoverHeaderText={"Files per author"}
+                                popoverBody={
+                                    "The bar chart shows the number of files for each author."
+                                }
+                            />
                             <CardBody>
+                                <div
+                                    className={
+                                        "expert-mode-editor hide-expert-mode files-per-author"
+                                    }
+                                >
+                                    <CypherEditor
+                                        className="cypheredit"
+                                        value={this.state.queryFilesPerAuthor}
+                                        options={{
+                                            mode: "cypher",
+                                            theme: "cypher"
+                                        }}
+                                        onValueChange={this.updateStateQueryFilesPerAuthor.bind(
+                                            this
+                                        )}
+                                    />
+                                    <Button
+                                        onClick={this.sendQuery.bind(this)}
+                                        className="btn btn-success send-query float-right"
+                                        color="success"
+                                        id="send"
+                                    >
+                                        Send
+                                    </Button>
+                                    <Button
+                                        onClick={this.clearFilesPerAuthor.bind(
+                                            this
+                                        )}
+                                        className="btn btn-success send-query float-right margin-right"
+                                        color="danger"
+                                        id="reset"
+                                    >
+                                        Reset
+                                    </Button>
+                                </div>
                                 <FilesPerAuthor />
                             </CardBody>
                         </Card>

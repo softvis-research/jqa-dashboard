@@ -84,7 +84,7 @@ class ResourceManagementKnowledgeDistribution extends DashboardAbstract {
                             <CardBody>
                                 <div
                                     className={
-                                        "expert-mode-editor hide-expert-mode"
+                                        "expert-mode-editor hide-expert-mode knowledge-distribution"
                                     }
                                 >
                                     <CypherEditor

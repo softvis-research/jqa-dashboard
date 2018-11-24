@@ -84,7 +84,7 @@ class QualityManagementTestCoverage extends DashboardAbstract {
                                     <Col xs="12" sm="12" md="12">
                                         <div
                                             className={
-                                                "expert-mode-editor hide-expert-mode"
+                                                "expert-mode-editor hide-expert-mode test-coverage"
                                             }
                                         >
                                             <CypherEditor

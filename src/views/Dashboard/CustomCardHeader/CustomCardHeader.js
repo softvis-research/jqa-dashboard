@@ -28,13 +28,17 @@ class CustomCardHeader extends Component {
                         .find("input")
                         .attr("id");
                     var editor = $(".expert-mode-editor");
+                    var visualizationWrapper = $(".visualization-wrapper");
                     if (
                         typeof group !== "undefined" &&
                         editor.hasClass(group)
                     ) {
                         editor = $(".expert-mode-editor." + group);
+                        visualizationWrapper = editor.next(
+                            ".visualization-wrapper"
+                        );
                     }
-                    var visualizationWrapper = $(".visualization-wrapper");
+
                     if (editor.hasClass("hide-expert-mode")) {
                         editor.removeClass("hide-expert-mode");
                         visualizationWrapper.addClass(
@@ -69,7 +73,7 @@ class CustomCardHeader extends Component {
         //var popoverToggle = this.props.toggle;
         var popoverHeaderText = this.props.popoverHeaderText;
         var popoverBody = this.props.popoverBody;
-        var cssClass = headerText.toLowerCase().replace(" ", "");
+        var cssClass = headerText.toLowerCase().replace(/\s/g, "-");
 
         var expertToggle = "";
         if (showExpertMode) {

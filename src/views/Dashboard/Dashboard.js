@@ -444,7 +444,7 @@ class Dashboard extends DashboardAbstract {
                             <CardBody>
                                 <div
                                     className={
-                                        "expert-mode-editor hide-expert-mode resourcemanagement"
+                                        "expert-mode-editor hide-expert-mode resource-management"
                                     }
                                 >
                                     <CypherEditor
@@ -530,7 +530,7 @@ class Dashboard extends DashboardAbstract {
                             <CardBody>
                                 <div
                                     className={
-                                        "expert-mode-editor hide-expert-mode riskmanagement"
+                                        "expert-mode-editor hide-expert-mode risk-management"
                                     }
                                 >
                                     <CypherEditor
@@ -616,7 +616,7 @@ class Dashboard extends DashboardAbstract {
                             <CardBody>
                                 <div
                                     className={
-                                        "expert-mode-editor hide-expert-mode qualitymanagement"
+                                        "expert-mode-editor hide-expert-mode quality-management"
                                     }
                                 >
                                     <CypherEditor
@@ -688,7 +688,7 @@ class Dashboard extends DashboardAbstract {
 
                                 <div
                                     className={
-                                        "expert-mode-editor hide-expert-mode qualitymanagement"
+                                        "expert-mode-editor hide-expert-mode quality-management"
                                     }
                                 >
                                     <CypherEditor
