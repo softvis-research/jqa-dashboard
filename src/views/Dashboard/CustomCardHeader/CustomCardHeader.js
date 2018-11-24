@@ -1,5 +1,11 @@
 import React, { Component } from "react";
-import { CardHeader, Popover, PopoverHeader, PopoverBody } from "reactstrap";
+import {
+    CardHeader,
+    Popover,
+    PopoverHeader,
+    PopoverBody,
+    Tooltip
+} from "reactstrap";
 import { AppSwitch } from "@coreui/react";
 import $ from "jquery";
 
@@ -8,6 +14,7 @@ class CustomCardHeader extends Component {
         super(props);
 
         this.state = {
+            tooltipOpen: [false, false],
             popoverOpen: false,
             popovers: [
                 {
@@ -58,6 +65,15 @@ class CustomCardHeader extends Component {
         });
     }
 
+    toggle(i) {
+        const newArray = this.state.tooltipOpen.map((element, index) => {
+            return index === i ? !element : false;
+        });
+        this.setState({
+            tooltipOpen: newArray
+        });
+    }
+
     toggleInfo() {
         this.setState({
             popoverOpen: !this.state.popoverOpen
@@ -79,17 +95,28 @@ class CustomCardHeader extends Component {
         if (showExpertMode) {
             expertToggle = (
                 <div className={"float-left"}>
-                    <div className={"float-left expert-label"}>Expert mode</div>
-                    <AppSwitch
-                        id={cssClass}
-                        className={
-                            "mx-1 float-right display-block expert-mode " +
-                            cssClass
-                        }
-                        color={"secondary"}
-                        size={"sm"}
-                        label
-                    />
+                    <div id={"tooltip-" + cssClass}>
+                        <AppSwitch
+                            id={cssClass}
+                            className={
+                                "mx-1 float-right display-block expert-mode " +
+                                cssClass
+                            }
+                            color={"secondary"}
+                            size={"sm"}
+                            label
+                        />
+                    </div>
+                    <Tooltip
+                        placement="top"
+                        isOpen={this.state.tooltipOpen[0]}
+                        target={"tooltip-" + cssClass}
+                        toggle={() => {
+                            this.toggle(0);
+                        }}
+                    >
+                        Toggle expert mode
+                    </Tooltip>
                 </div>
             );
         }
@@ -102,6 +129,16 @@ class CustomCardHeader extends Component {
                     <button onClick={this.toggleInfo} id={popoverTarget}>
                         <i className="text-muted fa fa-question-circle" />
                     </button>
+                    <Tooltip
+                        placement="top"
+                        isOpen={this.state.tooltipOpen[1]}
+                        target={popoverTarget}
+                        toggle={() => {
+                            this.toggle(1);
+                        }}
+                    >
+                        Show details
+                    </Tooltip>
                     <Popover
                         placement={popoverPlacement}
                         isOpen={this.state.popoverOpen}
