@@ -4,6 +4,37 @@ import CirclePackingHelper from "../utils/CirclePacking";
 var maxCommits = 0;
 
 class HotspotModel {
+    constructor(props) {
+        const hotspotsQuery =
+            "MATCH" +
+            " (c:Commit)-[:CONTAINS_CHANGE]->()-[:MODIFIES]->(f:File) " +
+            "WHERE NOT" +
+            " c:Merge " +
+            "WITH" +
+            " f, count(c) as commits " +
+            "MATCH" +
+            " (t:Type)-[:HAS_SOURCE]->(f)," +
+            " (t)-[:DECLARES]->(m:Method) " +
+            "RETURN" +
+            " t.fqn as fqn, sum(commits) as commits, sum(m.cyclomaticComplexity) as complexity, sum(m.effectiveLineCount) as loc ORDER BY fqn ASCENDING";
+        localStorage.setItem("hotspots_original_query", hotspotsQuery);
+
+        this.state = {
+            queryString: hotspotsQuery
+        };
+
+        if (!localStorage.getItem("hotspots_expert_query")) {
+            localStorage.setItem(
+                "hotspots_expert_query",
+                this.state.queryString
+            );
+        } else {
+            this.state.queryString = localStorage.getItem(
+                "hotspots_expert_query"
+            );
+        }
+    }
+
     readHotspots(IDENTIFIER_PROJECT_NAME) {
         var flatData = [];
         var commitsData = [];
@@ -12,19 +43,7 @@ class HotspotModel {
         var cpHelper = new CirclePackingHelper();
 
         return neo4jSession
-            .run(
-                "MATCH\n" +
-                    " (c:Commit)-[:CONTAINS_CHANGE]->()-[:MODIFIES]->(f:File)\n" +
-                    "WHERE NOT\n" +
-                    " c:Merge\n" +
-                    "WITH\n" +
-                    " f, count(c) as commits\n" +
-                    "MATCH\n" +
-                    " (t:Type)-[:HAS_SOURCE]->(f),\n" +
-                    " (t)-[:DECLARES]->(m:Method)\n" +
-                    "RETURN\n" +
-                    " t.fqn as fqn, sum(commits) as commits, sum(m.cyclomaticComplexity) as complexity, sum(m.effectiveLineCount) as loc ORDER BY fqn ASCENDING"
-            )
+            .run(this.state.queryString)
             .then(function(result) {
                 var collectedNames = [];
 
