@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import DashboardAbstract from "../../AbstractDashboardComponent";
 import CustomCardHeader from "../../CustomCardHeader/CustomCardHeader";
 import CommitsPerAuthor from "./visualizations/CommitsPerAuthor";
@@ -7,72 +7,9 @@ import CommitsTimescale from "./visualizations/CommitsTimescale";
 import LatestCommits from "./visualizations/LatestCommits";
 import { CypherEditor } from "graph-app-kit/components/Editor";
 
-import {
-    Button,
-    Row,
-    Col,
-    Card,
-    CardHeader,
-    CardBody,
-    Popover,
-    PopoverHeader,
-    PopoverBody
-} from "reactstrap";
+import { Button, Row, Col, Card, CardBody } from "reactstrap";
 
 var AppDispatcher = require("../../../../AppDispatcher");
-
-class PopoverItem extends Component {
-    constructor(props) {
-        super(props);
-
-        this.toggle = this.toggle.bind(this);
-        this.state = {
-            popoverOpen: false,
-            infoText: {
-                "Commits per author":
-                    "The bar chart shows the number of commits for each author.",
-                "Files per author":
-                    "The bar chart shows the number of files for each author.",
-                "Commits over time":
-                    "The calendar shows the number of commits per day. The darker the color is, the more commits were made.",
-                "Latest 20 commits":
-                    "The table shows the author, the date, and the commit message of the latest 20 commits."
-            }
-        };
-    }
-
-    toggle() {
-        this.setState({
-            popoverOpen: !this.state.popoverOpen
-        });
-    }
-
-    render() {
-        return (
-            <span>
-                <button
-                    className="mr-1"
-                    color="secondary"
-                    id={"Popover-" + this.props.id}
-                    onClick={this.toggle}
-                >
-                    <i className="text-muted fa fa-question-circle" />
-                </button>
-                <Popover
-                    placement={"bottom"}
-                    isOpen={this.state.popoverOpen}
-                    target={"Popover-" + this.props.id}
-                    toggle={this.toggle}
-                >
-                    <PopoverHeader>{this.props.type}</PopoverHeader>
-                    <PopoverBody>
-                        {this.state.infoText[this.props.type]}
-                    </PopoverBody>
-                </Popover>
-            </span>
-        );
-    }
-}
 
 class ResourceManagementActivity extends DashboardAbstract {
     constructor(props) {
@@ -81,7 +18,8 @@ class ResourceManagementActivity extends DashboardAbstract {
         this.state = {
             queryCommitsPerAuthor: "",
             queryFilesPerAuthor: "",
-            queryCommitsTimescale: ""
+            queryCommitsTimescale: "",
+            queryLatestCommits: ""
         };
 
         this.toggleInfo = this.toggleInfo.bind(this);
@@ -99,6 +37,9 @@ class ResourceManagementActivity extends DashboardAbstract {
             ),
             queryCommitsTimescale: localStorage.getItem(
                 "commits_timescale_expert_query"
+            ),
+            queryLatestCommits: localStorage.getItem(
+                "latest_commits_expert_query"
             )
         });
     }
@@ -131,6 +72,14 @@ class ResourceManagementActivity extends DashboardAbstract {
         this.sendQuery(this);
     }
 
+    clearLatestCommits(event) {
+        localStorage.setItem(
+            "latest_commits_expert_query",
+            localStorage.getItem("latest_commits_original_query")
+        );
+        this.sendQuery(this);
+    }
+
     sendQuery(event) {
         this.setState({
             queryCommitsPerAuthor: localStorage.getItem(
@@ -141,6 +90,9 @@ class ResourceManagementActivity extends DashboardAbstract {
             ),
             queryCommitsTimescale: localStorage.getItem(
                 "commits_timescale_expert_query"
+            ),
+            queryLatestCommits: localStorage.getItem(
+                "latest_commits_expert_query"
             )
         });
 
@@ -155,6 +107,9 @@ class ResourceManagementActivity extends DashboardAbstract {
                 ),
                 queryCommitsTimescale: localStorage.getItem(
                     "commits_timescale_expert_query"
+                ),
+                queryLatestCommits: localStorage.getItem(
+                    "latest_commits_expert_query"
                 )
             }
         });
@@ -170,6 +125,10 @@ class ResourceManagementActivity extends DashboardAbstract {
 
     updateStateQueryCommitsTimescale(event) {
         localStorage.setItem("commits_timescale_expert_query", event);
+    }
+
+    updateStateQueryLatestCommits(event) {
+        localStorage.setItem("latest_commits_expert_query", event);
     }
 
     toggleInfo() {
@@ -347,17 +306,52 @@ class ResourceManagementActivity extends DashboardAbstract {
                     </Col>
                     <Col xs="12" sm="12" md="6">
                         <Card>
-                            <CardHeader>
-                                Latest 20 commits
-                                <div className="card-actions">
-                                    <PopoverItem
-                                        key={"Latest20commits"}
-                                        type={"Latest 20 commits"}
-                                        id={"Latest20commits"}
-                                    />
-                                </div>
-                            </CardHeader>
+                            <CustomCardHeader
+                                cardHeaderText={"Latest 20 commits"}
+                                showExpertMode={true}
+                                placement={"bottom"}
+                                target={"Popover4"}
+                                popoverHeaderText={"Latest 20 commits"}
+                                popoverBody={
+                                    "The table shows the author, the date, and the commit message of the latest 20 commits."
+                                }
+                            />
                             <CardBody>
+                                <div
+                                    className={
+                                        "expert-mode-editor hide-expert-mode latest-20-commits"
+                                    }
+                                >
+                                    <CypherEditor
+                                        className="cypheredit"
+                                        value={this.state.queryLatestCommits}
+                                        options={{
+                                            mode: "cypher",
+                                            theme: "cypher"
+                                        }}
+                                        onValueChange={this.updateStateQueryLatestCommits.bind(
+                                            this
+                                        )}
+                                    />
+                                    <Button
+                                        onClick={this.sendQuery.bind(this)}
+                                        className="btn btn-success send-query float-right"
+                                        color="success"
+                                        id="send"
+                                    >
+                                        Send
+                                    </Button>
+                                    <Button
+                                        onClick={this.clearLatestCommits.bind(
+                                            this
+                                        )}
+                                        className="btn btn-success send-query float-right margin-right"
+                                        color="danger"
+                                        id="reset"
+                                    >
+                                        Reset
+                                    </Button>
+                                </div>
                                 <LatestCommits />
                             </CardBody>
                         </Card>
