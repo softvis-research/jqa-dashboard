@@ -2,6 +2,34 @@ import $ from "jquery";
 import { neo4jSession } from "../../views/Dashboard/AbstractDashboardComponent";
 
 class CommitsTimescaleModel {
+    constructor(props) {
+        const commitsTimescaleQuery =
+            "MATCH (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->()-[:MODIFIES]->(f:File), " +
+            "(c)-[:OF_DAY]->(d)-[:OF_MONTH]->(m)-[:OF_YEAR]->(y) " +
+            "WHERE NOT c:Merge " +
+            "RETURN y.year as year, m.month as month, d.day as day, count(distinct c) as commits, count(f) as files " +
+            "ORDER BY year, month, day";
+        localStorage.setItem(
+            "commits_timescale_original_query",
+            commitsTimescaleQuery
+        );
+
+        this.state = {
+            queryStringCommitsTimescale: commitsTimescaleQuery
+        };
+
+        if (!localStorage.getItem("commits_timescale_expert_query")) {
+            localStorage.setItem(
+                "commits_timescale_expert_query",
+                this.state.queryStringCommitsTimescale
+            );
+        } else {
+            this.state.queryStringCommitsTimescale = localStorage.getItem(
+                "commits_timescale_expert_query"
+            );
+        }
+    }
+
     readCommitsTimescale(thisBackup) {
         var aggregatedData = [];
 
@@ -9,13 +37,7 @@ class CommitsTimescaleModel {
         var maxDate = new Date("1970-01-01");
 
         neo4jSession
-            .run(
-                "MATCH (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->()-[:MODIFIES]->(f:File), " +
-                    "(c)-[:OF_DAY]->(d)-[:OF_MONTH]->(m)-[:OF_YEAR]->(y) " +
-                    "WHERE NOT c:Merge " +
-                    "RETURN y.year as year, m.month as month, d.day as day, count(distinct c) as commits, count(f) as files " +
-                    "ORDER BY year, month, day  "
-            )
+            .run(this.state.queryStringCommitsTimescale)
             .then(function(result) {
                 result.records.forEach(function(record) {
                     var dayString =

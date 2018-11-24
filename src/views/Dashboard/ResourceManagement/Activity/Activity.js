@@ -80,7 +80,8 @@ class ResourceManagementActivity extends DashboardAbstract {
 
         this.state = {
             queryCommitsPerAuthor: "",
-            queryFilesPerAuthor: ""
+            queryFilesPerAuthor: "",
+            queryCommitsTimescale: ""
         };
 
         this.toggleInfo = this.toggleInfo.bind(this);
@@ -95,6 +96,9 @@ class ResourceManagementActivity extends DashboardAbstract {
             ),
             queryFilesPerAuthor: localStorage.getItem(
                 "files_per_author_expert_query"
+            ),
+            queryCommitsTimescale: localStorage.getItem(
+                "commits_timescale_expert_query"
             )
         });
     }
@@ -119,6 +123,14 @@ class ResourceManagementActivity extends DashboardAbstract {
         this.sendQuery(this);
     }
 
+    clearCommitsTimescale(event) {
+        localStorage.setItem(
+            "commits_timescale_expert_query",
+            localStorage.getItem("commits_timescale_original_query")
+        );
+        this.sendQuery(this);
+    }
+
     sendQuery(event) {
         this.setState({
             queryCommitsPerAuthor: localStorage.getItem(
@@ -126,6 +138,9 @@ class ResourceManagementActivity extends DashboardAbstract {
             ),
             queryFilesPerAuthor: localStorage.getItem(
                 "files_per_author_expert_query"
+            ),
+            queryCommitsTimescale: localStorage.getItem(
+                "commits_timescale_expert_query"
             )
         });
 
@@ -137,6 +152,9 @@ class ResourceManagementActivity extends DashboardAbstract {
                 ),
                 queryStringFilesPerAuthor: localStorage.getItem(
                     "files_per_author_expert_query"
+                ),
+                queryCommitsTimescale: localStorage.getItem(
+                    "commits_timescale_expert_query"
                 )
             }
         });
@@ -148,6 +166,10 @@ class ResourceManagementActivity extends DashboardAbstract {
 
     updateStateQueryFilesPerAuthor(event) {
         localStorage.setItem("files_per_author_expert_query", event);
+    }
+
+    updateStateQueryCommitsTimescale(event) {
+        localStorage.setItem("commits_timescale_expert_query", event);
     }
 
     toggleInfo() {
@@ -273,17 +295,52 @@ class ResourceManagementActivity extends DashboardAbstract {
                 <Row>
                     <Col xs="12" sm="12" md="6">
                         <Card className="commit-calendar">
-                            <CardHeader>
-                                Commits over time
-                                <div className="card-actions">
-                                    <PopoverItem
-                                        key={"Commitsovertime"}
-                                        type={"Commits over time"}
-                                        id={"Commitsovertime"}
-                                    />
-                                </div>
-                            </CardHeader>
+                            <CustomCardHeader
+                                cardHeaderText={"Commits over time"}
+                                showExpertMode={true}
+                                placement={"bottom"}
+                                target={"Popover3"}
+                                popoverHeaderText={"Commits over time"}
+                                popoverBody={
+                                    "The calendar shows the number of commits per day. The darker the color is, the more commits were made."
+                                }
+                            />
                             <CardBody>
+                                <div
+                                    className={
+                                        "expert-mode-editor hide-expert-mode commits-over-time"
+                                    }
+                                >
+                                    <CypherEditor
+                                        className="cypheredit"
+                                        value={this.state.queryCommitsTimescale}
+                                        options={{
+                                            mode: "cypher",
+                                            theme: "cypher"
+                                        }}
+                                        onValueChange={this.updateStateQueryCommitsTimescale.bind(
+                                            this
+                                        )}
+                                    />
+                                    <Button
+                                        onClick={this.sendQuery.bind(this)}
+                                        className="btn btn-success send-query float-right"
+                                        color="success"
+                                        id="send"
+                                    >
+                                        Send
+                                    </Button>
+                                    <Button
+                                        onClick={this.clearCommitsTimescale.bind(
+                                            this
+                                        )}
+                                        className="btn btn-success send-query float-right margin-right"
+                                        color="danger"
+                                        id="reset"
+                                    >
+                                        Reset
+                                    </Button>
+                                </div>
                                 <CommitsTimescale />
                             </CardBody>
                         </Card>
