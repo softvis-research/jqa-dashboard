@@ -41,7 +41,9 @@ describe("<CommitsTimescale />", () => {
         });
         var html = wrapper.html();
 
-        expect(html).to.contain('<div class="calendar-wrapper">');
+        expect(html).to.contain(
+            '<div class="calendar-wrapper visualization-wrapper">'
+        );
         expect(html).to.contain('<div class="calendar-legend">');
         //expect(html).to.contain('<svg>');
     });

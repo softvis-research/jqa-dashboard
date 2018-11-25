@@ -12,7 +12,7 @@ it("renders without crashing", () => {
 });
 */
 
-it("click on popover", () => {
+it("click on reset", () => {
     var wrapper = shallow(<ArchitectureFileTypes />);
-    wrapper.find("#Popover1").simulate("click");
+    wrapper.find("#reset").simulate("click");
 });
