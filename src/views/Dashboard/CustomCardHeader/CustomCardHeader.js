@@ -89,7 +89,10 @@ class CustomCardHeader extends Component {
         //var popoverToggle = this.props.toggle;
         var popoverHeaderText = this.props.popoverHeaderText;
         var popoverBody = this.props.popoverBody;
-        var cssClass = headerText.toLowerCase().replace(/\s/g, "-");
+        var cssClass = headerText
+            .toLowerCase()
+            .replace(/\s/g, "-")
+            .replace(/[&/\\#,+()$~%.'":*?<>{}]/g, "");
 
         var expertToggle = "";
         if (showExpertMode) {
