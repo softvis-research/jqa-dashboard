@@ -38,13 +38,22 @@ class LatestCommits extends DashboardAbstract {
 
     handleAction(event) {
         var action = event.action;
+        var latestCommitsModel = "";
         switch (action.actionType) {
+            case "EXPERT_QUERY":
+                latestCommitsModel = new LatestCommitsModel();
+                latestCommitsModel.readLatestCommits(
+                    this,
+                    this.state.startDate,
+                    this.state.endDate
+                );
+                break;
             case "DATERANGEPICKER_MODIFIED":
                 this.setState({
                     startDate: action.data.displayFrom,
                     endDate: action.data.displayTo
                 });
-                var latestCommitsModel = new LatestCommitsModel();
+                latestCommitsModel = new LatestCommitsModel();
                 latestCommitsModel.readLatestCommits(
                     this,
                     this.state.startDate,
@@ -67,7 +76,7 @@ class LatestCommits extends DashboardAbstract {
         }
 
         return (
-            <div>
+            <div className={"visualization-wrapper display-block clear"}>
                 <div style={{ height: "409px" }}>
                     <ReactTable
                         data={this.state.latestCommits}

@@ -25,6 +25,6 @@ describe("<FileType />", () => {
         });
         var html = wrapper.html();
 
-        expect(html).to.contain('<div><div style="height:600px">');
+        expect(html).to.contain('<div style="height:600px">');
     });
 });

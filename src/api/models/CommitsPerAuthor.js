@@ -1,21 +1,42 @@
 import { neo4jSession } from "../../views/Dashboard/AbstractDashboardComponent";
 
 class CommitsPerAuthorModel {
+    constructor(props) {
+        const commitsPerAuthorQuery =
+            "MATCH (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(file:File) " +
+            "WHERE NOT c:Merge AND c.date >= {startDate} AND c.date <= {endDate} " +
+            "RETURN a.name as author, count(distinct c) as commits " +
+            "ORDER BY commits DESC";
+        localStorage.setItem(
+            "commits_per_author_original_query",
+            commitsPerAuthorQuery
+        );
+
+        this.state = {
+            queryStringCommitsPerAuthor: commitsPerAuthorQuery
+        };
+
+        if (!localStorage.getItem("commits_per_author_expert_query")) {
+            localStorage.setItem(
+                "commits_per_author_expert_query",
+                this.state.queryStringCommitsPerAuthor
+            );
+        } else {
+            this.state.queryStringCommitsPerAuthor = localStorage.getItem(
+                "commits_per_author_expert_query"
+            );
+        }
+    }
+
     readCommitsPerAuthor(thisBackup, startDate, endDate) {
         var aggregatedData = [];
         var recordCount = 0;
 
         neo4jSession
-            .run(
-                "MATCH (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(file:File) " +
-                    "WHERE NOT c:Merge AND c.date >= {startDate} AND c.date <= {endDate} " +
-                    "RETURN a.name as author, count(distinct c) as commits " +
-                    "ORDER BY commits DESC",
-                {
-                    startDate: startDate,
-                    endDate: endDate
-                }
-            )
+            .run(this.state.queryStringCommitsPerAuthor, {
+                startDate: startDate,
+                endDate: endDate
+            })
             .then(function(result) {
                 result.records.forEach(function(record) {
                     var recordConverted = {

@@ -97,6 +97,23 @@ class TestCoverageTreeMap extends DashboardAbstract {
         super.componentWillUnmount();
     }
 
+    handleAction(event) {
+        var action = event.action;
+        switch (action.actionType) {
+            case "EXPERT_QUERY":
+                if (databaseCredentialsProvided) {
+                    var testCoverageModel = new TestCoverageModel();
+                    testCoverageModel.readTestCoverage(
+                        this,
+                        localStorage.getItem(IDENTIFIER_PROJECT_NAME)
+                    );
+                }
+                break;
+            default:
+                return true;
+        }
+    }
+
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
@@ -110,93 +127,99 @@ class TestCoverageTreeMap extends DashboardAbstract {
         var thisBackup = this;
 
         return (
-            <div className={"test-coverage"} style={{ height: "800px" }}>
-                <ResponsiveTreeMapHtml
-                    root={this.state.testCoverageData}
-                    identity="name"
-                    value="loc"
-                    innerPadding={2}
-                    outerPadding={2}
-                    margin={{
-                        top: 10,
-                        right: 10,
-                        bottom: 10,
-                        left: 10
-                    }}
-                    enableLabel={false}
-                    colors="nivo"
-                    colorBy={function(e) {
-                        var data = e.data;
+            <div className={"visualization-wrapper"}>
+                <div className={"test-coverage"} style={{ height: "800px" }}>
+                    <ResponsiveTreeMapHtml
+                        root={this.state.testCoverageData}
+                        identity="name"
+                        value="loc"
+                        innerPadding={2}
+                        outerPadding={2}
+                        margin={{
+                            top: 10,
+                            right: 10,
+                            bottom: 10,
+                            left: 10
+                        }}
+                        enableLabel={false}
+                        colors="nivo"
+                        colorBy={function(e) {
+                            var data = e.data;
 
-                        var role = "undefined";
-                        if (data && data.role) {
-                            role = data.role;
-                        }
+                            var role = "undefined";
+                            if (data && data.role) {
+                                role = data.role;
+                            }
 
-                        var r, g, b;
+                            var r, g, b;
 
-                        if (data && role === "leaf") {
-                            var coverage = data.coverage / 100;
-                            var rgbObject = tinygradient("red", "green").rgbAt(
-                                coverage
-                            );
-                            r = Math.round(rgbObject._r);
-                            g = Math.round(rgbObject._g);
-                            b = Math.round(rgbObject._b);
-                            return "rgb(" + r + ", " + g + ", " + b + ")";
-                        } else if (data) {
-                            var level = data.level;
-                            r = 228 - 11 * level * 2;
-                            g = 242 - 6 * level * 2;
-                            b = 243 - 6 * level * 2;
-                            return "rgb(" + r + ", " + g + ", " + b + ")";
-                        }
-                    }}
-                    borderColor="inherit:darker(0.3)"
-                    animate={true}
-                    motionStiffness={90}
-                    motionDamping={11}
-                    tooltip={({ id, value, color, node }) => (
-                        <div
-                            style={{
-                                whiteSpace: "pre",
-                                display: "flex",
-                                alignItems: "center"
-                            }}
-                        >
-                            <span
+                            if (data && role === "leaf") {
+                                var coverage = data.coverage / 100;
+                                var rgbObject = tinygradient(
+                                    "red",
+                                    "green"
+                                ).rgbAt(coverage);
+                                r = Math.round(rgbObject._r);
+                                g = Math.round(rgbObject._g);
+                                b = Math.round(rgbObject._b);
+                                return "rgb(" + r + ", " + g + ", " + b + ")";
+                            } else if (data) {
+                                var level = data.level;
+                                r = 228 - 11 * level * 2;
+                                g = 242 - 6 * level * 2;
+                                b = 243 - 6 * level * 2;
+                                return "rgb(" + r + ", " + g + ", " + b + ")";
+                            }
+                        }}
+                        borderColor="inherit:darker(0.3)"
+                        animate={false}
+                        motionStiffness={90}
+                        motionDamping={11}
+                        tooltip={({ id, value, color, node }) => (
+                            <div
                                 style={{
-                                    display: "block",
-                                    height: "12px",
-                                    width: "12px",
-                                    marginRight: "7px",
-                                    backgroundColor: color
+                                    whiteSpace: "pre",
+                                    display: "flex",
+                                    alignItems: "center"
                                 }}
-                            />
-                            <span>
-                                <strong>
-                                    <span className={"additional"}>
-                                        {TestCoverageTreeMap.reversePathForDisplay(
-                                            node
-                                        )}
-                                    </span>
-                                    <span className={"additional"}>{id}</span>
-                                    <span className={"additional"}>
-                                        LOC: {value}
-                                        {thisBackup.findCoverageByNode(node) >
-                                        -1
-                                            ? ", Test coverage: " +
-                                              thisBackup.findCoverageByNode(
-                                                  node
-                                              ) +
-                                              "%"
-                                            : ""}
-                                    </span>
-                                </strong>
-                            </span>
-                        </div>
-                    )}
-                />
+                            >
+                                <span
+                                    style={{
+                                        display: "block",
+                                        height: "12px",
+                                        width: "12px",
+                                        marginRight: "7px",
+                                        backgroundColor: color
+                                    }}
+                                />
+                                <span>
+                                    <strong>
+                                        <span className={"additional"}>
+                                            {TestCoverageTreeMap.reversePathForDisplay(
+                                                node
+                                            )}
+                                        </span>
+                                        <span className={"additional"}>
+                                            {id}
+                                        </span>
+                                        <span className={"additional"}>
+                                            LOC: {value}
+                                            {thisBackup.findCoverageByNode(
+                                                node
+                                            ) > -1
+                                                ? ", Test coverage: " +
+                                                  thisBackup.findCoverageByNode(
+                                                      node
+                                                  ) +
+                                                  "%"
+                                                : ""}
+                                        </span>
+                                    </strong>
+                                </span>
+                            </div>
+                        )}
+                    />
+                </div>
             </div>
         );
     }

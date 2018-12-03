@@ -12,17 +12,34 @@ class FilesPerFiletypePerAuthorModel {
             //TODO: this could result in a sql injection, proper enconding is needed!
         }
 
-        var query =
-            "MATCH " +
-            "  (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(file:File) " +
-            "WHERE " +
+        var knowledgeDistributionQuery =
+            "MATCH (a:Author)-[:COMMITTED]->(c:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(file:File) " +
+            "WHERE" +
             whereClause +
-            "RETURN " +
-            "  file.type as filetype, a.name as author, count(file) as files " +
-            "ORDER BY " +
-            "  files DESC, filetype ";
+            "RETURN file.type as filetype, a.name as author, count(file) as files " +
+            "ORDER BY files DESC, filetype";
+        localStorage.setItem(
+            "knowledge_distribution_original_query",
+            knowledgeDistributionQuery
+        );
+
+        this.state = {
+            queryString: knowledgeDistributionQuery
+        };
+
+        if (!localStorage.getItem("knowledge_distribution_expert_query")) {
+            localStorage.setItem(
+                "knowledge_distribution_expert_query",
+                this.state.queryString
+            );
+        } else {
+            this.state.queryString = localStorage.getItem(
+                "knowledge_distribution_expert_query"
+            );
+        }
+
         neo4jSession
-            .run(query)
+            .run(this.state.queryString)
             .then(function(result) {
                 result.records.forEach(function(record) {
                     var author = record.get(1);

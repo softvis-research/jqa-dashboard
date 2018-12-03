@@ -34,6 +34,20 @@ class FileType extends DashboardAbstract {
         super.componentWillUnmount();
     }
 
+    handleAction(event) {
+        var action = event.action;
+        switch (action.actionType) {
+            case "EXPERT_QUERY":
+                if (databaseCredentialsProvided) {
+                    var fileTypesModel = new FileTypesModel();
+                    fileTypesModel.readFiletypes(this);
+                }
+                break;
+            default:
+                return true;
+        }
+    }
+
     render() {
         var redirect = super.render();
         if (redirect.length > 0) {
@@ -45,7 +59,7 @@ class FileType extends DashboardAbstract {
         }
 
         return (
-            <div>
+            <div className={"visualization-wrapper"}>
                 <div style={{ height: "600px" }}>
                     <ResponsivePie
                         data={this.state.filetypeData}

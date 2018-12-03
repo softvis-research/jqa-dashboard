@@ -314,7 +314,8 @@ a.breadcrumb-item {
   }
 }
 
-.card-actions a:hover {
+.card-actions a:hover,
+.card-actions button:hover {
   cursor: pointer;
 }
 
@@ -350,4 +351,59 @@ a.breadcrumb-item {
 
 .settings label {
   padding-top: 0.375rem;
+}
+
+.switch {
+  margin-top: 8px !important;
+  margin-right: 10px !important;
+}
+
+.display-block {
+  display: block !important;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.expert-label {
+  font-size: 11px;
+  margin-top: 10px;
+  margin-right: 3px;
+}
+
+.hide-expert-mode {
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.margin-top-50 {
+  margin-top: 50px;
+}
+
+.margin-bottom-50 {
+  margin-bottom: 50px;
+}
+
+.switch-secondary .switch-input:checked + .switch-slider {
+  background: #73818f;
+  border-color: #73818f;
+}
+
+.switch-secondary .switch-input:checked + .switch-slider::before {
+  border-color: #73818f;
+}
+
+.customize-query-label {
+  padding-right: 10px !important;
+  padding-left: 10px !important;
+  width: auto !important;
+  &:focus {
+    text-decoration: none;
+  }
+}
+
+.height-auto {
+  height: auto !important;
 }

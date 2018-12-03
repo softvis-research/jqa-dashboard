@@ -40,6 +40,17 @@ class CommitsTimescale extends DashboardAbstract {
         }
     }
 
+    componentDidUpdate() {
+        //when applying expert mode query the calender wrapper will completely rerender > fix margins
+        if (
+            !$(".calendar-wrapper")
+                .prev()
+                .hasClass("hide-expert-mode")
+        ) {
+            $(".calendar-wrapper").addClass("margin-top-50 margin-bottom-50");
+        }
+    }
+
     componentWillUnmount() {
         $(".daterangepicker-placeholder").html("");
         super.componentWillUnmount();
@@ -47,6 +58,26 @@ class CommitsTimescale extends DashboardAbstract {
 
     setYear(year) {
         this.setState({ calendarPaginationYear: year });
+    }
+
+    handleAction(event) {
+        var action = event.action;
+        var commitsTimescaleModel = "";
+        switch (action.actionType) {
+            case "EXPERT_QUERY":
+                if (databaseCredentialsProvided) {
+                    // clear pmd data to prevent multiple rendering errors
+                    this.setState({
+                        commitsTimescale: []
+                    });
+
+                    commitsTimescaleModel = new CommitsTimescaleModel();
+                    commitsTimescaleModel.readCommitsTimescale(this);
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     render() {
@@ -143,7 +174,7 @@ class CommitsTimescale extends DashboardAbstract {
         });
 
         return (
-            <div className="calendar-wrapper">
+            <div className="calendar-wrapper visualization-wrapper">
                 <DateRangePicker
                     isInvalidDate={function(date) {
                         if (
