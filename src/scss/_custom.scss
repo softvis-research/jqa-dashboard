@@ -314,7 +314,8 @@ a.breadcrumb-item {
   }
 }
 
-.card-actions a:hover {
+.card-actions a:hover,
+.card-actions button:hover {
   cursor: pointer;
 }
 

@@ -1,7 +1,7 @@
 @charset "UTF-8";
 /*!
  * CoreUI - Open Source Dashboard UI Kit
- * @version v2.1.1
+ * @version v2.1.3
  * @link https://coreui.io
  * Copyright (c) 2018 creativeLabs Łukasz Holeczek
  * Licensed under MIT (https://coreui.io/license)
@@ -10129,7 +10129,8 @@ a.breadcrumb-item {
     background-color: #f0f0f0;
     border-color: #c8ced3; }
 
-.card-actions a:hover {
+.card-actions a:hover,
+.card-actions button:hover {
   cursor: pointer; }
 
 .bs-popover-bottom, .bs-popover-auto[x-placement^="bottom"] {
