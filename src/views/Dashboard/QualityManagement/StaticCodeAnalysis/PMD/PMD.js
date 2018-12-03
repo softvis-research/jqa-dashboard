@@ -14,7 +14,8 @@ import {
     CardBody,
     Popover,
     PopoverHeader,
-    PopoverBody
+    PopoverBody,
+    Tooltip
 } from "reactstrap";
 import PMDModel from "../../../../../api/models/PMD";
 import PmdRadar from "./visualization/PmdRadar";
@@ -32,6 +33,7 @@ class PopoverItem extends Component {
 
         this.toggle = this.toggle.bind(this);
         this.state = {
+            tooltipOpen: [false, false],
             popoverOpen: false,
             infoText: {
                 "Best Practices":
@@ -46,6 +48,15 @@ class PopoverItem extends Component {
                 Performance: "Rules that flag suboptimal code."
             }
         };
+    }
+
+    toggleTooltip(i) {
+        const newArray = this.state.tooltipOpen.map((element, index) => {
+            return index === i ? !element : false;
+        });
+        this.setState({
+            tooltipOpen: newArray
+        });
     }
 
     toggle() {
@@ -65,6 +76,16 @@ class PopoverItem extends Component {
                 >
                     <i className="text-muted fa fa-question-circle" />
                 </button>
+                <Tooltip
+                    placement="top"
+                    isOpen={this.state.tooltipOpen[1]}
+                    target={"Popover-" + this.props.id}
+                    toggle={() => {
+                        this.toggleTooltip(1);
+                    }}
+                >
+                    Show details
+                </Tooltip>
                 <Popover
                     placement={"bottom"}
                     isOpen={this.state.popoverOpen}
