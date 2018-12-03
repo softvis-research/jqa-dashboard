@@ -2,16 +2,9 @@ import React from "react";
 import DashboardAbstract, {
     databaseCredentialsProvided
 } from "../../AbstractDashboardComponent";
-import {
-    Row,
-    Col,
-    Card,
-    CardHeader,
-    CardBody,
-    Popover,
-    PopoverHeader,
-    PopoverBody
-} from "reactstrap";
+import CustomCardHeader from "../../CustomCardHeader/CustomCardHeader";
+import { CypherEditor } from "graph-app-kit/components/Editor";
+import { Button, Row, Col, Card, CardBody } from "reactstrap";
 import DynamicBreadcrumb from "../../DynamicBreadcrumb/DynamicBreadcrumb";
 import StructureBubble from "./visualization/StructureBubble";
 import { Treebeard } from "react-treebeard";
@@ -37,6 +30,7 @@ class ArchitectureStructure extends DashboardAbstract {
         super(props);
 
         this.state = {
+            query: "",
             hotSpotData: {},
             treeViewData: {},
             breadCrumbData: [""],
@@ -71,10 +65,39 @@ class ArchitectureStructure extends DashboardAbstract {
                 });
             //this.readStructure();
         }
+
+        this.setState({
+            query: localStorage.getItem("hotspots_expert_query")
+        });
     }
 
     componentWillUnmount() {
         super.componentWillUnmount();
+    }
+
+    clear(event) {
+        localStorage.setItem(
+            "hotspots_expert_query",
+            localStorage.getItem("hotspots_original_query")
+        );
+        this.sendQuery(this);
+    }
+
+    sendQuery(event) {
+        this.setState({
+            query: localStorage.getItem("hotspots_expert_query")
+        });
+
+        AppDispatcher.handleAction({
+            actionType: "EXPERT_QUERY",
+            data: {
+                queryString: localStorage.getItem("hotspots_expert_query")
+            }
+        });
+    }
+
+    updateStateQuery(event) {
+        localStorage.setItem("hotspots_expert_query", event);
     }
 
     triggerClickOnNode(node) {
@@ -109,8 +132,26 @@ class ArchitectureStructure extends DashboardAbstract {
     }
 
     handleAction(event) {
+        var thisBackup = this;
         var action = event.action;
         switch (action.actionType) {
+            case "EXPERT_QUERY":
+                if (databaseCredentialsProvided) {
+                    // clear pmd data to prevent multiple rendering errors
+                    this.setState({
+                        hotSpotData: {}
+                    });
+
+                    var hotspotModel = new HotspotModel();
+                    hotspotModel
+                        .readHotspots(IDENTIFIER_PROJECT_NAME)
+                        .then(function(data) {
+                            thisBackup.setState({
+                                hotSpotData: data.hierarchicalData
+                            });
+                        });
+                }
+                break;
             case "SELECT_HOTSPOT_PACKAGE":
                 var selectedPackage = event.action.data.data.id;
 
@@ -258,34 +299,55 @@ class ArchitectureStructure extends DashboardAbstract {
                 <Row>
                     <Col xs="12" sm="12" md="12">
                         <Card>
-                            <CardHeader>
-                                Structure
-                                <div className="card-actions">
-                                    <button
-                                        onClick={this.toggleInfo}
-                                        id="Popover2"
-                                    >
-                                        <i className="text-muted fa fa-question-circle" />
-                                    </button>
-                                    <Popover
-                                        placement="bottom"
-                                        isOpen={this.state.popoverOpen}
-                                        target="Popover2"
-                                        toggle={this.toggleInfo}
-                                    >
-                                        <PopoverHeader>Structure</PopoverHeader>
-                                        <PopoverBody>
-                                            The structure analysis view gives an
-                                            overview of the project hierarchy.
-                                            Packages and types are mapped to
-                                            nested circles with LOC as their
-                                            size.
-                                        </PopoverBody>
-                                    </Popover>
-                                </div>
-                            </CardHeader>
+                            <CustomCardHeader
+                                cardHeaderText={"Structure"}
+                                showExpertMode={true}
+                                placement={"bottom"}
+                                target={"Popover1"}
+                                popoverHeaderText={"Structure"}
+                                popoverBody={
+                                    "The structure analysis view gives an overview of the project hierarchy. Packages and types are mapped to nested circles with LOC as their size."
+                                }
+                            />
                             <CardBody>
-                                <Row>
+                                <div
+                                    className={
+                                        "expert-mode-editor hide-expert-mode structure"
+                                    }
+                                >
+                                    <CypherEditor
+                                        className="cypheredit"
+                                        value={this.state.query}
+                                        options={{
+                                            mode: "cypher",
+                                            theme: "cypher"
+                                        }}
+                                        onValueChange={this.updateStateQuery.bind(
+                                            this
+                                        )}
+                                    />
+                                    <Button
+                                        onClick={this.sendQuery.bind(this)}
+                                        className="btn btn-success send-query float-right"
+                                        color="success"
+                                        id="send"
+                                    >
+                                        Send
+                                    </Button>
+                                    <Button
+                                        onClick={this.clear.bind(this)}
+                                        className="btn btn-success send-query float-right margin-right"
+                                        color="danger"
+                                        id="reset"
+                                    >
+                                        Reset
+                                    </Button>
+                                </div>
+                                <Row
+                                    className={
+                                        "display-block clear visualization-wrapper"
+                                    }
+                                >
                                     <Col xs="12" sm="12" md="12">
                                         <Card>
                                             <CardBody>

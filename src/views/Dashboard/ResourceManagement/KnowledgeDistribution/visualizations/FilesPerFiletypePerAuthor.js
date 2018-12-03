@@ -39,10 +39,16 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
     handleAction(event) {
         var action = event.action;
         switch (action.actionType) {
+            case "EXPERT_QUERY":
             case "SELECT_COMMITSPERAUTHOR":
-                authorToFilterBy = action.data.indexValue;
-                var filesPerFiletypePerAuthorModel = new FilesPerFiletypePerAuthorModel();
-                filesPerFiletypePerAuthorModel.readData(this, authorToFilterBy);
+                if (databaseCredentialsProvided) {
+                    authorToFilterBy = action.data.indexValue;
+                    var filesPerFiletypePerAuthorModel = new FilesPerFiletypePerAuthorModel();
+                    filesPerFiletypePerAuthorModel.readData(
+                        this,
+                        authorToFilterBy
+                    );
+                }
                 break;
             default:
                 return true;
@@ -98,7 +104,7 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
 
         //TODO: calculate height from this.state.dataKeys.length
         return (
-            <div>
+            <div className={"visualization-wrapper"}>
                 <div style={{ height: "4000px", width: "85%", float: "left" }}>
                     <ResponsiveBar
                         onClick={function(event) {

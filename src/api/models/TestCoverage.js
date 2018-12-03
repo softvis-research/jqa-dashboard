@@ -4,18 +4,35 @@ import DashboardAbstract from "../../views/Dashboard/AbstractDashboardComponent"
 
 class TestCoverageModel extends DashboardAbstract {
     readTestCoverage(thisBackup, projectName) {
+        const testCoverageQuery =
+            "MATCH (c:Jacoco:Class)-[:HAS_METHOD]->(m:Method:Jacoco)-[:HAS_COUNTER]->(cnt:Counter) " +
+            "WHERE cnt.type='INSTRUCTION' " +
+            "RETURN  c.fqn as fqn, m.signature as signature,(cnt.covered*100)/(cnt.covered+cnt.missed) as coverage, cnt.covered+cnt.missed as loc " +
+            "ORDER BY fqn, signature ASCENDING";
+        localStorage.setItem("test_coverage_original_query", testCoverageQuery);
+
+        this.state = {
+            queryString: testCoverageQuery
+        };
+
+        if (!localStorage.getItem("test_coverage_expert_query")) {
+            localStorage.setItem(
+                "test_coverage_expert_query",
+                this.state.queryString
+            );
+        } else {
+            this.state.queryString = localStorage.getItem(
+                "test_coverage_expert_query"
+            );
+        }
+
         var flatData = [];
         var hierarchicalData = [];
         var collectedNames = [];
         var cpHelper = new CirclePackingHelper();
 
         neo4jSession
-            .run(
-                "MATCH (c:Jacoco:Class)-[:HAS_METHOD]->(m:Method:Jacoco)-[:HAS_COUNTER]->(cnt:Counter) " +
-                    "WHERE cnt.type='INSTRUCTION' " +
-                    "RETURN  c.fqn as fqn, m.signature as signature,(cnt.covered*100)/(cnt.covered+cnt.missed) as coverage, cnt.covered+cnt.missed as loc " +
-                    "ORDER BY fqn, signature ASCENDING"
-            )
+            .run(this.state.queryString)
             .then(function(result) {
                 var idCounter = 1;
                 // collect results

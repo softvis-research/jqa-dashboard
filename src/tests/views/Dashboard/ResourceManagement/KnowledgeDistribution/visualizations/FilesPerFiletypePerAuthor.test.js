@@ -27,7 +27,7 @@ describe("<FilesPerFiletypePerAuthor />", () => {
         var html = wrapper.html();
 
         expect(html).to.contain(
-            '<div><div style="height:4000px;width:85%;float:left"><div style="width:100%;height:100%">'
+            '<div class="visualization-wrapper"><div style="height:4000px;width:85%;float:left"><div style="width:100%;height:100%">'
         );
         //expect(html).to.contain('<svg>');
     });

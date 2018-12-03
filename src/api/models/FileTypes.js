@@ -1,17 +1,36 @@
 import { neo4jSession } from "../../views/Dashboard/AbstractDashboardComponent";
 
 class FileTypesModel {
+    constructor(props) {
+        const fileTypeQuery =
+            "MATCH (f:Git:File) " +
+            'WITH f, split(f.relativePath, ".") as splittedFileName ' +
+            "SET f.type = splittedFileName[size(splittedFileName)-1] " +
+            "RETURN f.type as filetype, count(f) as files " +
+            "ORDER BY files DESC";
+        localStorage.setItem("filetype_original_query", fileTypeQuery);
+
+        this.state = {
+            queryString: fileTypeQuery
+        };
+
+        if (!localStorage.getItem("filetype_expert_query")) {
+            localStorage.setItem(
+                "filetype_expert_query",
+                this.state.queryString
+            );
+        } else {
+            this.state.queryString = localStorage.getItem(
+                "filetype_expert_query"
+            );
+        }
+    }
+
     readFiletypes(thisBackup) {
         var aggregatedData = [];
 
         neo4jSession
-            .run(
-                "MATCH (f:Git:File) " +
-                    'WITH f, split(f.relativePath, ".") as splittedFileName ' +
-                    "SET f.type = splittedFileName[size(splittedFileName)-1] " +
-                    "RETURN f.type as filetype, count(f) as files " +
-                    "ORDER BY files DESC"
-            )
+            .run(this.state.queryString)
             .then(function(result) {
                 result.records.forEach(function(record) {
                     var recordConverted = {

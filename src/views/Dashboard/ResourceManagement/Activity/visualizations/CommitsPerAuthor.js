@@ -39,13 +39,22 @@ class CommitsPerAuthor extends DashboardAbstract {
 
     handleAction(event) {
         var action = event.action;
+        var commitsPerAuthorModel = "";
         switch (action.actionType) {
+            case "EXPERT_QUERY":
+                commitsPerAuthorModel = new CommitsPerAuthorModel();
+                commitsPerAuthorModel.readCommitsPerAuthor(
+                    this,
+                    this.state.startDate,
+                    this.state.endDate
+                );
+                break;
             case "DATERANGEPICKER_MODIFIED":
                 this.setState({
                     startDate: action.data.displayFrom,
                     endDate: action.data.displayTo
                 });
-                var commitsPerAuthorModel = new CommitsPerAuthorModel();
+                commitsPerAuthorModel = new CommitsPerAuthorModel();
                 commitsPerAuthorModel.readCommitsPerAuthor(
                     this,
                     this.state.startDate,
@@ -68,7 +77,7 @@ class CommitsPerAuthor extends DashboardAbstract {
         }
 
         return (
-            <div>
+            <div className={"visualization-wrapper"}>
                 <div style={{ height: "600px" }}>
                     <ResponsiveBar
                         onClick={function(event) {

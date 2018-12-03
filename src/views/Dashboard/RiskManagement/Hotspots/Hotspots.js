@@ -2,16 +2,9 @@ import React from "react";
 import DashboardAbstract, {
     databaseCredentialsProvided
 } from "../../AbstractDashboardComponent";
-import {
-    Row,
-    Col,
-    Card,
-    CardHeader,
-    CardBody,
-    Popover,
-    PopoverHeader,
-    PopoverBody
-} from "reactstrap";
+import CustomCardHeader from "../../CustomCardHeader/CustomCardHeader";
+import { CypherEditor } from "graph-app-kit/components/Editor";
+import { Button, Row, Col, Card, CardBody } from "reactstrap";
 import DynamicBreadcrumb from "../../DynamicBreadcrumb/DynamicBreadcrumb";
 import SimpleBar from "simplebar";
 import HotspotModel from "../../../../api/models/Hotspots";
@@ -30,6 +23,7 @@ class RiskManagementHotspots extends DashboardAbstract {
         super(props);
 
         this.state = {
+            query: "",
             maxCommits: 0,
             hotSpotData: {},
             treeViewData: {},
@@ -64,6 +58,10 @@ class RiskManagementHotspots extends DashboardAbstract {
                     thisBackup.setDataToState(data);
                 });
         }
+
+        this.setState({
+            query: localStorage.getItem("hotspots_expert_query")
+        });
     }
 
     setDataToState(data) {
@@ -89,6 +87,31 @@ class RiskManagementHotspots extends DashboardAbstract {
 
     componentWillUnmount() {
         super.componentWillUnmount();
+    }
+
+    clear(event) {
+        localStorage.setItem(
+            "hotspots_expert_query",
+            localStorage.getItem("hotspots_original_query")
+        );
+        this.sendQuery(this);
+    }
+
+    sendQuery(event) {
+        this.setState({
+            query: localStorage.getItem("hotspots_expert_query")
+        });
+
+        AppDispatcher.handleAction({
+            actionType: "EXPERT_QUERY",
+            data: {
+                queryString: localStorage.getItem("hotspots_expert_query")
+            }
+        });
+    }
+
+    updateStateQuery(event) {
+        localStorage.setItem("hotspots_expert_query", event);
     }
 
     triggerClickOnNode(node) {
@@ -126,9 +149,24 @@ class RiskManagementHotspots extends DashboardAbstract {
     }
 
     handleAction(event) {
+        var thisBackup = this;
         var action = event.action;
         switch (action.actionType) {
-            // Respond to CART_ADD action
+            case "EXPERT_QUERY":
+                if (databaseCredentialsProvided) {
+                    // clear pmd data to prevent multiple rendering errors
+                    this.setState({
+                        hotSpotData: {}
+                    });
+
+                    var hotspotModel = new HotspotModel();
+                    hotspotModel
+                        .readHotspots(IDENTIFIER_PROJECT_NAME)
+                        .then(function(data) {
+                            thisBackup.setDataToState(data);
+                        });
+                }
+                break;
             case "SELECT_HOTSPOT_PACKAGE":
                 var selectedPackage = event.action.data.data.id;
 
@@ -277,36 +315,55 @@ class RiskManagementHotspots extends DashboardAbstract {
                 <Row>
                     <Col xs="12" sm="12" md="12">
                         <Card>
-                            <CardHeader>
-                                Hotspots
-                                <div className="card-actions">
-                                    <button
-                                        onClick={this.toggleInfo}
-                                        id="Popover1"
-                                    >
-                                        <i className="text-muted fa fa-question-circle" />
-                                    </button>
-                                    <Popover
-                                        placement="bottom"
-                                        isOpen={this.state.popoverOpen}
-                                        target="Popover1"
-                                        toggle={this.toggleInfo}
-                                    >
-                                        <PopoverHeader>Hotspots</PopoverHeader>
-                                        <PopoverBody>
-                                            The hotspot analysis view highlights
-                                            refactoring candidates. Hotspots are
-                                            complex or big parts of the source
-                                            code that change often. Packages and
-                                            types are mapped to nested circles
-                                            with LOC as the size and the number
-                                            of commits as the color of a circle.
-                                        </PopoverBody>
-                                    </Popover>
-                                </div>
-                            </CardHeader>
+                            <CustomCardHeader
+                                cardHeaderText={"Hotspots"}
+                                showExpertMode={true}
+                                placement={"bottom"}
+                                target={"Popover1"}
+                                popoverHeaderText={"Hotspots"}
+                                popoverBody={
+                                    "The hotspot analysis view highlights refactoring candidates. Hotspots are complex or big parts of the source code that change often. Packages and types are mapped to nested circles with LOC as the size and the number of commits as the color of a circle."
+                                }
+                            />
                             <CardBody>
-                                <Row>
+                                <div
+                                    className={
+                                        "expert-mode-editor hide-expert-mode hotspots"
+                                    }
+                                >
+                                    <CypherEditor
+                                        className="cypheredit"
+                                        value={this.state.query}
+                                        options={{
+                                            mode: "cypher",
+                                            theme: "cypher"
+                                        }}
+                                        onValueChange={this.updateStateQuery.bind(
+                                            this
+                                        )}
+                                    />
+                                    <Button
+                                        onClick={this.sendQuery.bind(this)}
+                                        className="btn btn-success send-query float-right"
+                                        color="success"
+                                        id="send"
+                                    >
+                                        Send
+                                    </Button>
+                                    <Button
+                                        onClick={this.clear.bind(this)}
+                                        className="btn btn-success send-query float-right margin-right"
+                                        color="danger"
+                                        id="reset"
+                                    >
+                                        Reset
+                                    </Button>
+                                </div>
+                                <Row
+                                    className={
+                                        "display-block clear visualization-wrapper"
+                                    }
+                                >
                                     <Col xs="12" sm="12" md="12">
                                         <Card>
                                             <CardBody>

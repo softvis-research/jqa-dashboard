@@ -40,13 +40,22 @@ class FilesPerAuthor extends DashboardAbstract {
     handleAction(event) {
         console.log(event);
         var action = event.action;
+        var filesPerAuthorModel = "";
         switch (action.actionType) {
+            case "EXPERT_QUERY":
+                filesPerAuthorModel = new FilesPerAuthorModel();
+                filesPerAuthorModel.readFilesPerAuthor(
+                    this,
+                    this.state.startDate,
+                    this.state.endDate
+                );
+                break;
             case "DATERANGEPICKER_MODIFIED":
                 this.setState({
                     startDate: action.data.displayFrom,
                     endDate: action.data.displayTo
                 });
-                var filesPerAuthorModel = new FilesPerAuthorModel();
+                filesPerAuthorModel = new FilesPerAuthorModel();
                 filesPerAuthorModel.readFilesPerAuthor(
                     this,
                     this.state.startDate,
@@ -69,7 +78,7 @@ class FilesPerAuthor extends DashboardAbstract {
         }
 
         return (
-            <div>
+            <div className={"visualization-wrapper"}>
                 <div style={{ height: "600px" }}>
                     <ResponsiveBar
                         onClick={function(event) {
