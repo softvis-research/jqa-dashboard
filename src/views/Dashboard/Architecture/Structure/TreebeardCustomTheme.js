@@ -37,7 +37,7 @@ export default {
                     position: "absolute",
                     top: "50%",
                     left: "56%",
-                    margin: "-7px 0px 0px -7px",
+                    margin: "-11px 0px 0px -7px",
                     height: "10px"
                 },
                 height: 12,
