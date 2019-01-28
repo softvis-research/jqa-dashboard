@@ -31,6 +31,48 @@ class DashboardAbstract extends Component {
             neo4jPassword !== "" &&
             neo4jUsername !== null &&
             neo4jUsername !== "";
+
+        // if database credentials are provided via .env file, we load them initially
+        if (
+            !databaseCredentialsProvided &&
+            typeof process.env.REACT_APP_NEO4J_URL !== "undefined" &&
+            typeof process.env.REACT_APP_NEO4J_USERNAME !== "undefined" &&
+            typeof process.env.REACT_APP_NEO4J_PASSWORD !== "undefined"
+        ) {
+            localStorage.setItem(
+                "connectionString",
+                process.env.REACT_APP_NEO4J_URL
+            );
+            localStorage.setItem(
+                "username",
+                process.env.REACT_APP_NEO4J_USERNAME
+            );
+            localStorage.setItem(
+                "password",
+                process.env.REACT_APP_NEO4J_PASSWORD
+            );
+
+            var projectName = "My project";
+            if (typeof process.env.REACT_APP_PROJECT_NAME !== "undefined") {
+                projectName = process.env.REACT_APP_PROJECT_NAME;
+            }
+            localStorage.setItem("projectName", projectName);
+
+            var limitCountingHotspots = "70";
+            if (
+                typeof process.env.REACT_APP_LIMIT_COUNTING_HOTSPOTS !==
+                "undefined"
+            ) {
+                limitCountingHotspots =
+                    process.env.REACT_APP_LIMIT_COUNTING_HOTSPOTS;
+            }
+            localStorage.setItem(
+                "limitCountingHotspots",
+                limitCountingHotspots
+            );
+
+            databaseCredentialsProvided = true;
+        }
     }
 
     componentWillMount() {
