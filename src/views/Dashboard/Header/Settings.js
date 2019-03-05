@@ -134,10 +134,73 @@ class Settings extends DashboardAbstract {
 
         // clear inputs
         [].forEach.call(settings, function(setting) {
-            setting.value = "";
             var identifier = setting.id.replace("-input", "");
+
+            switch (identifier) {
+                case "connectionString":
+                    setting.value =
+                        process.env.REACT_APP_NEO4J_URL || "bolt://localhost";
+                    break;
+                case "username":
+                    setting.value =
+                        process.env.REACT_APP_NEO4J_USERNAME || "neo4j";
+                    break;
+                case "password":
+                    setting.value =
+                        process.env.REACT_APP_NEO4J_PASSWORD || "neo4j";
+                    break;
+                case "projectName":
+                    setting.value =
+                        process.env.REACT_APP_PROJECT_NAME || "My project";
+                    break;
+                case "limitCountingHotspots":
+                    setting.value =
+                        process.env.REACT_APP_LIMIT_COUNTING_HOTSPOTS || 70;
+                    break;
+                default:
+            }
+
             localStorage.removeItem(identifier);
         });
+
+        // if database credentials are provided via .env file, we load them now
+        if (
+            typeof process.env.REACT_APP_NEO4J_URL !== "undefined" &&
+            typeof process.env.REACT_APP_NEO4J_USERNAME !== "undefined" &&
+            typeof process.env.REACT_APP_NEO4J_PASSWORD !== "undefined"
+        ) {
+            localStorage.setItem(
+                "connectionString",
+                process.env.REACT_APP_NEO4J_URL
+            );
+            localStorage.setItem(
+                "username",
+                process.env.REACT_APP_NEO4J_USERNAME
+            );
+            localStorage.setItem(
+                "password",
+                process.env.REACT_APP_NEO4J_PASSWORD
+            );
+
+            var projectName = "My project";
+            if (typeof process.env.REACT_APP_PROJECT_NAME !== "undefined") {
+                projectName = process.env.REACT_APP_PROJECT_NAME;
+            }
+            localStorage.setItem("projectName", projectName);
+
+            var limitCountingHotspots = "70";
+            if (
+                typeof process.env.REACT_APP_LIMIT_COUNTING_HOTSPOTS !==
+                "undefined"
+            ) {
+                limitCountingHotspots =
+                    process.env.REACT_APP_LIMIT_COUNTING_HOTSPOTS;
+            }
+            localStorage.setItem(
+                "limitCountingHotspots",
+                limitCountingHotspots
+            );
+        }
     }
 
     toggleInfo() {
@@ -425,7 +488,7 @@ class Settings extends DashboardAbstract {
                                                 onClick={this.resetSettings}
                                                 id="reset"
                                             >
-                                                Reset
+                                                Set to default
                                             </Button>
                                             <Alert
                                                 id="database-settings-alert"
