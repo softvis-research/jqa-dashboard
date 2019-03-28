@@ -27,7 +27,6 @@ class FileTypesModel {
 
     readFiletypes(thisBackup) {
         var aggregatedData = [];
-        console.log(this.state.queryString);
         neo4jSession
             .run(this.state.queryString)
             .then(function(result) {
@@ -51,7 +50,6 @@ class FileTypesModel {
                 thisBackup.setState({ filetypeData: aggregatedData });
             })
             .catch(function(error) {
-                console.log(aggregatedData);
                 console.log(error);
             });
     }
