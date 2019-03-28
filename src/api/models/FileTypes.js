@@ -5,8 +5,7 @@ class FileTypesModel {
         const fileTypeQuery =
             "MATCH (f:Git:File) " +
             'WITH f, split(f.relativePath, ".") as splittedFileName ' +
-            "SET f.type = splittedFileName[size(splittedFileName)-1] " +
-            "RETURN f.type as filetype, count(f) as files " +
+            "RETURN splittedFileName[size(splittedFileName)-1] as filetype, count(f) as files " +
             "ORDER BY files DESC";
         localStorage.setItem("filetype_original_query", fileTypeQuery);
 
@@ -28,7 +27,6 @@ class FileTypesModel {
 
     readFiletypes(thisBackup) {
         var aggregatedData = [];
-
         neo4jSession
             .run(this.state.queryString)
             .then(function(result) {

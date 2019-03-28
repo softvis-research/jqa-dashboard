@@ -1,7 +1,7 @@
 # Software Analysis and Visualization Dashboard #
 
 [![GitHub license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/softvis-research/jqa-dashboard/blob/master/LICENSE)
-[![build status](https://travis-ci.com/softvis-research/jqa-dashboard.svg)](https://travis-ci.com/softvis-research/jqa-dashboard)
+[![build status](https://travis-ci.com/softvis-research/jqa-dashboard.svg?branch=master)](https://travis-ci.com/softvis-research/jqa-dashboard)
 [![codecov](https://codecov.io/gh/softvis-research/jqa-dashboard/branch/master/graph/badge.svg)](https://codecov.io/gh/softvis-research/jqa-dashboard)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
