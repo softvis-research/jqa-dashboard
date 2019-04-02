@@ -7,6 +7,9 @@
 
 A web-based dashboard for software analysis and visualization using software artifacts' data scanned by jQAssistant. This [screencast](https://youtu.be/LebVqfzQ_KE) shows how to scan, analyze, and visualize software artifacts' data with the open source stack (jQAssistant, Neo4j, React, D3).
 
+## Demo ##
+Interactively explore [jUnit](https://github.com/junit-team/junit4) in this [online demo](http://139.18.211.212:3000) of the dashboard.
+
 ## Prerequisites ##
 
 The dashboard requires a Neo4j database where the information of the software to be analyzed has been imported with jQAssistant.
