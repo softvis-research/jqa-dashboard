@@ -8,7 +8,11 @@ var localStorageMock = (function() {
             return store[key];
         },
         setItem: function(key, value) {
-            store[key] = value.toString();
+            if (value) {
+                value = value.toString();
+            }
+
+            store[key] = value;
         }
     };
 })();
