@@ -1,0 +1,14 @@
+= jQA-Dashboard
+
+This document contains concepts and constraints which are executed by https://jqassistant.org[jQAssistant]
+
+[[default]]
+[role=group,includesGroups="dashboard"]
+== Default Rules
+
+The following groups are executed by default:
+
+- <<dashboard>>
+
+include::dashboard.adoc[]
+

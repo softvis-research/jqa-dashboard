@@ -1,0 +1,109 @@
+[[dashboard]]
+[role=group, includesConcepts="dashboard:Authors, dashboard:Merge, dashboard:Timetree,dashboard:TypeHasSourceGitFile, dashboard:Filetype"]
+== Dashboard
+
+These concepts prepare the data for the dashboard.
+
+=== Concepts
+
+The root package of the application is "org.springframework.samples.petclinic".
+
+[[dashboard:Authors]]
+[source,cypher,role=concept]
+.Removes duplicate authors.
+----
+MATCH
+  (a:Author)
+WITH
+  a.name as name, collect(a) as authors
+WITH
+  head(authors) as author, tail(authors) as duplicates
+UNWIND
+  duplicates as duplicate
+MATCH
+  (duplicate)-[:COMMITTED]->(c:Commit)
+MERGE
+  (author)-[:COMMITTED]->(c)
+DETACH DELETE
+  duplicate
+RETURN
+  author.name, count(duplicate)
+----
+
+[[dashboard:Merge]]
+[source,cypher,role="concept"]
+.Labels merge commits.
+----
+MATCH
+  (c:Commit)-[:HAS_PARENT]->(p:Commit)
+WITH
+  c, count(p) as parents
+WHERE
+  parents > 1
+SET
+  c:Merge
+RETURN
+  count(c)
+----
+[[dashboard:Timetree]]
+[source,cypher,role="concept"]
+.Creates a time tree for commits.
+----
+MATCH
+  (c:Commit)
+WITH
+  c, split(c.date, "-") as parts 
+MERGE
+  (y:Year{year:parts[0]})
+MERGE
+  (m:Month{month:parts[1]})-[:OF_YEAR]->(y)
+MERGE
+  (d:Day{day:parts[2]})-[:OF_MONTH]->(m)
+MERGE
+  (c)-[:OF_DAY]->(d)
+RETURN
+  y, m, d
+----
+
+[[dashboard:GitFileName]]
+[source,cypher,role="concept",verify="aggregation"]
+.Copies the relativePath property of `:Git:File` nodes to the indexed property `fileName` for faster lookup.
+----
+MATCH
+  (f:Git:File)
+SET
+  f.fileName = f.relativePath
+RETURN
+  count(f)
+----
+
+[[dashboard:TypeHasSourceGitFile]]
+[source,cypher,role="concept",requiresConcepts="dashboard:GitFileName"]
+.Creates relates HAS_SOURCE between types and git files.
+----
+MATCH
+  (p:Package)-[:CONTAINS]->(t:Type)
+WITH
+  t, p.fileName + "/" + t.sourceFileName as sourceFileName // e.g. "/org/dukecon/model/Location.java"
+MATCH
+  (f:Git:File)
+WHERE
+  f.fileName ends with sourceFileName
+MERGE
+  (t)-[:HAS_SOURCE]->(f)
+RETURN
+  f.fileName, collect(t.fqn)
+----
+
+[[dashboard:Filetype]]
+[source,cypher,role="concept"]
+.Sets file types.
+----
+MATCH
+  (f:Git:File)
+WITH
+  f, split(f.relativePath, ".") as splittedFileName
+SET
+  f.type = splittedFileName[size(splittedFileName)-1]
+RETURN 
+  f.type as filetype, count(f) as files
