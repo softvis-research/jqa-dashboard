@@ -8,7 +8,9 @@ ENV NPM_CONFIG_LOGLEVEL warn
 # Copy all local files into the image.
 COPY . .
 
-# Install and configure `serve`.
+# Install and run dashboard.
 RUN npm run install-dashboard
-CMD npm run dashboard
+RUN npm run build
+RUN npm install serve -g
+CMD serve -l 3000 -n -s build
 EXPOSE 3000
