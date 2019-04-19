@@ -19,7 +19,7 @@ var localStorageMock = (function() {
 Object.defineProperty(window, "localStorage", { value: localStorageMock });
 Object.defineProperty(window, "testrun", { value: true });
 
-localStorage.setItem("connectionString", "bolt://localhost");
+localStorage.setItem("connectionString", "localhost");
 localStorage.setItem("username", "neo4j");
 localStorage.setItem("password", "Test123.");
 localStorage.setItem("projectName", "###jest-test###");

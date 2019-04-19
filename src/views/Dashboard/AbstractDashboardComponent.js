@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 var AppDispatcher = require("../../AppDispatcher");
 
-var neo4jConnectionString = localStorage.getItem("connectionString"); //"bolt://localhost";
+var neo4jConnectionString = localStorage.getItem("connectionString"); //"localhost";
 var neo4jUsername = localStorage.getItem("username"); //"neo4j";
 var neo4jPassword = localStorage.getItem("password"); //"Test123.";
 
@@ -106,7 +106,7 @@ class DashboardAbstract extends Component {
             }
 
             neo4jDriver = neo4j.v1.driver(
-                connectionString,
+                "bolt://" + connectionString,
                 neo4j.v1.auth.basic(username, password)
             );
             neo4jSession = neo4jDriver.session();
@@ -130,7 +130,7 @@ class DashboardAbstract extends Component {
     componentDidMount() {}
 
     refreshConnectionSettings() {
-        neo4jConnectionString = localStorage.getItem("connectionString"); //"bolt://localhost";
+        neo4jConnectionString = localStorage.getItem("connectionString"); //"localhost";
         neo4jUsername = localStorage.getItem("username"); //"neo4j";
         neo4jPassword = localStorage.getItem("password"); //"Test123.";
     }

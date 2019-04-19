@@ -139,7 +139,7 @@ class Settings extends DashboardAbstract {
             switch (identifier) {
                 case "connectionString":
                     setting.value =
-                        process.env.REACT_APP_NEO4J_URL || "bolt://localhost";
+                        process.env.REACT_APP_NEO4J_URL || "localhost";
                     break;
                 case "username":
                     setting.value =
@@ -297,12 +297,17 @@ class Settings extends DashboardAbstract {
                                                     localStorageConnectionString !==
                                                         ""
                                                         ? localStorageConnectionString
-                                                        : "bolt://localhost"
+                                                        : "localhost"
                                                 }
                                                 required
                                             />
                                             <FormText color="muted">
-                                                Default: "bolt://localhost"
+                                                Since the dashboard uses the
+                                                Bolt protocol, the prefix
+                                                "bolt://" is automatically added
+                                                to the entered URL.
+                                                <br />
+                                                Default: "localhost"
                                             </FormText>
                                         </Col>
                                     </FormGroup>
