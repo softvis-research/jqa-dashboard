@@ -12,5 +12,5 @@ COPY . .
 RUN npm run install-dashboard
 RUN npm run build
 RUN npm install serve -g
-CMD serve -l 3000 -n -s build
-EXPOSE 3000
+CMD serve -l ${PORT} -n -s build
+EXPOSE ${PORT}

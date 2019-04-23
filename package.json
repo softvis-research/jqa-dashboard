@@ -40,7 +40,7 @@
     "flag-icon-css": "^3.3.0",
     "flux": "^3.1.3",
     "font-awesome": "^4.7.0",
-    "graph-app-kit": "^1.0.2",
+    "graph-app-kit": "^1.0.4",
     "group-array": "^0.3.3",
     "history": "4.7.2",
     "identity-obj-proxy": "^3.0.0",
