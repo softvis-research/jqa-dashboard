@@ -14,13 +14,9 @@ Interactively explore [jUnit](https://github.com/junit-team/junit4) in this [onl
 
 The dashboard requires a Neo4j database where the information of the software to be analyzed has been imported with jQAssistant.
 There are three possibilities how to achieve this.
-1. You can use jQAssistant to extract the data of your software project as described [here](https://jqassistant.org/get-started/). After successful extraction, the data has to be enriched with the [concepts](http://buschmais.github.io/jqassistant/doc/1.6.0/#_concepts) in `jqa-dashboard/data/jqassistant`. Therefore, copy this folder in your project root and run `mvn jqassistant:analyze`. Then you can start the Neo4j database with `mvn jqassistant:server`. The dashboard uses the bolt driver to connect to the database (bolt://localhost, port 7687). You can change the default connection settings in the `.env` file or on the settings page of the dashboard.
-2. Alternatively, you can use one of the [pre-built Docker images](https://hub.docker.com/r/visualsoftwareanalytics/jqa-dashboard/tags/) containing a Neo4j server with sample data ([spring-petclinic](https://github.com/buschmais/spring-petclinic/tree/master) or [jUnit](https://github.com/jqassistant-demo/junit4/tree/jqassistant/vissoft-2018)).
-3. Or you import the dumps provided in the [data directory](https://github.com/softvis-research/jqa-dashboard/tree/master/data) directly into your Neo4j database with the following command.
-
-```
-$ neo4j-admin load --from=<path-to-neo4j-dump> [--force=true]
-```
+1. You can use jQAssistant to extract the data of your software project as described [here](https://jqassistant.org/get-started/). After successful extraction, the data has to be enriched with the [concepts](http://buschmais.github.io/jqassistant/doc/1.6.0/#_concepts) in `jqa-dashboard/data/jqassistant`. Therefore, copy this folder in your project root and run `$ mvn jqassistant:analyze`. Then you can start the Neo4j database with `$ mvn jqassistant:server`. The dashboard uses the bolt driver to connect to the database (bolt://localhost, port 7687). You can change the default connection settings in the `.env` file or on the settings page of the dashboard.
+2. Alternatively, you can use one of the [pre-built Docker images](https://hub.docker.com/r/visualsoftwareanalytics/jqa-dashboard/tags/) containing a Neo4j server with sample data ([spring-petclinic](https://github.com/buschmais/spring-petclinic/tree/master) or [jUnit](https://github.com/jqassistant-demo/junit4/tree/jqassistant/vissoft-2018)) as described below.
+3. Or you import the dumps provided in the [data directory](https://github.com/softvis-research/jqa-dashboard/tree/master/data) directly into your Neo4j database with `$ neo4j-admin load --from=<path-to-neo4j-dump> [--force=true]`.
 
 ## Installation ##
 
@@ -46,11 +42,14 @@ $ npm run update-dashboard
 
 ## Docker ##
 
+### Dashboard ###
+
 The dashboard can also be run via Docker. Therefore, you can use these [pre-built Docker images](https://hub.docker.com/r/visualsoftwareanalytics/jqa-dashboard/tags/).
 
 ```
-$ docker run -it -p 3000:3000 visualsoftwareanalytics/jqa-dashboard:dashboard
+$ docker run --env-file .env -it -p 3000:3000 visualsoftwareanalytics/jqa-dashboard:dashboard
 ```
+### Data ###
 
 If needed, you can use one of these commands to additionally run a Neo4j server with sample data already loaded.
 

@@ -10,18 +10,6 @@ Enzyme.configure({ adapter: new Adapter() });
 import StaticCodeAnalysisPMD from "../../../../../../views/Dashboard/QualityManagement/StaticCodeAnalysis/PMD/PMD";
 import { expect } from "chai";
 
-/*
-if (typeof localStorage === "undefined" || localStorage === null) {
-    var LocalStorage = require('node-localstorage').LocalStorage;
-    localStorage = new LocalStorage('./scratch');
-}
-
-localStorage.setItem('connectionString', 'bolt://localhost');
-localStorage.setItem('username', 'neo4j');
-localStorage.setItem('password', 'Test123.');
-localStorage.setItem('projectName', 'jest-test');
-*/
-
 describe("<StaticCodeAnalysisPMD />", () => {
     it("should render without throwing an error", () => {
         var wrapper = shallow(<StaticCodeAnalysisPMD />);
