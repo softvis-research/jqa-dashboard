@@ -47,7 +47,7 @@ $ npm run update-dashboard
 The dashboard can also be run via Docker. Therefore, you can use these [pre-built Docker images](https://hub.docker.com/r/visualsoftwareanalytics/jqa-dashboard/tags/).
 
 ```
-$ docker run --env-file .env -it -p 3000:3000 visualsoftwareanalytics/jqa-dashboard:dashboard
+$ docker run --env PORT=3000 -it visualsoftwareanalytics/jqa-dashboard:dashboard
 ```
 ### Data ###
 
