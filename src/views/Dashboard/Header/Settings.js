@@ -139,7 +139,7 @@ class Settings extends DashboardAbstract {
             switch (identifier) {
                 case "connectionString":
                     setting.value =
-                        process.env.REACT_APP_NEO4J_URL || "localhost";
+                        process.env.REACT_APP_NEO4J_IP || "localhost";
                     break;
                 case "username":
                     setting.value =
@@ -165,13 +165,13 @@ class Settings extends DashboardAbstract {
 
         // if database credentials are provided via .env file, we load them now
         if (
-            typeof process.env.REACT_APP_NEO4J_URL !== "undefined" &&
+            typeof process.env.REACT_APP_NEO4J_IP !== "undefined" &&
             typeof process.env.REACT_APP_NEO4J_USERNAME !== "undefined" &&
             typeof process.env.REACT_APP_NEO4J_PASSWORD !== "undefined"
         ) {
             localStorage.setItem(
                 "connectionString",
-                process.env.REACT_APP_NEO4J_URL
+                process.env.REACT_APP_NEO4J_IP
             );
             localStorage.setItem(
                 "username",
@@ -275,7 +275,7 @@ class Settings extends DashboardAbstract {
                                                     "-input"
                                                 }
                                             >
-                                                URL
+                                                IP
                                             </Label>
                                         </Col>
                                         <Col xs="12" md="9">
@@ -302,11 +302,10 @@ class Settings extends DashboardAbstract {
                                                 required
                                             />
                                             <FormText color="muted">
-                                                Since the dashboard uses the
-                                                Bolt protocol, the prefix
-                                                "bolt://" is automatically added
-                                                to the entered URL.
-                                                <br />
+                                                The dashboard uses the bolt
+                                                protocol to connect to the
+                                                database. Please ensure that the
+                                                Neo4j bolt connector is enabled.
                                                 Default: "localhost"
                                             </FormText>
                                         </Col>
