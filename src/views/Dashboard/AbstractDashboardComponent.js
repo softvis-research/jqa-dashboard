@@ -35,13 +35,13 @@ class DashboardAbstract extends Component {
         // if database credentials are provided via .env file, we load them initially
         if (
             !databaseCredentialsProvided &&
-            typeof process.env.REACT_APP_NEO4J_URL !== "undefined" &&
+            typeof process.env.REACT_APP_NEO4J_IP !== "undefined" &&
             typeof process.env.REACT_APP_NEO4J_USERNAME !== "undefined" &&
             typeof process.env.REACT_APP_NEO4J_PASSWORD !== "undefined"
         ) {
             localStorage.setItem(
                 "connectionString",
-                process.env.REACT_APP_NEO4J_URL
+                process.env.REACT_APP_NEO4J_IP
             );
             localStorage.setItem(
                 "username",
