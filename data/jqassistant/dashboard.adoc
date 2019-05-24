@@ -1,16 +1,14 @@
 [[dashboard]]
-[role=group, includesConcepts="dashboard:Authors, dashboard:Merge, dashboard:Timetree,dashboard:TypeHasSourceGitFile, dashboard:Filetype"]
+[role=group, includesConcepts="dashboard:*"]
 == Dashboard
 
-These concepts prepare the data for the dashboard.
+This document provides rules related to the https://jqassistant.org/the-jqassistant-dashboard[jQAssistant Dashboard].
 
 === Concepts
 
-The root package of the application is "org.springframework.samples.petclinic".
-
-[[dashboard:Authors]]
+[[dashboard:GitDuplicateAuthors]]
 [source,cypher,role=concept]
-.Removes duplicate authors.
+.Remove duplicate `:Git:Author` commits identified by their `name`.
 ----
 MATCH
   (a:Author)
@@ -27,12 +25,14 @@ MERGE
 DETACH DELETE
   duplicate
 RETURN
-  author.name, count(duplicate)
+  author.name as Author, count(duplicate) as NumberOfDuplicates
+ORDER BY
+  NumberOfDuplicates desc
 ----
 
-[[dashboard:Merge]]
+[[dashboard:GitMergeCommit]]
 [source,cypher,role="concept"]
-.Labels merge commits.
+.Every `:Git:Commit` with more than one parent commit is labeled as `Merge`.
 ----
 MATCH
   (c:Commit)-[:HAS_PARENT]->(p:Commit)
@@ -43,11 +43,12 @@ WHERE
 SET
   c:Merge
 RETURN
-  count(c)
+  count(c) as MergeCommits
 ----
-[[dashboard:Timetree]]
+
+[[dashboard:GitTimeTree]]
 [source,cypher,role="concept"]
-.Creates a time tree for commits.
+.Each `:Commit` is assigned to a time tree `(:Commit)-[:OF_DAY]->(:Day)-[:OF_MONTH]-(:Month)-[:OF_YEAR]->(:Year)` according the the commit `date`.
 ----
 MATCH
   (c:Commit)
@@ -62,48 +63,60 @@ MERGE
 MERGE
   (c)-[:OF_DAY]->(d)
 RETURN
-  y, m, d
+  y.year as Year, count(c) as Commits
+ORDER BY
+  Year
 ----
 
 [[dashboard:GitFileName]]
 [source,cypher,role="concept",verify="aggregation"]
-.Copies the relativePath property of `:Git:File` nodes to the indexed property `fileName` for faster lookup.
+.Copies the relativePath property of `:Git:File` nodes to the property `fileName` that is index and allows faster lookups.
 ----
 MATCH
   (f:Git:File)
 SET
   f.fileName = f.relativePath
 RETURN
-  count(f)
+  count(f) as Files
 ----
 
 [[dashboard:TypeHasSourceGitFile]]
 [source,cypher,role="concept",requiresConcepts="dashboard:GitFileName"]
-.Creates relates HAS_SOURCE between types and git files.
+.A `HAS_SOURCE` relationship is created between a `:Java:Type` and a `:Git:File` if their source file names match.
 ----
 MATCH
-  (p:Package)-[:CONTAINS]->(t:Type)
+  (p:Java:Package)-[:CONTAINS]->(t:Java:Type)
 WITH
-  t, p.fileName + "/" + t.sourceFileName as sourceFileName // e.g. "/org/dukecon/model/Location.java"
+  t, p.fileName + "/" + t.sourceFileName as sourceFileName // e.g. "/org/junit/Test.java"
 MATCH
   (f:Git:File)
 WHERE
   f.fileName ends with sourceFileName
 MERGE
-  (t)-[:HAS_SOURCE]->(f)
+  (t)-[h:HAS_SOURCE]->(f)
 RETURN
-  f.fileName, collect(t.fqn)
+  count(h) as Matches
 ----
 
 [[dashboard:Filetype]]
 [source,cypher,role="concept"]
-.Sets file types.
+.A property `fileType` is added to each `:Git:File` extracted from extension of the `relativePath`.(e.g. java).
 ----
 MATCH
   (f:Git:File)
 WITH
-  f, split(f.relativePath, ".") as splittedFileName
+  f, split(f.relativePath, "/") as splittedPathName
+WITH
+  f, splittedPathName[size(splittedPathName)-1] as fileName
+WHERE
+  fileName contains "."
+WITH
+  f, split(fileName, ".") as splittedFileName
 SET
   f.type = splittedFileName[size(splittedFileName)-1]
-RETURN 
-  f.type as filetype, count(f) as files
+RETURN
+  f.type as FileType, count(f) as FilesOfType
+ORDER BY
+  FilesOfType desc
+----
+
