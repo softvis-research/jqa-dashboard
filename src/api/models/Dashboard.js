@@ -5,23 +5,24 @@ class DashboardModel {
         const dashboardStructureQuery =
             // architecture metrics (table 1)
             // number of classes
-            "OPTIONAL MATCH (t:Type:Class)-[:HAS_SOURCE]->(:File) " +
+            "OPTIONAL MATCH (t:Type:Class) " +
             "WITH count(t) as classes " +
             // number of interfaces
-            "OPTIONAL MATCH (t:Type:Interface)-[:HAS_SOURCE]->(:File) " +
+            "OPTIONAL MATCH (t:Type:Interface) " +
             "WITH classes, count(t) as interfaces " +
             // number of enums
-            "OPTIONAL MATCH (t:Type:Enum)-[:HAS_SOURCE]->(:File) " +
+            "OPTIONAL MATCH (t:Type:Enum) " +
             "WITH classes, interfaces, count(t) as enums " +
             // number of annotations
-            "OPTIONAL MATCH (t:Type:Enum)-[:HAS_SOURCE]->(:File) " +
+            "OPTIONAL MATCH (t:Type:Annotation) " +
             "WITH  classes, interfaces, enums, count(t) as annotations " +
             // number of methods and lines of code
-            "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[:DECLARES]->(m:Method) " +
+            "OPTIONAL MATCH (t:Type:ProjectFile)-[:DECLARES]->(m:Method) " +
             "WITH classes, interfaces, enums, annotations, count(m) as methods, sum(m.effectiveLineCount) as loc " +
             // number of fields
-            "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[:DECLARES]->(f:Field) " +
+            "OPTIONAL MATCH (t:Type:ProjectFile)-[:DECLARES]->(f:Field) " +
             "RETURN classes, interfaces, enums, annotations, methods, loc, count(f) as fields";
+
         localStorage.setItem(
             "dashboard_structure_original_query",
             dashboardStructureQuery
@@ -30,23 +31,23 @@ class DashboardModel {
         const dashboardDependenciesQuery =
             // relation metrics (table 2)
             // dependencies
-            "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[d:DEPENDS_ON]->(:Type) " +
+            "OPTIONAL MATCH (:Type:ProjectFile)-[d:DEPENDS_ON]->(:Type) " +
             "WITH count(d) as dependencies " +
             // extends
-            "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[e:EXTENDS]->(superType:Type) " +
+            "OPTIONAL MATCH (:Type:ProjectFile)-[e:EXTENDS]->(superType:Type) " +
             'WHERE superType.name <> "Object" ' +
             "WITH dependencies, count(e) as extends " +
             // implements
-            "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[i:IMPLEMENTS]->(:Type) " +
+            "OPTIONAL MATCH (:Type:ProjectFile)-[i:IMPLEMENTS]->(:Type) " +
             "WITH dependencies, extends, count(i) as implements " +
             // calls
-            "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[:DECLARES]->(m:Method)-[i:INVOKES]->(:Method) " +
+            "OPTIONAL MATCH (:Type:ProjectFile)-[:DECLARES]->(m:Method)-[i:INVOKES]->(:Method) " +
             "WITH dependencies, extends, implements, count(i) as invocations " +
             // reads
-            "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[:DECLARES]->(m:Method)-[r:READS]->(:Field) " +
+            "OPTIONAL MATCH (:Type:ProjectFile)-[:DECLARES]->(m:Method)-[r:READS]->(:Field) " +
             "WITH dependencies, extends, implements, invocations, count(r) as reads " +
             // writes
-            "OPTIONAL MATCH (t:Type)-[:HAS_SOURCE]->(:File), (t)-[:DECLARES]->(m:Method)-[w:WRITES]->(:Field) " +
+            "OPTIONAL MATCH (:Type:ProjectFile)-[:DECLARES]->(m:Method)-[w:WRITES]->(:Field) " +
             "RETURN dependencies, extends, implements, invocations, reads, count(w) as writes";
         localStorage.setItem(
             "dashboard_dependencies_original_query",
@@ -59,11 +60,11 @@ class DashboardModel {
             "OPTIONAL MATCH (a:Author) " +
             "WITH count(a) as authors " +
             // number of commits (without merges)
-            "OPTIONAL MATCH (c:Commit)-[:CONTAINS_CHANGE]->()-[:MODIFIES]->(f:File) " +
+            "OPTIONAL MATCH (c:Commit) " +
             "WHERE NOT c:Merge " +
             "WITH authors, count(c) as commitsWithoutMerges " +
             // number of commits (including merges)
-            "OPTIONAL MATCH (c:Commit)-[:CONTAINS_CHANGE]->()-[:MODIFIES]->(f:File) " +
+            "OPTIONAL MATCH (c:Commit:Merge) " +
             "RETURN authors, commitsWithoutMerges, count(c) as commitsWithMerges";
         localStorage.setItem(
             "dashboard_activity_original_query",
