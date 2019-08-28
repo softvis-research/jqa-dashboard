@@ -92,13 +92,23 @@ class DashboardModel {
             dashboardTestCoverageQuery
         );
 
+        const pluginPresenceQuery =
+            "OPTIONAL MATCH (x:Git) " +
+            "WITH count(x) > 0 as git " +
+            "OPTIONAL MATCH (x:Jacoco) " +
+            "WITH git, count(x) > 0 as jacoco " +
+            "OPTIONAL MATCH (x:Pmd) " +
+            "WITH git, jacoco,count(x) > 0 as pmd " +
+            "RETURN git, jacoco, pmd";
+
         this.state = {
             queryStringStructure: dashboardStructureQuery,
             queryStringDependencies: dashboardDependenciesQuery,
             queryStringActivity: dashboardActivityQuery,
             queryStringHotspot: dashboardHotspotQuery,
             queryStringPMD: dashboardPMDQuery,
-            queryStringTestCoverage: dashboardTestCoverageQuery
+            queryStringTestCoverage: dashboardTestCoverageQuery,
+            queryPluginPresence: pluginPresenceQuery
         };
 
         if (!localStorage.getItem("dashboard_structure_expert_query")) {
@@ -166,6 +176,30 @@ class DashboardModel {
                 "dashboard_test_coverage_expert_query"
             );
         }
+    }
+
+    async readPluginPresence(thisBackup) {
+        var pluginPresence;
+        await Promise.resolve(
+            neo4jSession
+                .run(this.state.queryPluginPresence)
+                .then(function(result) {
+                    result.records.forEach(function(record) {
+                        pluginPresence = {
+                            git: record.get("git"),
+                            jacoco: record.get("jacoco"),
+                            pmd: record.get("pmd")
+                        };
+                    });
+                })
+                .then(function(context) {
+                    thisBackup.setState({ pluginPresence: pluginPresence });
+                })
+                .catch(function(error) {
+                    console.log(error);
+                })
+        );
+        return Promise.resolve(thisBackup);
     }
 
     readStructureMetrics(thisBackup) {
