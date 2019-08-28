@@ -69,7 +69,7 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
         var yPosition = 0;
         for (var i = 0; i < this.state.dataKeys.length; i++) {
             var label = this.state.dataKeys[i];
-            if (label.indexOf("/") !== -1) {
+            if (label === null || label.indexOf("/") !== -1) {
                 continue; //filter out obviously broken elements
             }
             yPosition += 20;
@@ -102,10 +102,16 @@ class FilesPerFiletypePerAuthor extends DashboardAbstract {
             legendItems.push(legendSvgItem);
         }
 
-        //TODO: calculate height from this.state.dataKeys.length
+        //TODO: properly calculate height from this.state.dataKeys.length
+        var panelHeight = Math.max(
+            this.state.data.length * 40,
+            yPosition + 35 + 100
+        );
         return (
             <div className={"visualization-wrapper"}>
-                <div style={{ height: "4000px", width: "85%", float: "left" }}>
+                <div
+                    style={{ height: panelHeight, width: "85%", float: "left" }}
+                >
                     <ResponsiveBar
                         onClick={function(event) {
                             console.log(event);

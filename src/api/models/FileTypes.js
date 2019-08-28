@@ -30,6 +30,7 @@ class FileTypesModel {
         neo4jSession
             .run(this.state.queryString)
             .then(function(result) {
+                var showSmallValues = result.records[0].get(1).low < 50;
                 result.records.forEach(function(record) {
                     var recordConverted = {
                         id: record.get(0),
@@ -39,7 +40,7 @@ class FileTypesModel {
 
                     if (
                         recordConverted.id !== null &&
-                        recordConverted.value > 3
+                        (showSmallValues || recordConverted.value > 3)
                     ) {
                         //below 3 is considered too small to display
                         aggregatedData.push(recordConverted);
