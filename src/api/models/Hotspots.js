@@ -16,7 +16,7 @@ class HotspotModel {
             " (t:Type)-[:HAS_SOURCE]->(f)," +
             " (t)-[:DECLARES]->(m:Method) " +
             "RETURN" +
-            " t.fqn as fqn, sum(commits) as commits, sum(m.cyclomaticComplexity) as complexity, sum(m.effectiveLineCount) as loc ORDER BY fqn ASCENDING";
+            " t.fqn as fqn, sum(commits)/count(m) as commits, sum(m.cyclomaticComplexity) as complexity, sum(m.effectiveLineCount) as loc ORDER BY fqn ASCENDING";
         localStorage.setItem("hotspots_original_query", hotspotsQuery);
 
         this.state = {
