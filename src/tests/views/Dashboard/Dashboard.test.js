@@ -45,7 +45,5 @@ describe("<Dashboard />", () => {
 
         expect(html).to.contain("<strong>Structure metrics</strong>");
         expect(html).to.contain("<strong>Dependency metrics</strong>");
-        expect(html).to.contain("<strong>Activity metrics</strong>");
-        expect(html).to.contain("<strong>Static Code Analysis (PMD)</strong>");
     });
 });
