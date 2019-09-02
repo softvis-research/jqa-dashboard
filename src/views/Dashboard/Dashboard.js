@@ -59,6 +59,11 @@ class Dashboard extends DashboardAbstract {
             },
             testCoverageMetrics: {
                 overallTestCoverage: "loading"
+            },
+            pluginPresence: {
+                git: false,
+                jacoco: false,
+                pmd: false
             }
         };
 
@@ -70,30 +75,41 @@ class Dashboard extends DashboardAbstract {
 
         if (databaseCredentialsProvided) {
             var dashboardModel = new DashboardModel();
-            dashboardModel.readStructureMetrics(this);
-            dashboardModel.readDependencyMetrics(this);
-            dashboardModel.readActivityMetrics(this);
-            dashboardModel.readStaticCodeAnalysisPMDMetrics(this);
-            dashboardModel.readHotspotMetrics(this);
-            dashboardModel.readTestCoverageMetrics(this);
 
-            this.setState({
-                queryStructure: localStorage.getItem(
-                    "dashboard_structure_expert_query"
-                ),
-                queryDependencies: localStorage.getItem(
-                    "dashboard_dependencies_expert_query"
-                ),
-                queryActivity: localStorage.getItem(
-                    "dashboard_activity_expert_query"
-                ),
-                queryHotspot: localStorage.getItem(
-                    "dashboard_hotspot_expert_query"
-                ),
-                queryPMD: localStorage.getItem("dashboard_pmd_expert_query"),
-                queryTestCoverage: localStorage.getItem(
-                    "dashboard_test_coverage_expert_query"
-                )
+            dashboardModel.readPluginPresence(this).then(function(context) {
+                dashboardModel.readStructureMetrics(context);
+                dashboardModel.readDependencyMetrics(context);
+                if (context.state.pluginPresence.git) {
+                    dashboardModel.readActivityMetrics(context);
+                    dashboardModel.readHotspotMetrics(context);
+                }
+                if (context.state.pluginPresence.pmd) {
+                    dashboardModel.readStaticCodeAnalysisPMDMetrics(context);
+                }
+                if (context.state.pluginPresence.jacoco) {
+                    dashboardModel.readTestCoverageMetrics(context);
+                }
+
+                context.setState({
+                    queryStructure: localStorage.getItem(
+                        "dashboard_structure_expert_query"
+                    ),
+                    queryDependencies: localStorage.getItem(
+                        "dashboard_dependencies_expert_query"
+                    ),
+                    queryActivity: localStorage.getItem(
+                        "dashboard_activity_expert_query"
+                    ),
+                    queryHotspot: localStorage.getItem(
+                        "dashboard_hotspot_expert_query"
+                    ),
+                    queryPMD: localStorage.getItem(
+                        "dashboard_pmd_expert_query"
+                    ),
+                    queryTestCoverage: localStorage.getItem(
+                        "dashboard_test_coverage_expert_query"
+                    )
+                });
             });
         }
 
@@ -429,339 +445,382 @@ class Dashboard extends DashboardAbstract {
                             </CardBody>
                         </Card>
                     </Col>
-                    <Col xs="12" sm="6" md="3">
-                        <Card>
-                            <CustomCardHeader
-                                cardHeaderText={"Resource Management"}
-                                showExpertMode={true}
-                                placement={"bottom"}
-                                target={"Popover2"}
-                                popoverHeaderText={"Resource Management"}
-                                popoverBody={
-                                    "Resource management provides an overview of development activities, authors, and their commits."
-                                }
-                            />
-                            <CardBody>
-                                <div
-                                    className={
-                                        "expert-mode-editor hide-expert-mode resource-management"
+                    {this.state.pluginPresence.git && (
+                        <Col xs="12" sm="6" md="3">
+                            <Card>
+                                <CustomCardHeader
+                                    cardHeaderText={"Resource Management"}
+                                    showExpertMode={true}
+                                    placement={"bottom"}
+                                    target={"Popover2"}
+                                    popoverHeaderText={"Resource Management"}
+                                    popoverBody={
+                                        "Resource management provides an overview of development activities, authors, and their commits."
                                     }
-                                >
-                                    <CypherEditor
-                                        className="cypheredit"
-                                        value={this.state.queryActivity}
-                                        options={{
-                                            mode: "cypher",
-                                            theme: "cypher"
-                                        }}
-                                        onValueChange={this.updateStateQueryActivity.bind(
-                                            this
-                                        )}
-                                    />
-                                    <Button
-                                        onClick={this.sendQuery.bind(this)}
-                                        className="btn btn-success send-query float-right"
-                                        color="success"
-                                        id="send"
+                                />
+                                <CardBody>
+                                    <div
+                                        className={
+                                            "expert-mode-editor hide-expert-mode resource-management"
+                                        }
                                     >
-                                        Send
-                                    </Button>
-                                    <Button
-                                        onClick={this.clearActivity.bind(this)}
-                                        className="btn btn-success send-query float-right margin-right"
-                                        color="danger"
-                                        id="reset"
+                                        <CypherEditor
+                                            className="cypheredit"
+                                            value={this.state.queryActivity}
+                                            options={{
+                                                mode: "cypher",
+                                                theme: "cypher"
+                                            }}
+                                            onValueChange={this.updateStateQueryActivity.bind(
+                                                this
+                                            )}
+                                        />
+                                        <Button
+                                            onClick={this.sendQuery.bind(this)}
+                                            className="btn btn-success send-query float-right"
+                                            color="success"
+                                            id="send"
+                                        >
+                                            Send
+                                        </Button>
+                                        <Button
+                                            onClick={this.clearActivity.bind(
+                                                this
+                                            )}
+                                            className="btn btn-success send-query float-right margin-right"
+                                            color="danger"
+                                            id="reset"
+                                        >
+                                            Reset
+                                        </Button>
+                                    </div>
+                                    <a
+                                        href="#/resource-management/activity"
+                                        className={"display-block clear"}
                                     >
-                                        Reset
-                                    </Button>
-                                </div>
-                                <a
-                                    href="#/resource-management/activity"
-                                    className={"display-block clear"}
-                                >
-                                    <strong>Activity metrics</strong>
-                                    <ListGroup>
-                                        {Object.keys(
-                                            this.state.activityMetrics
-                                        ).map(function(key) {
-                                            var label = key
-                                                // insert a space before all caps
-                                                .replace(/([A-Z])/g, " $1")
-                                                .toLowerCase()
-                                                // uppercase the first character
-                                                .replace(/^./, function(str) {
-                                                    return str.toUpperCase();
-                                                });
+                                        <strong>Activity metrics</strong>
+                                        <ListGroup>
+                                            {Object.keys(
+                                                this.state.activityMetrics
+                                            ).map(function(key) {
+                                                var label = key
+                                                    // insert a space before all caps
+                                                    .replace(/([A-Z])/g, " $1")
+                                                    .toLowerCase()
+                                                    // uppercase the first character
+                                                    .replace(/^./, function(
+                                                        str
+                                                    ) {
+                                                        return str.toUpperCase();
+                                                    });
 
-                                            return (
-                                                <ListGroupItem
-                                                    key={key}
-                                                    className="justify-content-between"
-                                                >
-                                                    {label}{" "}
-                                                    <div className="float-right">
-                                                        {
-                                                            this.state
-                                                                .activityMetrics[
-                                                                key
-                                                            ]
-                                                        }
-                                                    </div>
-                                                </ListGroupItem>
-                                            );
-                                        }, this)}
-                                    </ListGroup>
-                                </a>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                    <Col xs="12" sm="6" md="3">
-                        <Card>
-                            <CustomCardHeader
-                                cardHeaderText={"Risk Management"}
-                                showExpertMode={true}
-                                placement={"bottom"}
-                                target={"Popover3"}
-                                popoverHeaderText={"Risk Management"}
-                                popoverBody={
-                                    "Risk management helps to identify hotspots of the project."
-                                }
-                            />
-                            <CardBody>
-                                <div
-                                    className={
-                                        "expert-mode-editor hide-expert-mode risk-management"
+                                                return (
+                                                    <ListGroupItem
+                                                        key={key}
+                                                        className="justify-content-between"
+                                                    >
+                                                        {label}{" "}
+                                                        <div className="float-right">
+                                                            {
+                                                                this.state
+                                                                    .activityMetrics[
+                                                                    key
+                                                                ]
+                                                            }
+                                                        </div>
+                                                    </ListGroupItem>
+                                                );
+                                            }, this)}
+                                        </ListGroup>
+                                    </a>
+                                </CardBody>
+                            </Card>
+                        </Col>
+                    )}
+                    {this.state.pluginPresence.git && (
+                        <Col xs="12" sm="6" md="3">
+                            <Card>
+                                <CustomCardHeader
+                                    cardHeaderText={"Risk Management"}
+                                    showExpertMode={true}
+                                    placement={"bottom"}
+                                    target={"Popover3"}
+                                    popoverHeaderText={"Risk Management"}
+                                    popoverBody={
+                                        "Risk management helps to identify hotspots of the project."
                                     }
-                                >
-                                    <CypherEditor
-                                        className="cypheredit"
-                                        value={this.state.queryHotspot}
-                                        options={{
-                                            mode: "cypher",
-                                            theme: "cypher"
-                                        }}
-                                        onValueChange={this.updateStateQueryHotspot.bind(
-                                            this
-                                        )}
-                                    />
-                                    <Button
-                                        onClick={this.sendQuery.bind(this)}
-                                        className="btn btn-success send-query float-right"
-                                        color="success"
-                                        id="send"
+                                />
+                                <CardBody>
+                                    <div
+                                        className={
+                                            "expert-mode-editor hide-expert-mode risk-management"
+                                        }
                                     >
-                                        Send
-                                    </Button>
-                                    <Button
-                                        onClick={this.clearHotspot.bind(this)}
-                                        className="btn btn-success send-query float-right margin-right"
-                                        color="danger"
-                                        id="reset"
+                                        <CypherEditor
+                                            className="cypheredit"
+                                            value={this.state.queryHotspot}
+                                            options={{
+                                                mode: "cypher",
+                                                theme: "cypher"
+                                            }}
+                                            onValueChange={this.updateStateQueryHotspot.bind(
+                                                this
+                                            )}
+                                        />
+                                        <Button
+                                            onClick={this.sendQuery.bind(this)}
+                                            className="btn btn-success send-query float-right"
+                                            color="success"
+                                            id="send"
+                                        >
+                                            Send
+                                        </Button>
+                                        <Button
+                                            onClick={this.clearHotspot.bind(
+                                                this
+                                            )}
+                                            className="btn btn-success send-query float-right margin-right"
+                                            color="danger"
+                                            id="reset"
+                                        >
+                                            Reset
+                                        </Button>
+                                    </div>
+                                    <a
+                                        href="#/risk-management/hotspots"
+                                        className={"display-block clear"}
                                     >
-                                        Reset
-                                    </Button>
-                                </div>
-                                <a
-                                    href="#/risk-management/hotspots"
-                                    className={"display-block clear"}
-                                >
-                                    <strong>Hotspot metrics</strong>
-                                    <ListGroup className="margin-bottom">
-                                        {Object.keys(
-                                            this.state.hotspotMetrics
-                                        ).map(function(key) {
-                                            var label = key
-                                                // insert a space before all caps
-                                                .replace(/([A-Z])/g, " $1")
-                                                .toLowerCase()
-                                                // uppercase the first character
-                                                .replace(/^./, function(str) {
-                                                    return str.toUpperCase();
-                                                });
+                                        <strong>Hotspot metrics</strong>
+                                        <ListGroup className="margin-bottom">
+                                            {Object.keys(
+                                                this.state.hotspotMetrics
+                                            ).map(function(key) {
+                                                var label = key
+                                                    // insert a space before all caps
+                                                    .replace(/([A-Z])/g, " $1")
+                                                    .toLowerCase()
+                                                    // uppercase the first character
+                                                    .replace(/^./, function(
+                                                        str
+                                                    ) {
+                                                        return str.toUpperCase();
+                                                    });
 
-                                            return (
-                                                <ListGroupItem
-                                                    key={key}
-                                                    className="justify-content-between"
-                                                >
-                                                    {label}{" "}
-                                                    <div className="float-right">
-                                                        {
-                                                            this.state
-                                                                .hotspotMetrics[
-                                                                key
-                                                            ]
-                                                        }
-                                                    </div>
-                                                </ListGroupItem>
-                                            );
-                                        }, this)}
-                                    </ListGroup>
-                                </a>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                    <Col xs="12" sm="6" md="3">
-                        <Card>
-                            <CustomCardHeader
-                                cardHeaderText={"Quality Management"}
-                                showExpertMode={true}
-                                placement={"bottom"}
-                                target={"Popover4"}
-                                popoverHeaderText={"Quality Management"}
-                                popoverBody={
-                                    "Quality management supports quality monitoring with regard to static code analysis results and test coverage."
-                                }
-                            />
-                            <CardBody>
-                                <div
-                                    className={
-                                        "expert-mode-editor hide-expert-mode quality-management"
+                                                return (
+                                                    <ListGroupItem
+                                                        key={key}
+                                                        className="justify-content-between"
+                                                    >
+                                                        {label}{" "}
+                                                        <div className="float-right">
+                                                            {
+                                                                this.state
+                                                                    .hotspotMetrics[
+                                                                    key
+                                                                ]
+                                                            }
+                                                        </div>
+                                                    </ListGroupItem>
+                                                );
+                                            }, this)}
+                                        </ListGroup>
+                                    </a>
+                                </CardBody>
+                            </Card>
+                        </Col>
+                    )}
+                    {(this.state.pluginPresence.jacoco ||
+                        this.state.pluginPresence.pmd) && (
+                        <Col xs="12" sm="6" md="3">
+                            <Card>
+                                <CustomCardHeader
+                                    cardHeaderText={"Quality Management"}
+                                    showExpertMode={true}
+                                    placement={"bottom"}
+                                    target={"Popover4"}
+                                    popoverHeaderText={"Quality Management"}
+                                    popoverBody={
+                                        "Quality management supports quality monitoring with regard to static code analysis results and test coverage."
                                     }
-                                >
-                                    <CypherEditor
-                                        className="cypheredit"
-                                        value={this.state.queryPMD}
-                                        options={{
-                                            mode: "cypher",
-                                            theme: "cypher"
-                                        }}
-                                        onValueChange={this.updateStateQueryPMD.bind(
-                                            this
-                                        )}
-                                    />
-                                    <Button
-                                        onClick={this.sendQuery.bind(this)}
-                                        className="btn btn-success send-query float-right"
-                                        color="success"
-                                        id="send"
-                                    >
-                                        Send
-                                    </Button>
-                                    <Button
-                                        onClick={this.clearPMD.bind(this)}
-                                        className="btn btn-success send-query float-right margin-right"
-                                        color="danger"
-                                        id="reset"
-                                    >
-                                        Reset
-                                    </Button>
-                                </div>
-                                <a
-                                    href="#/quality-management/static-code-analysis/pmd"
-                                    className={"display-block clear"}
-                                >
-                                    <strong>Static Code Analysis (PMD)</strong>
-                                    <ListGroup className="margin-bottom">
-                                        {Object.keys(
-                                            this.state
-                                                .staticCodeAnalysisPMDMetrics
-                                        ).map(function(key) {
-                                            var label = key
-                                                // insert a space before all caps
-                                                .replace(/([A-Z])/g, " $1")
-                                                .toLowerCase()
-                                                // uppercase the first character
-                                                .replace(/^./, function(str) {
-                                                    return str.toUpperCase();
-                                                });
+                                />
+                                <CardBody>
+                                    {this.state.pluginPresence.pmd && (
+                                        <div
+                                            className={
+                                                "expert-mode-editor hide-expert-mode quality-management"
+                                            }
+                                        >
+                                            <CypherEditor
+                                                className="cypheredit"
+                                                value={this.state.queryPMD}
+                                                options={{
+                                                    mode: "cypher",
+                                                    theme: "cypher"
+                                                }}
+                                                onValueChange={this.updateStateQueryPMD.bind(
+                                                    this
+                                                )}
+                                            />
+                                            <Button
+                                                onClick={this.sendQuery.bind(
+                                                    this
+                                                )}
+                                                className="btn btn-success send-query float-right"
+                                                color="success"
+                                                id="send"
+                                            >
+                                                Send
+                                            </Button>
+                                            <Button
+                                                onClick={this.clearPMD.bind(
+                                                    this
+                                                )}
+                                                className="btn btn-success send-query float-right margin-right"
+                                                color="danger"
+                                                id="reset"
+                                            >
+                                                Reset
+                                            </Button>
+                                        </div>
+                                    )}
+                                    {this.state.pluginPresence.pmd && (
+                                        <a
+                                            href="#/quality-management/static-code-analysis/pmd"
+                                            className={"display-block clear"}
+                                        >
+                                            <strong>
+                                                Static Code Analysis (PMD)
+                                            </strong>
+                                            <ListGroup className="margin-bottom">
+                                                {Object.keys(
+                                                    this.state
+                                                        .staticCodeAnalysisPMDMetrics
+                                                ).map(function(key) {
+                                                    var label = key
+                                                        // insert a space before all caps
+                                                        .replace(
+                                                            /([A-Z])/g,
+                                                            " $1"
+                                                        )
+                                                        .toLowerCase()
+                                                        // uppercase the first character
+                                                        .replace(/^./, function(
+                                                            str
+                                                        ) {
+                                                            return str.toUpperCase();
+                                                        });
 
-                                            return (
-                                                <ListGroupItem
-                                                    key={key}
-                                                    className="justify-content-between"
-                                                >
-                                                    {label}{" "}
-                                                    <div className="float-right">
-                                                        {
-                                                            this.state
-                                                                .staticCodeAnalysisPMDMetrics[
-                                                                key
-                                                            ]
-                                                        }
-                                                    </div>
-                                                </ListGroupItem>
-                                            );
-                                        }, this)}
-                                    </ListGroup>
-                                </a>
+                                                    return (
+                                                        <ListGroupItem
+                                                            key={key}
+                                                            className="justify-content-between"
+                                                        >
+                                                            {label}{" "}
+                                                            <div className="float-right">
+                                                                {
+                                                                    this.state
+                                                                        .staticCodeAnalysisPMDMetrics[
+                                                                        key
+                                                                    ]
+                                                                }
+                                                            </div>
+                                                        </ListGroupItem>
+                                                    );
+                                                }, this)}
+                                            </ListGroup>
+                                        </a>
+                                    )}
+                                    {this.state.pluginPresence.jacoco && (
+                                        <div
+                                            className={
+                                                "expert-mode-editor hide-expert-mode quality-management"
+                                            }
+                                        >
+                                            <CypherEditor
+                                                className="cypheredit"
+                                                value={
+                                                    this.state.queryTestCoverage
+                                                }
+                                                options={{
+                                                    mode: "cypher",
+                                                    theme: "cypher"
+                                                }}
+                                                onValueChange={this.updateStateQueryTestCoverage.bind(
+                                                    this
+                                                )}
+                                            />
+                                            <Button
+                                                onClick={this.sendQuery.bind(
+                                                    this
+                                                )}
+                                                className="btn btn-success send-query float-right"
+                                                color="success"
+                                                id="send"
+                                            >
+                                                Send
+                                            </Button>
+                                            <Button
+                                                onClick={this.clearTestCoverage.bind(
+                                                    this
+                                                )}
+                                                className="btn btn-success send-query float-right margin-right"
+                                                color="danger"
+                                                id="reset"
+                                            >
+                                                Reset
+                                            </Button>
+                                        </div>
+                                    )}
+                                    {this.state.pluginPresence.jacoco && (
+                                        <a
+                                            href="#/quality-management/test-coverage"
+                                            className={"display-block clear"}
+                                        >
+                                            <strong>Test Coverage</strong>
+                                            <ListGroup>
+                                                {Object.keys(
+                                                    this.state
+                                                        .testCoverageMetrics
+                                                ).map(function(key) {
+                                                    var label = key
+                                                        // insert a space before all caps
+                                                        .replace(
+                                                            /([A-Z])/g,
+                                                            " $1"
+                                                        )
+                                                        .toLowerCase()
+                                                        // uppercase the first character
+                                                        .replace(/^./, function(
+                                                            str
+                                                        ) {
+                                                            return str.toUpperCase();
+                                                        });
 
-                                <div
-                                    className={
-                                        "expert-mode-editor hide-expert-mode quality-management"
-                                    }
-                                >
-                                    <CypherEditor
-                                        className="cypheredit"
-                                        value={this.state.queryTestCoverage}
-                                        options={{
-                                            mode: "cypher",
-                                            theme: "cypher"
-                                        }}
-                                        onValueChange={this.updateStateQueryTestCoverage.bind(
-                                            this
-                                        )}
-                                    />
-                                    <Button
-                                        onClick={this.sendQuery.bind(this)}
-                                        className="btn btn-success send-query float-right"
-                                        color="success"
-                                        id="send"
-                                    >
-                                        Send
-                                    </Button>
-                                    <Button
-                                        onClick={this.clearTestCoverage.bind(
-                                            this
-                                        )}
-                                        className="btn btn-success send-query float-right margin-right"
-                                        color="danger"
-                                        id="reset"
-                                    >
-                                        Reset
-                                    </Button>
-                                </div>
-                                <a
-                                    href="#/quality-management/test-coverage"
-                                    className={"display-block clear"}
-                                >
-                                    <strong>Test Coverage</strong>
-                                    <ListGroup>
-                                        {Object.keys(
-                                            this.state.testCoverageMetrics
-                                        ).map(function(key) {
-                                            var label = key
-                                                // insert a space before all caps
-                                                .replace(/([A-Z])/g, " $1")
-                                                .toLowerCase()
-                                                // uppercase the first character
-                                                .replace(/^./, function(str) {
-                                                    return str.toUpperCase();
-                                                });
-
-                                            return (
-                                                <ListGroupItem
-                                                    key={key}
-                                                    className="justify-content-between"
-                                                >
-                                                    {label}{" "}
-                                                    <div className="float-right">
-                                                        {
-                                                            this.state
-                                                                .testCoverageMetrics[
-                                                                key
-                                                            ]
-                                                        }
-                                                        %
-                                                    </div>
-                                                </ListGroupItem>
-                                            );
-                                        }, this)}
-                                    </ListGroup>
-                                </a>
-                            </CardBody>
-                        </Card>
-                    </Col>
+                                                    return (
+                                                        <ListGroupItem
+                                                            key={key}
+                                                            className="justify-content-between"
+                                                        >
+                                                            {label}{" "}
+                                                            <div className="float-right">
+                                                                {
+                                                                    this.state
+                                                                        .testCoverageMetrics[
+                                                                        key
+                                                                    ]
+                                                                }
+                                                                %
+                                                            </div>
+                                                        </ListGroupItem>
+                                                    );
+                                                }, this)}
+                                            </ListGroup>
+                                        </a>
+                                    )}
+                                </CardBody>
+                            </Card>
+                        </Col>
+                    )}
                 </Row>
             </div>
         );

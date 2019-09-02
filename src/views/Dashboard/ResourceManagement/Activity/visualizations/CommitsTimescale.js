@@ -23,7 +23,7 @@ class CommitsTimescale extends DashboardAbstract {
             commitsTo: "2019-01-01",
             displayFrom: "2017-01-01",
             displayTo: "2019-01-01",
-            calendarPaginationYear: "2018",
+            calendarPaginationYear: "2019",
             commitsTimescale: []
         };
     }
@@ -320,7 +320,11 @@ class CommitsTimescale extends DashboardAbstract {
                 </div>
                 <div
                     className={"year-switcher"}
-                    style={{ position: "relative", bottom: "200px" }}
+                    style={{
+                        position: "absolute",
+                        bottom: "100px",
+                        left: "20px"
+                    }}
                 >
                     {years.map(year => (
                         <span
