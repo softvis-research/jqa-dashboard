@@ -77,7 +77,7 @@ class LatestCommits extends DashboardAbstract {
 
         return (
             <div className={"visualization-wrapper display-block clear"}>
-                <div style={{ height: "409px" }}>
+                <div style={{ minHeight: "409px" }}>
                     <ReactTable
                         data={this.state.latestCommits}
                         columns={[
@@ -94,6 +94,7 @@ class LatestCommits extends DashboardAbstract {
                                 accessor: "message"
                             }
                         ]}
+                        pageSizeOptions={[10, 20]}
                         defaultPageSize={10}
                         className="-striped -highlight"
                     />
