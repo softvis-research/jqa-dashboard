@@ -75,3 +75,11 @@ $ docker run -it -p 7474:7474 -p 7687:7687 visualsoftwareanalytics/jqa-dashboard
 * [React Table](https://github.com/react-tools/react-table)
 * [Graph App Kit](https://github.com/neo4j-apps/graph-app-kit)
 * [Neo4j](https://github.com/neo4j/neo4j)
+
+## Publications ##
+
+* David Baum, Pascal Kovacs, Richard Müller: [Fostering Collaboration of Academia and Industry by Open Source Software](https://www.researchgate.net/publication/338008152_Fostering_Collaboration_of_Academia_and_Industry_by_Open_Source_Software), SE20 Software Engineering, 2020.
+* Richard Müller, Dirk Mahler, Michael Hunger, Jens Nerche, Markus Harrer: [Towards an Open Source Stack to Create a Unified Data Source for Software Analysis and Visualization](https://www.researchgate.net/publication/328282991_Towards_an_Open_Source_Stack_to_Create_a_Unified_Data_Source_for_Software_Analysis_and_Visualization), 6th IEEE Working Conference on Software Visualization, 2018.
+* Tino Mewes: [Konzeption und prototypische Implementierung eines web-basierten Dashboards zur Softwarevisualisierung](http://nbn-resolving.de/urn:nbn:de:bsz:15-qucosa2-323826), Masterarbeit, 2018.
+
+A full list of publications you can find on [our website](http://home.uni-leipzig.de/svis/Publications/).
