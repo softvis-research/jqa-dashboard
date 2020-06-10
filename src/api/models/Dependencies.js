@@ -3,7 +3,7 @@ import { neo4jSession } from "../../views/Dashboard/AbstractDashboardComponent";
 class DependenciesModel {
     constructor(props) {
         const dependenciesQuery =
-            "MATCH (dependent_package:Package)-[:CONTAINS]->(dependent:Type:ProjectFile)-[depends:DEPENDS_ON]->(dependency:Type:ProjectFile)<-[:CONTAINS]-(dependency_package:Package) " +
+            "MATCH (:Artifact)-[:CONTAINS]->(dependent:Type), (:Artifact)-[:CONTAINS]->(dependency:Type), (dependent_package:Package)-[:CONTAINS]->(dependent)-[depends:DEPENDS_ON]->(dependency)<-[:CONTAINS]-(dependency_package:Package) " +
             "WITH dependent_package.fqn as dependent, dependency_package.fqn as dependency, count(dependency) as dependencies " +
             "RETURN  dependent , dependency, dependencies ORDER BY dependent, dependency";
         localStorage.setItem("dependencies_original_query", dependenciesQuery);

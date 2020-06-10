@@ -17,10 +17,10 @@ class DashboardModel {
             "OPTIONAL MATCH (t:Type:Annotation) " +
             "WITH  classes, interfaces, enums, count(t) as annotations " +
             // number of methods and lines of code
-            "OPTIONAL MATCH (t:Type:ProjectFile)-[:DECLARES]->(m:Method) " +
+            "OPTIONAL MATCH (:Artifact)-[:CONTAINS]->(t:Type), (t)-[:DECLARES]->(m:Method) " +
             "WITH classes, interfaces, enums, annotations, count(m) as methods, sum(m.effectiveLineCount) as loc " +
             // number of fields
-            "OPTIONAL MATCH (t:Type:ProjectFile)-[:DECLARES]->(f:Field) " +
+            "OPTIONAL MATCH (:Artifact)-[:CONTAINS]->(t:Type), (t)-[:DECLARES]->(f:Field) " +
             "RETURN classes, interfaces, enums, annotations, methods, loc, count(f) as fields";
 
         localStorage.setItem(
@@ -31,23 +31,23 @@ class DashboardModel {
         const dashboardDependenciesQuery =
             // relation metrics (table 2)
             // dependencies
-            "OPTIONAL MATCH (:Type:ProjectFile)-[d:DEPENDS_ON]->(:Type) " +
+            "OPTIONAL MATCH (:Artifact)-[:CONTAINS]->(t:Type), (t)-[d:DEPENDS_ON]->(:Type) " +
             "WITH count(d) as dependencies " +
             // extends
-            "OPTIONAL MATCH (:Type:ProjectFile)-[e:EXTENDS]->(superType:Type) " +
+            "OPTIONAL MATCH (:Artifact)-[:CONTAINS]->(t:Type), (t)-[e:EXTENDS]->(superType:Type) " +
             'WHERE superType.name <> "Object" ' +
             "WITH dependencies, count(e) as extends " +
             // implements
-            "OPTIONAL MATCH (:Type:ProjectFile)-[i:IMPLEMENTS]->(:Type) " +
+            "OPTIONAL MATCH (:Artifact)-[:CONTAINS]->(t:Type), (t)-[i:IMPLEMENTS]->(:Type) " +
             "WITH dependencies, extends, count(i) as implements " +
             // calls
-            "OPTIONAL MATCH (:Type:ProjectFile)-[:DECLARES]->(m:Method)-[i:INVOKES]->(:Method) " +
+            "OPTIONAL MATCH (:Artifact)-[:CONTAINS]->(t:Type), (t)-[:DECLARES]->(m:Method)-[i:INVOKES]->(:Method) " +
             "WITH dependencies, extends, implements, count(i) as invocations " +
             // reads
-            "OPTIONAL MATCH (:Type:ProjectFile)-[:DECLARES]->(m:Method)-[r:READS]->(:Field) " +
+            "OPTIONAL MATCH (:Artifact)-[:CONTAINS]->(t:Type), (t)-[:DECLARES]->(m:Method)-[r:READS]->(:Field) " +
             "WITH dependencies, extends, implements, invocations, count(r) as reads " +
             // writes
-            "OPTIONAL MATCH (:Type:ProjectFile)-[:DECLARES]->(m:Method)-[w:WRITES]->(:Field) " +
+            "OPTIONAL MATCH (:Artifact)-[:CONTAINS]->(t:Type), (t)-[:DECLARES]->(m:Method)-[w:WRITES]->(:Field) " +
             "RETURN dependencies, extends, implements, invocations, reads, count(w) as writes";
         localStorage.setItem(
             "dashboard_dependencies_original_query",

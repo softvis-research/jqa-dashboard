@@ -145,15 +145,3 @@ RETURN
 ORDER BY
   FilesOfType desc
 ----
-
-[[jqassistant-dashboard:ProjectFile]]
-[source,cypher,role="concept",verify="aggregation"]
-.Every `:Type` which is contained in an artifact is labeled as `:ProjectFile`.
-----
-MATCH
-  (:Artifact)-[:CONTAINS]->(t:Type)
-SET
-  t:ProjectFile
-RETURN
-  count(t) as NumberOfProjectFiles
-----
