@@ -22,7 +22,7 @@ class Layers extends DashboardAbstract {
                             />
                             <CardBody>
                                 <div className="visualization-wrapper">
-                                    <div style={{ height: "2200px" }}>
+                                    <div style={{ height: "700px" }}>
                                         <LayersVisualization />
                                     </div>
                                 </div>

@@ -15,6 +15,8 @@ class LayersModel {
         };
     }
 
+    getData() {}
+
     readLayers(visualization) {
         let layersData = [];
         neo4jSession
