@@ -2,7 +2,7 @@ import React from "react";
 import DashboardAbstract from "../../AbstractDashboardComponent";
 import CustomCardHeader from "../../CustomCardHeader/CustomCardHeader";
 import { Card, CardBody, Col, Row } from "reactstrap";
-import LayersWrapper from "./LayersWrapper";
+import LayersVisualization from "./visualizations/LayersVisualization";
 
 class Layers extends DashboardAbstract {
     render() {
@@ -21,7 +21,11 @@ class Layers extends DashboardAbstract {
                                 }
                             />
                             <CardBody>
-                                <LayersWrapper />
+                                <div className="visualization-wrapper">
+                                    <div style={{ height: "2200px" }}>
+                                        <LayersVisualization />
+                                    </div>
+                                </div>
                             </CardBody>
                         </Card>
                     </Col>
