@@ -21,6 +21,7 @@
     "@nivo/chord": "^0.52.0",
     "@nivo/circle-packing": "^0.52.0",
     "@nivo/legends": "^0.52.0",
+    "@nivo/network": "^0.62.0",
     "@nivo/pie": "^0.52.0",
     "@nivo/radar": "^0.52.0",
     "@nivo/treemap": "^0.52.0",

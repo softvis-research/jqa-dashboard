@@ -2,42 +2,96 @@ import { neo4jSession } from "../../views/Dashboard/AbstractDashboardComponent";
 
 class LayersModel {
     constructor(props) {
-        const layersQuery =
-            "MATCH (l1:Directory)-[:CONTAINS]->(t1:Directory) " +
-            "WITH l1, collect(t1.name) AS Children " +
-            "WHERE l1.fqn = 'org.junit' " +
-            "RETURN l1.name AS Node, Children " +
-            "ORDER BY Node, Children";
-        localStorage.setItem("layers_query", layersQuery);
+        const networkQuery =
+            "MATCH (package:Package)-[:CONTAINS]->(layer:Layer), (layer)-[:CONTAINS]->(dependent:Type) " +
+            "RETURN package.name, layer.name, collect(dependent.name) as dependents";
+        const dependencyQuery =
+            "MATCH (:Layer)-[:CONTAINS]->(dependent:Type)-[:DEPENDS_ON]->(dependency:Type)<-[:CONTAINS]-(:Layer) " +
+            "RETURN dependent.name, collect(dependency.name) as dependencies";
 
         this.state = {
-            queryString: layersQuery
+            networkQuery: networkQuery,
+            dependencyQuery: dependencyQuery
         };
     }
 
-    getData() {}
+    readLayers(thisBackup) {
+        let nodes = [];
+        let links = [];
 
-    readLayers(visualization) {
-        let layersData = [];
-        neo4jSession
-            .run(this.state.queryString)
-            .then(result => {
-                result.records.forEach(record => {
-                    let convertedRecord = {
-                        name: record.get("Node"),
-                        children: record.get("Children")
-                    };
-                    layersData.push(convertedRecord);
-                });
-            })
-            .then(() => {
-                visualization.setState({
-                    layersData: layersData
-                });
-            })
-            .catch(error => {
-                console.log("Error: " + error);
+        neo4jSession.run(this.state.networkQuery).then(result => {
+            console.log(result);
+            result.records.forEach(record => {
+                if (!this.nodeExists(nodes, record)) {
+                    this.appendNode(
+                        nodes,
+                        record.get("package.name"),
+                        16,
+                        1,
+                        "rgb(108,121,241)"
+                    );
+                }
+                if (!nodes.includes(record.get("layer.name"))) {
+                    this.appendNode(
+                        nodes,
+                        record.get("layer.name"),
+                        12,
+                        1,
+                        "rgb(97, 205, 187)"
+                    );
+                    this.appendLink(
+                        links,
+                        record.get("package.name"),
+                        record.get("layer.name")
+                    );
+                    record.get("dependents").forEach(dependent => {
+                        if (!nodes.includes(dependent)) {
+                            this.appendNode(
+                                nodes,
+                                dependent,
+                                4,
+                                2,
+                                "rgb(232, 193, 160)"
+                            );
+                            this.appendLink(
+                                links,
+                                record.get("layer.name"),
+                                dependent
+                            );
+                        }
+                    });
+                }
             });
+        });
+
+        neo4jSession.run(this.state.dependencyQuery).then(() => {
+            console.log(nodes, links);
+            thisBackup.setState({
+                nodes: nodes,
+                links: links
+            });
+        });
+    }
+
+    appendLink(links, source, target) {
+        links.push({
+            source: source,
+            target: target,
+            distance: 100
+        });
+    }
+
+    appendNode(nodes, id, radius, depth, color) {
+        nodes.push({
+            id: id,
+            radius: radius,
+            depth: depth,
+            color: color
+        });
+    }
+
+    nodeExists(nodes, record) {
+        return nodes.some(node => node.id === record.get("package.name"));
     }
 }
 
