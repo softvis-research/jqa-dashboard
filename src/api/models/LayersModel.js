@@ -22,7 +22,7 @@ class LayersModel {
         neo4jSession.run(this.state.networkQuery).then(result => {
             console.log(result);
             result.records.forEach(record => {
-                if (!this.nodeExists(nodes, record)) {
+                if (!this.nodeExists(nodes, record.get("package.name"))) {
                     this.appendNode(
                         nodes,
                         record.get("package.name"),
@@ -31,7 +31,7 @@ class LayersModel {
                         "rgb(108,121,241)"
                     );
                 }
-                if (!nodes.includes(record.get("layer.name"))) {
+                if (!this.nodeExists(nodes, record.get("layer.name"))) {
                     this.appendNode(
                         nodes,
                         record.get("layer.name"),
@@ -45,12 +45,12 @@ class LayersModel {
                         record.get("layer.name")
                     );
                     record.get("dependents").forEach(dependent => {
-                        if (!nodes.includes(dependent)) {
+                        if (!this.nodeExists(nodes, dependent)) {
                             this.appendNode(
                                 nodes,
                                 dependent,
                                 4,
-                                2,
+                                1,
                                 "rgb(232, 193, 160)"
                             );
                             this.appendLink(
@@ -64,20 +64,32 @@ class LayersModel {
             });
         });
 
-        neo4jSession.run(this.state.dependencyQuery).then(() => {
-            console.log(nodes, links);
-            thisBackup.setState({
-                nodes: nodes,
-                links: links
+        neo4jSession
+            .run(this.state.dependencyQuery)
+            .then(result => {
+                console.log(nodes, links);
+                console.log(result);
+                result.records.forEach(record => {
+                    console.log(record);
+                    let dependent = record.get("dependent.name");
+                    record.get("dependencies").forEach(dependency => {
+                        this.appendLink(links, dependent, dependency);
+                    });
+                });
+            })
+            .then(() => {
+                thisBackup.setState({
+                    nodes: nodes,
+                    links: links
+                });
             });
-        });
     }
 
     appendLink(links, source, target) {
         links.push({
             source: source,
             target: target,
-            distance: 100
+            distance: 50
         });
     }
 
@@ -90,8 +102,8 @@ class LayersModel {
         });
     }
 
-    nodeExists(nodes, record) {
-        return nodes.some(node => node.id === record.get("package.name"));
+    nodeExists(nodes, nodeId) {
+        return nodes.some(node => node.id === nodeId);
     }
 }
 
