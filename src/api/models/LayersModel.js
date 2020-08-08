@@ -1,109 +1,89 @@
 import { neo4jSession } from "../../views/Dashboard/AbstractDashboardComponent";
+import * as d3 from "d3";
 
 class LayersModel {
     constructor(props) {
-        const networkQuery =
-            "MATCH (package:Package)-[:CONTAINS]->(layer:Layer), (layer)-[:CONTAINS]->(dependent:Type) " +
-            "RETURN package.name, layer.name, collect(dependent.name) as dependents";
-        const dependencyQuery =
-            "MATCH (:Layer)-[:CONTAINS]->(dependent:Type)-[:DEPENDS_ON]->(dependency:Type)<-[:CONTAINS]-(:Layer) " +
-            "RETURN dependent.name, collect(dependency.name) as dependencies";
+        const layersQuery =
+            "MATCH (package:Package)-[:CONTAINS]->(layer:Layer), (layer)-[:CONTAINS]->(dependent:Type), (dependent)-[:DECLARES]->(method:Method) " +
+            "RETURN package.name, layer.name, dependent.name, sum(method.effectiveLineCount) as loc";
 
         this.state = {
-            networkQuery: networkQuery,
-            dependencyQuery: dependencyQuery
+            layersQuery: layersQuery
         };
     }
 
-    readLayers(thisBackup) {
-        let nodes = [];
-        let links = [];
-
-        neo4jSession.run(this.state.networkQuery).then(result => {
+    readLayers(that) {
+        neo4jSession.run(this.state.layersQuery).then(result => {
             console.log(result);
             result.records.forEach(record => {
-                if (!this.nodeExists(nodes, record.get("package.name"))) {
-                    this.appendNode(
-                        nodes,
-                        record.get("package.name"),
-                        16,
-                        1,
-                        "rgb(108,121,241)"
-                    );
+                if (!this.hasNode(root, record.get("package.name"))) {
+                    root.name = record.get("package.name");
+                    root.color = "hsl(228, 70%, 50%)";
+                    root.children = [];
                 }
-                if (!this.nodeExists(nodes, record.get("layer.name"))) {
+                if (!this.hasNode(root, record.get("layer.name"))) {
                     this.appendNode(
-                        nodes,
+                        root,
+                        record.get("package.name"),
+                        this.createNode(
+                            record.get("layer.name"),
+                            "hsl(111, 70%, 50%)"
+                        )
+                    );
+                    this.appendNode(
+                        root,
                         record.get("layer.name"),
-                        12,
-                        1,
-                        "rgb(97, 205, 187)"
+                        this.createNode(
+                            record.get("dependent.name"),
+                            "hsl(204, 70%, 50%)"
+                        )
                     );
-                    this.appendLink(
-                        links,
-                        record.get("package.name"),
-                        record.get("layer.name")
-                    );
-                    record.get("dependents").forEach(dependent => {
-                        if (!this.nodeExists(nodes, dependent)) {
-                            this.appendNode(
-                                nodes,
-                                dependent,
-                                4,
-                                1,
-                                "rgb(232, 193, 160)"
-                            );
-                            this.appendLink(
-                                links,
-                                record.get("layer.name"),
-                                dependent
-                            );
-                        }
-                    });
                 }
             });
-        });
-
-        neo4jSession
-            .run(this.state.dependencyQuery)
-            .then(result => {
-                console.log(nodes, links);
-                console.log(result);
-                result.records.forEach(record => {
-                    console.log(record);
-                    let dependent = record.get("dependent.name");
-                    record.get("dependencies").forEach(dependency => {
-                        this.appendLink(links, dependent, dependency);
-                    });
-                });
-            })
-            .then(() => {
-                thisBackup.setState({
-                    nodes: nodes,
-                    links: links
-                });
-            });
-    }
-
-    appendLink(links, source, target) {
-        links.push({
-            source: source,
-            target: target,
-            distance: 50
+            console.log(root);
         });
     }
 
-    appendNode(nodes, id, radius, depth, color) {
-        nodes.push({
-            id: id,
-            radius: radius,
-            depth: depth,
-            color: color
-        });
+    hasNode(root, name) {
+        if (this.isEmpty(root)) return false;
+        if (root.name === name) return true;
+        for (let child of root.children) {
+            if (child.name === name) {
+                return true;
+            }
+        }
     }
 
-    nodeExists(nodes, nodeId) {
-        return nodes.some(node => node.id === nodeId);
+    isEmpty(root) {
+        return Object.keys(root).length === 0 && root.constructor === Object;
+    }
+
+    createNode(name, color) {
+        return {
+            name: name,
+            color: color,
+            children: []
+        };
+    }
+
+    appendNode(root, parent, child) {
+        debugger;
+        const parentNode = this.findParent(root, parent);
+        console.log(parentNode);
+        parentNode.children.push(child);
+    }
+
+    findParent(root, parentName) {
+        if (root.name === parentName) {
+            return parentName;
+        }
+        debugger;
+        let result;
+        for (let child of root.children) {
+            console.log(child);
+            // result = this.findParent(child.children, name)
+            // if (result) return result;
+        }
     }
 }
 

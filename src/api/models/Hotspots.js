@@ -109,6 +109,7 @@ class HotspotModel {
                     }
                 });
 
+                console.log(flatData);
                 hierarchicalData = cpHelper.circlePackingByName(
                     projectName,
                     flatData
