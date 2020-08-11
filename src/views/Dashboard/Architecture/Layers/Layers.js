@@ -69,8 +69,6 @@ class Layers extends DashboardAbstract {
                                                             return node.color;
                                                         }}
                                                         animate={true}
-                                                        motionStiffness={90}
-                                                        motionDamping={12}
                                                     />
                                                 </div>
                                             </CardBody>

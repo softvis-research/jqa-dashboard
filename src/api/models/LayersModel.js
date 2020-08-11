@@ -7,46 +7,67 @@ class LayersModel {
             "MATCH (package:Package)-[:CONTAINS]->(layer:Layer)-[:CONTAINS]->(child:Type)-[:DECLARES]->(method:Method) " +
             "RETURN package.name as package, layer.name as layer, child.name as child, sum(method.effectiveLineCount) as loc";
 
+        const dependenciesQuery =
+            "MATCH (l1:Layer)-[:CONTAINS]->(dependent:Type)-[:DEPENDS_ON]->(dependency:Type)<-[:CONTAINS]-(l2:Layer) " +
+            "WHERE NOT (l1.name)=(l2.name) " +
+            "RETURN l1.name AS dependentLayer, l2.name AS dependencyLayer, dependent.name AS dependent, dependency.name AS dependency " +
+            "ORDER BY dependentLayer, dependencyLayer";
+
         this.state = {
-            layersQuery: layersQuery
+            layersQuery: layersQuery,
+            dependenciesQuery: dependenciesQuery,
+            validDependencyDirection: ["web", "service", "model", "repository"]
         };
     }
 
     readLayers(that) {
         let data = [];
         let root;
+        neo4jSession.run(this.state.layersQuery).then(result => {
+            result.records.forEach(record => {
+                if (!this.nodeExists(data, record.get("package"))) {
+                    this.appendNonLeafNode(
+                        data,
+                        record.get("package"),
+                        "#F6FBFC",
+                        ""
+                    );
+                }
+                if (!this.nodeExists(data, record.get("layer"))) {
+                    this.appendNonLeafNode(
+                        data,
+                        record.get("layer"),
+                        "#CCECE6",
+                        record.get("package")
+                    );
+                }
+                if (record.get("loc").low < 5) {
+                    record.get("loc").low = 5;
+                } else {
+                    record.get("loc").low = record.get("loc").low + 5;
+                }
+                this.appendLeafNode(
+                    data,
+                    record.get("child"),
+                    "#66C2A4",
+                    record.get("layer"),
+                    record.get("loc").low
+                );
+            });
+        });
+
         neo4jSession
-            .run(this.state.layersQuery)
+            .run(this.state.dependenciesQuery)
             .then(result => {
                 result.records.forEach(record => {
-                    if (!this.nodeExists(data, record.get("package"))) {
-                        this.appendNonLeafNode(
-                            data,
-                            record.get("package"),
-                            "#F6FBFC",
-                            ""
-                        );
+                    if (!this.dependencyIsValid(record)) {
+                        data.find(
+                            node => node.id === record.get("dependent")
+                        ).color = "#EF6548";
+                        data.find(
+                            node => node.id === record.get("dependency")
+                        ).color = "#EF6548";
                     }
-                    if (!this.nodeExists(data, record.get("layer"))) {
-                        this.appendNonLeafNode(
-                            data,
-                            record.get("layer"),
-                            "#CCECE6",
-                            record.get("package")
-                        );
-                    }
-                    if (record.get("loc").low < 5) {
-                        record.get("loc").low = 5;
-                    } else {
-                        record.get("loc").low = record.get("loc").low + 5;
-                    }
-                    this.appendLeafNode(
-                        data,
-                        record.get("child"),
-                        "#66C2A4",
-                        record.get("layer"),
-                        record.get("loc").low
-                    );
                 });
             })
             .then(() => {
@@ -67,6 +88,17 @@ class LayersModel {
                     data: root
                 });
             });
+    }
+
+    dependencyIsValid(record) {
+        return (
+            this.state.validDependencyDirection.indexOf(
+                record.get("dependentLayer")
+            ) <
+            this.state.validDependencyDirection.indexOf(
+                record.get("dependencyLayer")
+            )
+        );
     }
 
     convertData(node) {
