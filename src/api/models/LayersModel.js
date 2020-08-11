@@ -4,8 +4,8 @@ import * as d3 from "d3";
 class LayersModel {
     constructor(props) {
         const layersQuery =
-            "MATCH (package:Package)-[:CONTAINS]->(layer:Layer), (layer)-[:CONTAINS]->(dependent:Type), (dependent)-[:DECLARES]->(method:Method) " +
-            "RETURN package.name, layer.name, dependent.name, sum(method.effectiveLineCount) as loc";
+            "MATCH (package:Package)-[:CONTAINS]->(layer:Layer)-[:CONTAINS]->(child:Type)-[:DECLARES]->(method:Method) " +
+            "RETURN package.name as package, layer.name as layer, child.name as child, sum(method.effectiveLineCount) as loc";
 
         this.state = {
             layersQuery: layersQuery
@@ -13,77 +13,92 @@ class LayersModel {
     }
 
     readLayers(that) {
-        neo4jSession.run(this.state.layersQuery).then(result => {
-            console.log(result);
-            result.records.forEach(record => {
-                if (!this.hasNode(root, record.get("package.name"))) {
-                    root.name = record.get("package.name");
-                    root.color = "hsl(228, 70%, 50%)";
-                    root.children = [];
-                }
-                if (!this.hasNode(root, record.get("layer.name"))) {
-                    this.appendNode(
-                        root,
-                        record.get("package.name"),
-                        this.createNode(
-                            record.get("layer.name"),
-                            "hsl(111, 70%, 50%)"
-                        )
+        let data = [];
+        let root;
+        neo4jSession
+            .run(this.state.layersQuery)
+            .then(result => {
+                result.records.forEach(record => {
+                    if (!this.nodeExists(data, record.get("package"))) {
+                        this.appendNonLeafNode(
+                            data,
+                            record.get("package"),
+                            "#F6FBFC",
+                            ""
+                        );
+                    }
+                    if (!this.nodeExists(data, record.get("layer"))) {
+                        this.appendNonLeafNode(
+                            data,
+                            record.get("layer"),
+                            "#CCECE6",
+                            record.get("package")
+                        );
+                    }
+                    if (record.get("loc").low < 5) {
+                        record.get("loc").low = 5;
+                    } else {
+                        record.get("loc").low = record.get("loc").low + 5;
+                    }
+                    this.appendLeafNode(
+                        data,
+                        record.get("child"),
+                        "#66C2A4",
+                        record.get("layer"),
+                        record.get("loc").low
                     );
-                    this.appendNode(
-                        root,
-                        record.get("layer.name"),
-                        this.createNode(
-                            record.get("dependent.name"),
-                            "hsl(204, 70%, 50%)"
-                        )
-                    );
-                }
+                });
+            })
+            .then(() => {
+                root = d3
+                    .stratify()
+                    .id(node => {
+                        return node.id;
+                    })
+                    .parentId(node => {
+                        return node.parent;
+                    })(data);
+            })
+            .then(() => {
+                this.convertData(root);
+            })
+            .then(() => {
+                that.setState({
+                    data: root
+                });
             });
-            console.log(root);
-        });
     }
 
-    hasNode(root, name) {
-        if (this.isEmpty(root)) return false;
-        if (root.name === name) return true;
-        for (let child of root.children) {
-            if (child.name === name) {
-                return true;
+    convertData(node) {
+        node.color = node.data.color;
+        for (let i = 0; i < node.children.length; i++) {
+            node.children[i].color = node.children[i].data.color;
+            node.children[i].loc = node.children[i].data.loc;
+            if (node.children[i].children) {
+                this.convertData(node.children[i]);
             }
         }
     }
 
-    isEmpty(root) {
-        return Object.keys(root).length === 0 && root.constructor === Object;
-    }
-
-    createNode(name, color) {
-        return {
-            name: name,
+    appendNonLeafNode(data, id, color, parent) {
+        data.push({
+            id: id,
             color: color,
-            children: []
-        };
+            parent: parent
+        });
     }
 
-    appendNode(root, parent, child) {
-        debugger;
-        const parentNode = this.findParent(root, parent);
-        console.log(parentNode);
-        parentNode.children.push(child);
+    appendLeafNode(data, id, color, parent, loc) {
+        data.push({
+            id: id,
+            color: color,
+            loc: loc,
+            parent: parent
+        });
     }
 
-    findParent(root, parentName) {
-        if (root.name === parentName) {
-            return parentName;
-        }
-        debugger;
-        let result;
-        for (let child of root.children) {
-            console.log(child);
-            // result = this.findParent(child.children, name)
-            // if (result) return result;
-        }
+    nodeExists(nodes, nodeId) {
+        return nodes.some(node => node.id === nodeId);
     }
 }
 

@@ -294,6 +294,8 @@ class ArchitectureStructure extends DashboardAbstract {
             return "";
         }
 
+        console.log(this.state.hotSpotData);
+
         return (
             <div>
                 <Row>

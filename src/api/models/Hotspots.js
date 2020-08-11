@@ -114,8 +114,9 @@ class HotspotModel {
                     projectName,
                     flatData
                 );
+                console.log(hierarchicalData);
                 cpHelper.normalizeHotspots(hierarchicalData); //this function works by reference
-
+                console.log(hierarchicalData);
                 neo4jSession.close();
 
                 //normalize the root element

@@ -5,6 +5,7 @@ import DashboardAbstract, {
 import { Button, Row, Col, Card, CardBody } from "reactstrap";
 import { ResponsiveBubble } from "@nivo/circle-packing";
 import LayersModel from "../../../../api/models/LayersModel";
+import { Treebeard } from "react-treebeard";
 
 class Layers extends DashboardAbstract {
     constructor(props) {
@@ -24,8 +25,11 @@ class Layers extends DashboardAbstract {
     }
 
     render() {
-        console.log(this.state);
-
+        {
+            {
+                console.log(this.state.data);
+            }
+        }
         return (
             <div>
                 <Row>
@@ -33,6 +37,18 @@ class Layers extends DashboardAbstract {
                         <Card>
                             <CardBody>
                                 <Row>
+                                    <Col xs="12" sm="6" md="4">
+                                        <Card
+                                            id="treebeard-component"
+                                            data-simplebar
+                                            style={{
+                                                height: "635px",
+                                                overflow: "hidden"
+                                            }}
+                                        >
+                                            <CardBody></CardBody>
+                                        </Card>
+                                    </Col>
                                     <Col xs="12" sm="6" md="8">
                                         <Card>
                                             <CardBody>
@@ -41,9 +57,20 @@ class Layers extends DashboardAbstract {
                                                 >
                                                     <ResponsiveBubble
                                                         root={this.state.data}
-                                                        identity="name"
+                                                        margin={{
+                                                            top: 20,
+                                                            right: 20,
+                                                            bottom: 20,
+                                                            left: 20
+                                                        }}
+                                                        identity="id"
                                                         value="loc"
+                                                        colorBy={node => {
+                                                            return node.color;
+                                                        }}
                                                         animate={true}
+                                                        motionStiffness={90}
+                                                        motionDamping={12}
                                                     />
                                                 </div>
                                             </CardBody>
