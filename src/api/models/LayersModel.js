@@ -21,33 +21,48 @@ class LayersModel {
     }
 
     readLayers(that) {
-        let data = [];
-        let root;
+        let visualizationData = [];
+        let treeData = [];
+        let visualizationRoot;
+        let treeRoot;
+
         neo4jSession.run(this.state.layersQuery).then(result => {
             result.records.forEach(record => {
-                if (!this.nodeExists(data, record.get("package"))) {
+                if (
+                    !this.nodeExists(visualizationData, record.get("package"))
+                ) {
                     this.appendNonLeafNode(
-                        data,
+                        visualizationData,
                         record.get("package"),
-                        "#F6FBFC",
+                        "",
+                        "#F6FBFC"
+                    );
+                    this.appendNonLeafNode(
+                        treeData,
+                        record.get("package"),
+                        "",
                         ""
                     );
                 }
-                if (!this.nodeExists(data, record.get("layer"))) {
+                if (!this.nodeExists(visualizationData, record.get("layer"))) {
                     this.appendNonLeafNode(
-                        data,
+                        visualizationData,
                         record.get("layer"),
-                        "#CCECE6",
-                        record.get("package")
+                        record.get("package"),
+                        "#CCECE6"
+                    );
+                    this.appendNonLeafNode(
+                        treeData,
+                        record.get("layer"),
+                        record.get("package"),
+                        "#CCECE6"
                     );
                 }
-                if (record.get("loc").low < 5) {
-                    record.get("loc").low = 5;
-                } else {
-                    record.get("loc").low = record.get("loc").low + 5;
+                if (record.get("loc").low === 0) {
+                    record.get("loc").low = 1;
                 }
                 this.appendLeafNode(
-                    data,
+                    visualizationData,
                     record.get("child"),
                     "#66C2A4",
                     record.get("layer"),
@@ -61,33 +76,59 @@ class LayersModel {
             .then(result => {
                 result.records.forEach(record => {
                     if (!this.dependencyIsValid(record)) {
-                        data.find(
-                            node => node.id === record.get("dependent")
-                        ).color = "#EF6548";
-                        data.find(
-                            node => node.id === record.get("dependency")
-                        ).color = "#EF6548";
+                        treeData.push({
+                            id: record.get("dependent"),
+                            parent: record.get("dependentLayer"),
+                            dependency: record.get("dependency"),
+                            dependencyLayer: record.get("dependencyLayer")
+                        });
+                        this.changeColor(
+                            visualizationData,
+                            record.get("dependent")
+                        );
+                        this.changeColor(
+                            visualizationData,
+                            record.get("dependency")
+                        );
                     }
                 });
             })
             .then(() => {
-                root = d3
+                console.log("treedata", treeData);
+                visualizationRoot = d3
                     .stratify()
                     .id(node => {
                         return node.id;
                     })
                     .parentId(node => {
                         return node.parent;
-                    })(data);
+                    })(visualizationData);
+
+                treeRoot = d3
+                    .stratify()
+                    .id(node => {
+                        return node.id;
+                    })
+                    .parentId(node => {
+                        return node.parent;
+                    })(treeData);
             })
             .then(() => {
-                this.convertData(root);
+                console.log("visualizationRoot", visualizationRoot);
+                console.log("treeRoot", treeRoot);
+                this.convertDataForVisualization(visualizationRoot);
+                this.convertDataForTree(treeRoot);
             })
             .then(() => {
                 that.setState({
-                    data: root
+                    visualizationData: visualizationRoot,
+                    treeData: treeRoot
                 });
             });
+    }
+
+    changeColor(data, nodeId) {
+        data.find(node => node.id === nodeId).color = "#EF6548";
     }
 
     dependencyIsValid(record) {
@@ -101,22 +142,39 @@ class LayersModel {
         );
     }
 
-    convertData(node) {
-        node.color = node.data.color;
-        for (let i = 0; i < node.children.length; i++) {
-            node.children[i].color = node.children[i].data.color;
-            node.children[i].loc = node.children[i].data.loc;
-            if (node.children[i].children) {
-                this.convertData(node.children[i]);
+    convertDataForVisualization(root) {
+        root.color = root.data.color;
+        root.name = root.id;
+        for (let i = 0; i < root.children.length; i++) {
+            root.children[i].color = root.children[i].data.color;
+            root.children[i].loc = root.children[i].data.loc;
+            if (root.children[i].children) {
+                this.convertDataForVisualization(root.children[i]);
             }
         }
     }
 
-    appendNonLeafNode(data, id, color, parent) {
-        data.push({
+    convertDataForTree(root) {
+        root.name = root.id;
+        root.toggled = false;
+        for (let i = 0; i < root.children.length; i++) {
+            root.children[i].name = root.children[i].id;
+            root.children[i].toggled = false;
+            if (root.children[i].children) {
+                root.children[i].children.forEach(child => {
+                    child.name =
+                        child.data.id + " accesses " + child.data.dependency;
+                });
+            }
+        }
+    }
+
+    appendNonLeafNode(dataset, id, parent, color) {
+        dataset.push({
             id: id,
+            parent: parent,
             color: color,
-            parent: parent
+            violations: []
         });
     }
 

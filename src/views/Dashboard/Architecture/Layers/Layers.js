@@ -2,17 +2,22 @@ import React from "react";
 import DashboardAbstract, {
     databaseCredentialsProvided
 } from "../../AbstractDashboardComponent";
-import { Button, Row, Col, Card, CardBody } from "reactstrap";
+import { Row, Col, Card, CardBody } from "reactstrap";
 import { ResponsiveBubble } from "@nivo/circle-packing";
 import LayersModel from "../../../../api/models/LayersModel";
 import { Treebeard } from "react-treebeard";
+
+const treebeardCustomTheme = require("./TreebeardCustomTheme");
 
 class Layers extends DashboardAbstract {
     constructor(props) {
         super(props);
         this.state = {
-            data: {}
+            visualizationData: {},
+            treeData: {}
         };
+
+        this.onToggle = this.onToggle.bind(this);
     }
 
     componentDidMount() {
@@ -24,12 +29,23 @@ class Layers extends DashboardAbstract {
         }
     }
 
-    render() {
-        {
-            {
-                console.log(this.state.data);
-            }
+    onToggle(node, toggled) {
+        const { cursor, treeData } = this.state;
+        if (cursor) {
+            this.setState(() => ({ cursor, active: false }));
         }
+        node.active = true;
+        if (node.children) {
+            node.toggled = toggled;
+        }
+        this.setState(() => ({
+            cursor: node,
+            treeData: Object.assign({}, treeData)
+        }));
+    }
+
+    render() {
+        console.log(this.state);
         return (
             <div>
                 <Row>
@@ -46,7 +62,15 @@ class Layers extends DashboardAbstract {
                                                 overflow: "hidden"
                                             }}
                                         >
-                                            <CardBody></CardBody>
+                                            <CardBody>
+                                                <Treebeard
+                                                    data={this.state.treeData}
+                                                    onToggle={this.onToggle}
+                                                    style={
+                                                        treebeardCustomTheme.default
+                                                    }
+                                                />
+                                            </CardBody>
                                         </Card>
                                     </Col>
                                     <Col xs="12" sm="6" md="8">
@@ -56,7 +80,10 @@ class Layers extends DashboardAbstract {
                                                     style={{ height: "600px" }}
                                                 >
                                                     <ResponsiveBubble
-                                                        root={this.state.data}
+                                                        root={
+                                                            this.state
+                                                                .visualizationData
+                                                        }
                                                         margin={{
                                                             top: 20,
                                                             right: 20,
@@ -69,6 +96,7 @@ class Layers extends DashboardAbstract {
                                                             return node.color;
                                                         }}
                                                         animate={true}
+                                                        enableLabel={false}
                                                     />
                                                 </div>
                                             </CardBody>
