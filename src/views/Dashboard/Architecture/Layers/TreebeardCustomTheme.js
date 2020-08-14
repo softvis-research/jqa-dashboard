@@ -43,7 +43,7 @@ export default {
                 height: 12,
                 width: 12,
                 arrow: {
-                    fill: "#9DA5AB",
+                    fill: "#9da5ab",
                     strokeWidth: "0px"
                 }
             },

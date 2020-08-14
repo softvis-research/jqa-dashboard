@@ -75,25 +75,27 @@ class LayersModel {
             .run(this.state.dependenciesQuery)
             .then(result => {
                 result.records.forEach(record => {
-                    if (!this.dependencyIsValid(record)) {
+                    if (this.dependencyIsValid(record)) {
                         treeData.push({
                             id: record.get("dependent"),
                             parent: record.get("dependentLayer"),
                             dependency: record.get("dependency"),
-                            dependencyLayer: record.get("dependencyLayer")
+                            dependencyLayer: record.get("dependencyLayer"),
+                            dependencyIsValid: true
                         });
-                        this.changeColor(
-                            visualizationData,
-                            record.get("dependent")
-                        );
-                        this.changeColor(
-                            visualizationData,
-                            record.get("dependency")
-                        );
+                    } else {
+                        treeData.push({
+                            id: record.get("dependent"),
+                            parent: record.get("dependentLayer"),
+                            dependency: record.get("dependency"),
+                            dependencyLayer: record.get("dependencyLayer"),
+                            dependencyIsValid: false
+                        });
                     }
                 });
             })
             .then(() => {
+                console.log("visualizationData", visualizationData);
                 console.log("treedata", treeData);
                 visualizationRoot = d3
                     .stratify()

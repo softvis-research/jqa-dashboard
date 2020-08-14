@@ -3,7 +3,7 @@ import DashboardAbstract, {
     databaseCredentialsProvided
 } from "../../AbstractDashboardComponent";
 import { Row, Col, Card, CardBody } from "reactstrap";
-import { ResponsiveBubble } from "@nivo/circle-packing";
+import { ResponsiveBubbleHtml } from "@nivo/circle-packing";
 import LayersModel from "../../../../api/models/LayersModel";
 import { Treebeard } from "react-treebeard";
 
@@ -29,23 +29,36 @@ class Layers extends DashboardAbstract {
         }
     }
 
+    onClick(node) {
+        console.log(node);
+        const dependentId = node.id;
+        const dependencyId = node.data.dependency;
+
+        if (dependentId) {
+            const nodeCircle = document.querySelector();
+        }
+    }
+
     onToggle(node, toggled) {
-        const { cursor, treeData } = this.state;
-        if (cursor) {
-            this.setState(() => ({ cursor, active: false }));
+        if (this.state.cursor) {
+            this.state.cursor.active = false;
         }
         node.active = true;
         if (node.children) {
             node.toggled = toggled;
         }
         this.setState(() => ({
-            cursor: node,
-            treeData: Object.assign({}, treeData)
+            cursor: node
         }));
     }
 
     render() {
         console.log(this.state);
+
+        if (!this.state.visualizationData.name) {
+            return "";
+        }
+
         return (
             <div>
                 <Row>
@@ -77,9 +90,12 @@ class Layers extends DashboardAbstract {
                                         <Card>
                                             <CardBody>
                                                 <div
+                                                    className={
+                                                        "structure-component"
+                                                    }
                                                     style={{ height: "600px" }}
                                                 >
-                                                    <ResponsiveBubble
+                                                    <ResponsiveBubbleHtml
                                                         root={
                                                             this.state
                                                                 .visualizationData
