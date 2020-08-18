@@ -14,7 +14,8 @@ class Layers extends DashboardAbstract {
         super(props);
         this.state = {
             visualizationData: {},
-            treeData: {}
+            treeData: {},
+            dependencies: []
         };
 
         this.onToggle = this.onToggle.bind(this);
@@ -29,21 +30,12 @@ class Layers extends DashboardAbstract {
         }
     }
 
-    onClick(node) {
-        console.log(node);
-        const dependentId = node.id;
-        const dependencyId = node.data.dependency;
-
-        if (dependentId) {
-            const nodeCircle = document.querySelector();
-        }
-    }
-
     onToggle(node, toggled) {
         if (this.state.cursor) {
             this.state.cursor.active = false;
         }
         node.active = true;
+        // this.highlightCircles(node);
         if (node.children) {
             node.toggled = toggled;
         }
@@ -53,10 +45,8 @@ class Layers extends DashboardAbstract {
     }
 
     render() {
-        console.log(this.state);
-
         if (!this.state.visualizationData.name) {
-            return "";
+            return "Loading...";
         }
 
         return (
@@ -113,6 +103,14 @@ class Layers extends DashboardAbstract {
                                                         }}
                                                         animate={true}
                                                         enableLabel={false}
+                                                        borderWidth={2}
+                                                        tooltip={({ id }) => (
+                                                            <div>
+                                                                <span>
+                                                                    {id}
+                                                                </span>
+                                                            </div>
+                                                        )}
                                                     />
                                                 </div>
                                             </CardBody>

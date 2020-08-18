@@ -21,82 +21,125 @@ class LayersModel {
     }
 
     readLayers(that) {
+        const COLORS = {
+            PACKAGE: "#F6FBFC",
+            LAYER: "#CCECE6",
+            VALID_LEAF: "#66C2A4",
+            INVALID_LEAF: "#ef654c"
+        };
         let visualizationData = [];
         let treeData = [];
+        let dependencies = [];
         let visualizationRoot;
         let treeRoot;
 
-        neo4jSession.run(this.state.layersQuery).then(result => {
+        neo4jSession.run(this.state.dependenciesQuery).then(result => {
             result.records.forEach(record => {
-                if (
-                    !this.nodeExists(visualizationData, record.get("package"))
-                ) {
-                    this.appendNonLeafNode(
-                        visualizationData,
-                        record.get("package"),
-                        "",
-                        "#F6FBFC"
-                    );
-                    this.appendNonLeafNode(
+                if (!this.dependencyIsValid(record)) {
+                    dependencies.push({
+                        id: record.get("dependent"),
+                        dependency: record.get("dependency"),
+                        isValid: false
+                    });
+                    this.appendDependency(
                         treeData,
-                        record.get("package"),
-                        "",
-                        ""
+                        record.get("dependent"),
+                        record.get("dependency"),
+                        record.get("dependentLayer"),
+                        record.get("dependencyLayer"),
+                        false
                     );
-                }
-                if (!this.nodeExists(visualizationData, record.get("layer"))) {
-                    this.appendNonLeafNode(
-                        visualizationData,
-                        record.get("layer"),
-                        record.get("package"),
-                        "#CCECE6"
-                    );
-                    this.appendNonLeafNode(
+                } else {
+                    dependencies.push({
+                        id: record.get("dependent"),
+                        dependency: record.get("dependency"),
+                        isValid: true
+                    });
+                    this.appendDependency(
                         treeData,
-                        record.get("layer"),
-                        record.get("package"),
-                        "#CCECE6"
+                        record.get("dependent"),
+                        record.get("dependency"),
+                        record.get("dependentLayer"),
+                        record.get("dependencyLayer"),
+                        true
                     );
                 }
-                if (record.get("loc").low === 0) {
-                    record.get("loc").low = 1;
-                }
-                this.appendLeafNode(
-                    visualizationData,
-                    record.get("child"),
-                    "#66C2A4",
-                    record.get("layer"),
-                    record.get("loc").low
-                );
             });
         });
 
         neo4jSession
-            .run(this.state.dependenciesQuery)
+            .run(this.state.layersQuery)
             .then(result => {
                 result.records.forEach(record => {
-                    if (this.dependencyIsValid(record)) {
-                        treeData.push({
-                            id: record.get("dependent"),
-                            parent: record.get("dependentLayer"),
-                            dependency: record.get("dependency"),
-                            dependencyLayer: record.get("dependencyLayer"),
-                            dependencyIsValid: true
-                        });
+                    if (
+                        !this.nodeExists(
+                            visualizationData,
+                            record.get("package")
+                        )
+                    ) {
+                        this.appendVisualizationNode(
+                            visualizationData,
+                            record.get("package"),
+                            "",
+                            COLORS.PACKAGE
+                        );
+                        this.appendTreeNode(
+                            treeData,
+                            record.get("package"),
+                            ""
+                        );
+                    }
+                    if (
+                        !this.nodeExists(visualizationData, record.get("layer"))
+                    ) {
+                        this.appendVisualizationNode(
+                            visualizationData,
+                            record.get("layer"),
+                            record.get("package"),
+                            COLORS.LAYER
+                        );
+                        this.appendTreeNode(
+                            treeData,
+                            record.get("layer"),
+                            record.get("package")
+                        );
+                    }
+                    if (record.get("loc").low === 0) {
+                        record.get("loc").low = 1;
+                    }
+                    if (
+                        (dependencies.find(
+                            node => node.id === record.get("child")
+                        ) !== undefined &&
+                            !dependencies.find(
+                                node => node.id === record.get("child")
+                            ).isValid) ||
+                        (dependencies.find(
+                            node => node.dependency === record.get("child")
+                        ) !== undefined &&
+                            !dependencies.find(
+                                node => node.dependency === record.get("child")
+                            ).isValid)
+                    ) {
+                        this.appendLeafNode(
+                            visualizationData,
+                            record.get("child"),
+                            record.get("layer"),
+                            COLORS.INVALID_LEAF,
+                            record.get("loc").low
+                        );
                     } else {
-                        treeData.push({
-                            id: record.get("dependent"),
-                            parent: record.get("dependentLayer"),
-                            dependency: record.get("dependency"),
-                            dependencyLayer: record.get("dependencyLayer"),
-                            dependencyIsValid: false
-                        });
+                        this.appendLeafNode(
+                            visualizationData,
+                            record.get("child"),
+                            record.get("layer"),
+                            COLORS.VALID_LEAF,
+                            record.get("loc").low
+                        );
                     }
                 });
             })
             .then(() => {
-                console.log("visualizationData", visualizationData);
-                console.log("treedata", treeData);
                 visualizationRoot = d3
                     .stratify()
                     .id(node => {
@@ -116,21 +159,33 @@ class LayersModel {
                     })(treeData);
             })
             .then(() => {
-                console.log("visualizationRoot", visualizationRoot);
-                console.log("treeRoot", treeRoot);
                 this.convertDataForVisualization(visualizationRoot);
                 this.convertDataForTree(treeRoot);
             })
             .then(() => {
                 that.setState({
                     visualizationData: visualizationRoot,
-                    treeData: treeRoot
+                    treeData: treeRoot,
+                    dependencies: dependencies
                 });
             });
     }
 
-    changeColor(data, nodeId) {
-        data.find(node => node.id === nodeId).color = "#EF6548";
+    appendDependency(
+        dataset,
+        dependent,
+        dependency,
+        dependentLayer,
+        dependencyLayer,
+        isValid
+    ) {
+        dataset.push({
+            id: dependent,
+            dependency: dependency,
+            parent: dependentLayer,
+            dependencyLayer: dependencyLayer,
+            isValid: isValid
+        });
     }
 
     dependencyIsValid(record) {
@@ -171,21 +226,27 @@ class LayersModel {
         }
     }
 
-    appendNonLeafNode(dataset, id, parent, color) {
+    appendTreeNode(dataset, id, parent) {
+        dataset.push({
+            id: id,
+            parent: parent
+        });
+    }
+
+    appendVisualizationNode(dataset, id, parent, color) {
+        dataset.push({
+            id: id,
+            parent: parent,
+            color: color
+        });
+    }
+
+    appendLeafNode(dataset, id, parent, color, loc) {
         dataset.push({
             id: id,
             parent: parent,
             color: color,
-            violations: []
-        });
-    }
-
-    appendLeafNode(data, id, color, parent, loc) {
-        data.push({
-            id: id,
-            color: color,
-            loc: loc,
-            parent: parent
+            loc: loc
         });
     }
 

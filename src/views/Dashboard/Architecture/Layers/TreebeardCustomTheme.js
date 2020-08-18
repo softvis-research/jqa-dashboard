@@ -4,7 +4,7 @@ export default {
     tree: {
         base: {
             listStyle: "none",
-            backgroundColor: "#FFFFFF",
+            backgroundColor: "#ffffff",
             margin: "0px",
             padding: "0px",
             color: "#151b1e"
