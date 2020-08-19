@@ -5,7 +5,8 @@ import DashboardAbstract, {
 import { Row, Col, Card, CardBody } from "reactstrap";
 import { ResponsiveBubbleHtml } from "@nivo/circle-packing";
 import LayersModel from "../../../../api/models/LayersModel";
-import { Treebeard } from "react-treebeard";
+import { Treebeard, decorators } from "react-treebeard";
+import CustomHeader from "./CustomHeader";
 
 const treebeardCustomTheme = require("./TreebeardCustomTheme");
 
@@ -35,7 +36,6 @@ class Layers extends DashboardAbstract {
             this.state.cursor.active = false;
         }
         node.active = true;
-        // this.highlightCircles(node);
         if (node.children) {
             node.toggled = toggled;
         }
@@ -48,6 +48,8 @@ class Layers extends DashboardAbstract {
         if (!this.state.visualizationData.name) {
             return "Loading...";
         }
+
+        console.log(this.state);
 
         return (
             <div>
@@ -72,6 +74,10 @@ class Layers extends DashboardAbstract {
                                                     style={
                                                         treebeardCustomTheme.default
                                                     }
+                                                    decorators={{
+                                                        ...decorators,
+                                                        Header: CustomHeader
+                                                    }}
                                                 />
                                             </CardBody>
                                         </Card>
