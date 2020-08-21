@@ -13,10 +13,15 @@ class LayersModel {
             "RETURN l1.name AS dependentLayer, l2.name AS dependencyLayer, dependent.name AS dependent, dependency.name AS dependency " +
             "ORDER BY dependentLayer, dependencyLayer";
 
+        const dependencyDefinitionQuery =
+            "MATCH (dependent:Layer)-[:DEFINES_DEPENDENCY]->(dependency:Layer) " +
+            "RETURN dependent.name as dependent, collect(dependency.name) as dependencies";
+
         this.state = {
             layersQuery: layersQuery,
             dependenciesQuery: dependenciesQuery,
-            validDependencyDirection: ["web", "service", "model", "repository"]
+            dependencyDefinitionQuery: dependencyDefinitionQuery,
+            validDependencies: []
         };
     }
 
@@ -32,6 +37,19 @@ class LayersModel {
         let dependencies = [];
         let visualizationRoot;
         let treeRoot;
+
+        neo4jSession.run(this.state.dependencyDefinitionQuery).then(result => {
+            const validDependencies = [];
+            result.records.forEach(record => {
+                record.get("dependencies").forEach(dependency => {
+                    validDependencies.push({
+                        dependent: record.get("dependent"),
+                        dependency: dependency
+                    });
+                });
+            });
+            this.state.validDependencies = validDependencies;
+        });
 
         neo4jSession.run(this.state.dependenciesQuery).then(result => {
             result.records.forEach(record => {
@@ -189,14 +207,16 @@ class LayersModel {
     }
 
     dependencyIsValid(record) {
-        return (
-            this.state.validDependencyDirection.indexOf(
-                record.get("dependentLayer")
-            ) <
-            this.state.validDependencyDirection.indexOf(
-                record.get("dependencyLayer")
-            )
-        );
+        let isValid = false;
+        this.state.validDependencies.forEach(validDependency => {
+            if (
+                record.get("dependentLayer") === validDependency.dependent &&
+                record.get("dependencyLayer") === validDependency.dependency
+            ) {
+                isValid = true;
+            }
+        });
+        return isValid;
     }
 
     convertDataForVisualization(root) {
