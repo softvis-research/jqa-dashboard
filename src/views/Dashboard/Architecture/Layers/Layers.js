@@ -49,6 +49,8 @@ class Layers extends DashboardAbstract {
             return "Loading...";
         }
 
+        console.log(this.state.treeData);
+
         return (
             <div>
                 <Row>

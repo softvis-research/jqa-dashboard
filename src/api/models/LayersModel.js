@@ -125,19 +125,17 @@ class LayersModel {
                     if (record.get("loc").low === 0) {
                         record.get("loc").low = 1;
                     }
+
                     if (
-                        (dependencies.find(
-                            node => node.id === record.get("child")
-                        ) !== undefined &&
-                            !dependencies.find(
-                                node => node.id === record.get("child")
-                            ).isValid) ||
-                        (dependencies.find(
-                            node => node.dependency === record.get("child")
-                        ) !== undefined &&
-                            !dependencies.find(
-                                node => node.dependency === record.get("child")
-                            ).isValid)
+                        dependencies.filter(
+                            node =>
+                                node.id === record.get("child") && !node.isValid
+                        ).length > 0 ||
+                        dependencies.filter(
+                            node =>
+                                node.dependency === record.get("child") &&
+                                !node.isValid
+                        ).length > 0
                     ) {
                         this.appendLeafNode(
                             visualizationData,

@@ -11837,3 +11837,15 @@ a.breadcrumb-item {
 
 html body .app.flex-row.align-items-center {
   height: 100vh; }
+
+.circle-hovered-default {
+  border-color: #2b3cab !important;
+}
+
+.circle-hovered-valid {
+  border-color: #235d20 !important;
+}
+
+.circle-hovered-invalid {
+  border-color: #601926 !important;
+}
