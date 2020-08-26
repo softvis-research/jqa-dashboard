@@ -5,13 +5,14 @@ class LayersModel {
     constructor(props) {
         const layersQuery =
             "MATCH (package:Package)-[:CONTAINS]->(layer:Layer)-[:CONTAINS]->(child:Type)-[:DECLARES]->(method:Method) " +
-            "RETURN package.name as package, layer.name as layer, child.name as child, sum(method.effectiveLineCount) as loc";
+            "RETURN package.name as package, layer.name as layer, child.name as child, sum(method.effectiveLineCount) as loc " +
+            "ORDER BY layer.name, child.name";
 
         const dependenciesQuery =
             "MATCH (l1:Layer)-[:CONTAINS]->(dependent:Type)-[:DEPENDS_ON]->(dependency:Type)<-[:CONTAINS]-(l2:Layer) " +
             "WHERE NOT (l1.name)=(l2.name) " +
             "RETURN l1.name AS dependentLayer, l2.name AS dependencyLayer, dependent.name AS dependent, dependency.name AS dependency " +
-            "ORDER BY dependentLayer, dependencyLayer";
+            "ORDER BY dependentLayer, dependencyLayer, dependent";
 
         const dependencyDefinitionQuery =
             "MATCH (dependent:Layer)-[:DEFINES_DEPENDENCY]->(dependency:Layer) " +

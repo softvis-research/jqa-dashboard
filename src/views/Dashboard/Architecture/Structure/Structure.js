@@ -290,11 +290,11 @@ class ArchitectureStructure extends DashboardAbstract {
             return redirect;
         }
 
+        console.log(this.state.hotSpotData);
+
         if (!this.state.hotSpotData.name) {
             return "";
         }
-
-        console.log(this.state.hotSpotData);
 
         return (
             <div>
