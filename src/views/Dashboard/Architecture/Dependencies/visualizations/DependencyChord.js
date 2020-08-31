@@ -39,7 +39,6 @@ class DependencyChord extends DashboardAbstract {
     }
 
     render() {
-        console.log(this.state);
         var redirect = super.render();
         if (redirect.length > 0) {
             return redirect;

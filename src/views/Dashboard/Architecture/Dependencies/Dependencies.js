@@ -4,6 +4,7 @@ import CustomCardHeader from "../../CustomCardHeader/CustomCardHeader";
 import DependencyChord from "./visualizations/DependencyChord";
 import { CypherEditor } from "graph-app-kit/components/Editor";
 import { Button, Row, Col, Card, CardBody } from "reactstrap";
+
 var AppDispatcher = require("../../../../AppDispatcher");
 
 class ArchitectureDependencies extends DashboardAbstract {
