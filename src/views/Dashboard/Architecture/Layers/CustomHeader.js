@@ -17,6 +17,9 @@ const CustomHeader = ({ node, style }) => {
             document
                 .getElementById(node.id)
                 .classList.add("circle-hovered-invalid");
+            document
+                .getElementById(node.data.dependency)
+                .classList.add("circle-hovered-invalid");
         } else {
             document
                 .getElementById(node.id)
