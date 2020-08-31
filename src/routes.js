@@ -101,7 +101,11 @@ const routes = [
         name: "Dependencies",
         component: Dependencies
     },
-    { path: "/architecture/layers", name: "Layers", component: Layers },
+    {
+        path: "/architecture/layers",
+        name: "Layers",
+        component: Layers
+    },
     {
         path: "/resource-management",
         exact: true,

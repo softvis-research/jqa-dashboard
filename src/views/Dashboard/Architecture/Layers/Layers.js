@@ -7,6 +7,7 @@ import { ResponsiveBubbleHtml } from "@nivo/circle-packing";
 import LayersModel from "../../../../api/models/LayersModel";
 import { Treebeard, decorators } from "react-treebeard";
 import CustomHeader from "./CustomHeader";
+import CustomCardHeader from "../../CustomCardHeader/CustomCardHeader";
 
 const treebeardCustomTheme = require("./TreebeardCustomTheme");
 
@@ -49,11 +50,23 @@ class Layers extends DashboardAbstract {
             return "Loading...";
         }
 
+        console.log(this.state);
+
         return (
             <div>
                 <Row>
                     <Col xs="12" sm="12" md="12">
                         <Card>
+                            <CustomCardHeader
+                                cardHeaderText={"Layers"}
+                                placement={"bottom"}
+                                target={"Popover1"}
+                                popoverHeaderText={"Layers"}
+                                popoverBody={
+                                    "The layers analysis view gives an overview of the software architecture. The size of the bubble indicates the lines of code of the respective component." +
+                                    "A red color indicates that there are some issues with a component."
+                                }
+                            />
                             <CardBody>
                                 <Row>
                                     <Col xs="12" sm="6" md="4">

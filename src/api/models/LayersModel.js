@@ -185,6 +185,12 @@ class LayersModel {
                     treeData: treeRoot,
                     dependencies: dependencies
                 });
+            })
+            .catch(e => {
+                console.error(
+                    "Something went wrong while initializing the given data.",
+                    e
+                );
             });
     }
 
