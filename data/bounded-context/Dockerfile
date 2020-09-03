@@ -1,4 +1,4 @@
-FROM neo4j:latest
+FROM neo4j:3.5.14
 
 ENV NEO4J_PASSWD neo4j
 ENV NEO4J_AUTH neo4j/${NEO4J_PASSWD}
