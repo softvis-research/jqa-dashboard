@@ -82,4 +82,4 @@ $ docker run -it -p 7474:7474 -p 7687:7687 visualsoftwareanalytics/jqa-dashboard
 * Richard Müller, Dirk Mahler, Michael Hunger, Jens Nerche, Markus Harrer: [Towards an Open Source Stack to Create a Unified Data Source for Software Analysis and Visualization](https://www.researchgate.net/publication/328282991_Towards_an_Open_Source_Stack_to_Create_a_Unified_Data_Source_for_Software_Analysis_and_Visualization), 6th IEEE Working Conference on Software Visualization, 2018.
 * Tino Mewes: [Konzeption und prototypische Implementierung eines web-basierten Dashboards zur Softwarevisualisierung](http://nbn-resolving.de/urn:nbn:de:bsz:15-qucosa2-323826), Masterarbeit, 2018.
 
-You can find a complete list of publications on [our website](http://home.uni-leipzig.de/svis/Publications/).
+You can find a complete list of publications on [our website](https://home.uni-leipzig.de/svis/publications.html).
